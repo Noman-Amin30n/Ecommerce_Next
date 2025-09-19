@@ -1,101 +1,168 @@
+import Footer from "@/components/footer";
+import Header from "@/components/header/header";
+import BlogCard from "@/components/blogCard/blogCard";
 import Image from "next/image";
+import { MyButton } from "@/components/buttons";
+import { ProductCard_Big, ProductCard_Normal } from "@/components/product_card";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <>
+      {/* Header and Hero section */}
+      <article className="flex flex-col justify-start items-stretch min-h-[100dvh]">
+        <Header className="bg-[#fbebb5]" />
+        <section className="w-full bg-[#fbebb5] text-black flex justify-center items-center grow">
+          <div className="max-w-[1440px] mx-auto px-6 sm:px-[48px] md:px-[120px] lg:px-[48px] lg:pl-[96px] xl:px-[100px] xl:pl-[200px] flex flex-col lg:flex-row justify-center items-stretch gap-9 lg:gap-12">
+            <div className="relative flex justify-center lg:order-1">
+              <Image
+                src={"/images/hero_image.png"}
+                alt="hero"
+                width={500}
+                height={500}
+                className="object-contain object-right drop-shadow-[0px_28px_30px_rgba(0,0,0,0.1)]"
+              />
+            </div>
+            <div className="flex flex-col justify-end items-center lg:items-start gap-4 pb-8">
+              <h2 className="font-medium text-[36px] sm:text-[48px] md:text-[56px] leading-normal text-center lg:text-left sm:text-nowrap">
+                Rocket single<span className="block">seater</span>
+              </h2>
+              <MyButton btnText="Shop Now" />
+            </div>
+          </div>
+        </section>
+      </article>
+      {/* Featured products section */}
+      <section className="w-full bg-[#FAF4F4] text-black py-12 md:py-[54px]">
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-[48px] md:px-[100px] flex flex-col md:flex-row justify-between items-stretch gap-[30px]">
+          <ProductCard_Big
+            imageSrc={"/images/products/product_1.png"}
+            imageAlt="section_01"
+            title="Side Table"
+          />
+          <ProductCard_Big
+            imageSrc={"/images/products/product_2.png"}
+            imageAlt="section_01"
+            title="Coffee Table"
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+      {/* Top Picks for user */}
+      <section className="bg-white text-black py-12 md:py-[54px]">
+        <div className="max-w-[1440px] mx-auto flex flex-col justify-center items-center px-6 sm:px-[48px] md:px-[100px]">
+          <h2 className="font-medium text-[28px] md:text-[36px] leading-normal">
+            Top Picks For You
+          </h2>
+          <p className="font-medium text-sm md:text-base leading-normal text-[#9F9F9F] text-center mt-3">
+            Find a bright ideal to suit your taste with our great selection of
+            suspension, floor and table lights.
+          </p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-[30px] self-stretch mt-12 md:mt-16">
+            <ProductCard_Normal
+              imageSrc="/images/products/product_3.png"
+              imageAlt="section_01"
+              title="Trenton modular sofa_3"
+              price="Rs. 25,000.00"
+            />
+            <ProductCard_Normal
+              imageSrc="/images/products/product_4.png"
+              imageAlt="section_01"
+              title="Granite dining table with dining chair"
+              price="Rs. 25,000.00"
+            />
+            <ProductCard_Normal
+              imageSrc="/images/products/product_5.png"
+              imageAlt="section_01"
+              title="Outdoor bar table and stool"
+              price="Rs. 25,000.00"
+            />
+            <ProductCard_Normal
+              imageSrc="/images/products/product_6.png"
+              imageAlt="section_01"
+              title="Plain console with teak mirror"
+              price="Rs. 25,000.00"
+            />
+          </div>
+          <div className="mt-12 md:mt-16">
+            <MyButton btnText="View More" />
+          </div>
+        </div>
+      </section>
+      {/* New arrivals section */}
+      <section className="bg-[#FFF9E5] text-black py-12 md:py-[54px]">
+        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-stretch px-6 sm:px-[48px] md:pl-12 md:pr-[60px] xl:pr-[100px] gap-[30px] md:gap-[60px] xl:gap-[100px]">
+          <div className="md:grow">
+            <Image
+              src="/images/products/product_7.png"
+              alt="Newly arrived sofa"
+              width={500}
+              height={500}
+              className="w-full"
+            />
+          </div>
+          <div className="flex flex-col justify-center items-center">
+            <p className="font-medium text-base sm:text-lg md:text-[20px] leading-normal">
+              New Arrivals
+            </p>
+            <h3 className="font-bold text-[28px] sm:text-[32px] md:text-[36px] lg:text-[48px] leading-normal sm:text-nowrap">
+              Asgaard sofa
+            </h3>
+            <button className="text-sm sm:text-base lg:text-lg xl:text-[20px] leading-normal text-black py-2 md:py-3 lg:py-4 px-8 md:px-12 lg:px-[74px] border border-black mt-6 lg:mt-8">
+              Order Now
+            </button>
+          </div>
+        </div>
+      </section>
+      {/* Our blogs section */}
+      <section className="w-full bg-white text-black py-12 md:py-[54px]">
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-12 md:px-[100px] flex flex-col justify-between items-center gap-9 sm:gap-12 md:gap-16">
+          <div>
+            <h2 className="font-medium text-[28px] md:text-[36px] leading-normal text-center">
+              Our Blogs
+            </h2>
+            <p className="font-medium text-sm md:text-base leading-normal text-[#9F9F9F] text-center mt-3">
+              Find a bright ideal to suit your taste with our great selection
+            </p>
+          </div>
+          <div className="self-stretch grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-[30px] gap-y-12">
+            <BlogCard
+              imageSrc="/images/post_1.jpeg"
+              imageAlt="blog post 1 thumbnail"
+              title="Going all-in with millennial design"
+              readTime="5 min"
+              createdAt={new Date()}
+            />
+            <BlogCard
+              imageSrc="/images/post_2.jpeg"
+              imageAlt="blog post 1 thumbnail"
+              title="Going all-in with millennial design"
+              readTime="5 min"
+              createdAt={new Date()}
+            />
+            <BlogCard
+              imageSrc="/images/post_3.jpeg"
+              imageAlt="blog post 1 thumbnail"
+              title="Going all-in with millennial design"
+              readTime="5 min"
+              createdAt={new Date()}
+            />
+          </div>
+        </div>
+      </section>
+      {/* Follow us on Instagram */}
+      <section className='text-black bg-[url(/images/bg.jpeg)] bg-cover bg-center py-20 md:py-[100px] lg:py-[125px] isolate relative before:content-["_"] before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-[rgba(255,255,255,0.85)] before:z-[-999]'>
+        <div className="max-w-[1440px] mx-auto flex flex-col justify-center items-center px-6 sm:px-[48px] md:px-[100px]">
+          <h2 className="font-bold text-[36px] sm:text-[48px] md:text-[60px] leading-normal text-center">
+            Our Instagram
+          </h2>
+          <p className="text-base sm:text-lg md:text-xl leading-normal text-center">
+            Follow our store on Instagram
+          </p>
+          <button className="text-base sm:text-lg md:text-xl leading-normal text-black py-2 md:py-3 lg:py-4 px-10 md:px-[60px] lg:px-20 bg-[#FAF4F4] rounded-full shadow-[0px_20px_20px_rgba(0,0,0,0.1)] mt-4">
+            Follow Us
+          </button>
+        </div>
+      </section>
+      <Footer />
+    </>
   );
 }
