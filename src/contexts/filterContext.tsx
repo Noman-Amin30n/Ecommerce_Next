@@ -6,7 +6,12 @@ import React, {
   useState,
   ReactNode,
   useCallback,
+  useEffect,
+  startTransition,
 } from "react";
+import { setPageCookie } from "@/actions/filter.action";
+
+// Define the shape of the context
 
 interface FilterContextType {
   priceRangeValue: number;
@@ -37,10 +42,19 @@ export function FilterContextProvider({ children }: { children: ReactNode }) {
   const [totalProducts, _setTotalProducts] = useState(0);
 
   // ✅ Wrap setters in useCallback to prevent unnecessary re-renders
-  const setPriceRangeValue = useCallback((v: number) => _setPriceRangeValue(v), []);
+  const setPriceRangeValue = useCallback(
+    (v: number) => _setPriceRangeValue(v),
+    []
+  );
   const setItemsPerPage = useCallback((v: number) => _setItemsPerPage(v), []);
-  const setSortByCurrValue = useCallback((v: string) => _setSortByCurrValue(v), []);
-  const setIsApplyingFilter = useCallback((v: boolean) => _setIsApplyingFilter(v), []);
+  const setSortByCurrValue = useCallback(
+    (v: string) => _setSortByCurrValue(v),
+    []
+  );
+  const setIsApplyingFilter = useCallback(
+    (v: boolean) => _setIsApplyingFilter(v),
+    []
+  );
   const setLoading = useCallback((v: boolean) => _setLoading(v), []);
   const setPage = useCallback((v: number) => _setPage(v), []);
   const setTotalProducts = useCallback((v: number) => _setTotalProducts(v), []);
@@ -62,13 +76,23 @@ export function FilterContextProvider({ children }: { children: ReactNode }) {
     setLoading,
   };
 
-  return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>;
+  useEffect(() => {
+    startTransition(async () => {
+      await setPageCookie(page);
+    });
+  }, [page]);
+
+  return (
+    <FilterContext.Provider value={value}>{children}</FilterContext.Provider>
+  );
 }
 
 export function useFilterContext() {
   const ctx = useContext(FilterContext);
   if (!ctx) {
-    throw new Error("useFilterContext must be used within a FilterContextProvider");
+    throw new Error(
+      "useFilterContext must be used within a FilterContextProvider"
+    );
   }
   return ctx;
 }

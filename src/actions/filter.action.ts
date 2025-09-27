@@ -1,34 +1,32 @@
 "use server";
 import { cookies } from "next/headers";
 
-async function setCookie(name: string, value: string) {
-  (await cookies()).set(name, value, {
-    path: "/", // ✅ global by default (change if you want /shop only)
-    httpOnly: false, // ✅ allow client-side reading if needed
-    sameSite: "lax",
-  });
-}
-
 export async function setSortByCookie(sortBy: string) {
-  setCookie("sortBy", sortBy);
+    const cookieStore = await cookies();
+    cookieStore.set("sortBy", sortBy, { path: "/shop" });
 }
 
 export async function setItemsPerPageCookie(itemsPerPage: number) {
-  setCookie("itemsPerPage", itemsPerPage.toString());
+    const cookieStore = await cookies();
+    cookieStore.set("itemsPerPage", itemsPerPage.toString(), { path: "/shop" });
 }
 
 export async function setMaxPriceFilterCookie(maxPrice: number) {
-  setCookie("maxPrice", maxPrice.toString());
+    const cookieStore = await cookies();
+    cookieStore.set("maxPrice", maxPrice.toString(), { path: "/shop" });
 }
 
 export async function setProductsLayoutCookie(layout: string) {
-  setCookie("productsLayout", layout);
+    const cookieStore = await cookies();
+    cookieStore.set("productsLayout", layout, { path: "/shop" });
 }
 
 export async function setPageCookie(page: number) {
-  setCookie("page", page.toString());
+    const cookieStore = await cookies();
+    cookieStore.set("page", page.toString(), { path: "/shop" });
 }
 
 export async function setTotalProductsCookie(totalProducts: number) {
-  setCookie("totalProducts", totalProducts.toString());
+    const cookieStore = await cookies();
+    cookieStore.set("totalProducts", totalProducts.toString(), { path: "/shop" });
 }

@@ -26,8 +26,8 @@ export default function ItemsPerPage({ className, defaultValue = 16 }: ItemsPerP
     const value = Number(e.target.value);
 
     if (value > 0 && value <= 999) {
-      setItemsPerPage(value);
       startTransition(() => setItemsPerPageCookie(value));
+      setItemsPerPage(value);
     }
   };
 

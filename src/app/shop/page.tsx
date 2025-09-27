@@ -9,7 +9,6 @@ import { FilterContextProvider } from "@/contexts/filterContext";
 import ItemsPerPage from "./_shopComponents/itemsPerPage";
 import SortBy from "./_shopComponents/sortBy";
 import Filters from "./_shopComponents/filters";
-import ApplyFilter from "./_shopComponents/apply";
 import ProductsLayout from "./_shopComponents/productsLayout";
 import ProductsContainer from "./_shopComponents/productsGrid";
 import { ProductsContainerFallback } from "./_shopComponents/productsClientContainer";
@@ -59,7 +58,6 @@ export default async function ShopPage() {
                 <span>Sort by</span>
                 <SortBy />
               </div>
-              <ApplyFilter />
             </div>
           </div>
         </section>

@@ -82,7 +82,7 @@ export default function Filters({ productsApiEndpoint }: FiltersProps) {
           </div>
         </div>
 
-        <div className="mt-4 lg:hidden">
+        <div className="mt-4">
           <ApplyFilter className="text-sm sm:text-base" />
         </div>
       </div>
