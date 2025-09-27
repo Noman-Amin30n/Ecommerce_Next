@@ -1,48 +1,74 @@
-"use client"
-import { setIsAPPlyingFilterCookie, setPageCookie } from '@/actions/filter.action';
-import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction, useEffect, startTransition } from 'react';
+"use client";
+
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useCallback,
+} from "react";
 
 interface FilterContextType {
   priceRangeValue: number;
-  setPriceRangeValue: Dispatch<SetStateAction<number>>;
+  setPriceRangeValue: (value: number) => void;
   itemsPerPage: number;
-  setItemsPerPage: Dispatch<SetStateAction<number>>;
+  setItemsPerPage: (value: number) => void;
   sortByCurrValue: string;
-  setSortByCurrValue: Dispatch<SetStateAction<string>>;
+  setSortByCurrValue: (value: string) => void;
   isApplyingFilter: boolean;
-  setIsApplyingFilter: Dispatch<SetStateAction<boolean>>;
+  setIsApplyingFilter: (value: boolean) => void;
   page: number;
-  setPage: Dispatch<SetStateAction<number>>;
+  setPage: (value: number) => void;
   totalProducts: number;
-  setTotalProducts: Dispatch<SetStateAction<number>>
+  setTotalProducts: (value: number) => void;
+  loading: boolean;
+  setLoading: (value: boolean) => void;
 }
 
 const FilterContext = createContext<FilterContextType | null>(null);
 
-export const FilterContextProvider = ({ children }: { children: ReactNode }) => {
-  const [priceRangeValue, setPriceRangeValue] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(16);
-  const [sortByCurrValue, setSortByCurrValue] = useState("createdAt");
-  const [isApplyingFilter, setIsApplyingFilter] = useState(false);
-  const [page, setPage] = useState(1);
-  const [totalProducts, setTotalProducts] = useState(0);
-  useEffect(() => {
-    startTransition(async () => {
-      await setPageCookie(1);
-      await setIsAPPlyingFilterCookie(false);
-    });
-  }, [])
-  return (
-    <FilterContext value={{ priceRangeValue, setPriceRangeValue, itemsPerPage, setItemsPerPage, sortByCurrValue, setSortByCurrValue, isApplyingFilter, setIsApplyingFilter, page, setPage, totalProducts, setTotalProducts }}>
-      {children}
-    </FilterContext>
-  );
-};
+export function FilterContextProvider({ children }: { children: ReactNode }) {
+  const [priceRangeValue, _setPriceRangeValue] = useState(0);
+  const [itemsPerPage, _setItemsPerPage] = useState(16);
+  const [sortByCurrValue, _setSortByCurrValue] = useState("createdAt");
+  const [isApplyingFilter, _setIsApplyingFilter] = useState(false);
+  const [loading, _setLoading] = useState(true);
+  const [page, _setPage] = useState(1);
+  const [totalProducts, _setTotalProducts] = useState(0);
 
-export const useFilterContext = () => {
-  const context = useContext(FilterContext);
-  if (!context) {
-    throw new Error('useFilter must be used within a FilterProvider');
+  // ✅ Wrap setters in useCallback to prevent unnecessary re-renders
+  const setPriceRangeValue = useCallback((v: number) => _setPriceRangeValue(v), []);
+  const setItemsPerPage = useCallback((v: number) => _setItemsPerPage(v), []);
+  const setSortByCurrValue = useCallback((v: string) => _setSortByCurrValue(v), []);
+  const setIsApplyingFilter = useCallback((v: boolean) => _setIsApplyingFilter(v), []);
+  const setLoading = useCallback((v: boolean) => _setLoading(v), []);
+  const setPage = useCallback((v: number) => _setPage(v), []);
+  const setTotalProducts = useCallback((v: number) => _setTotalProducts(v), []);
+
+  const value: FilterContextType = {
+    priceRangeValue,
+    setPriceRangeValue,
+    itemsPerPage,
+    setItemsPerPage,
+    sortByCurrValue,
+    setSortByCurrValue,
+    isApplyingFilter,
+    setIsApplyingFilter,
+    page,
+    setPage,
+    totalProducts,
+    setTotalProducts,
+    loading,
+    setLoading,
+  };
+
+  return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>;
+}
+
+export function useFilterContext() {
+  const ctx = useContext(FilterContext);
+  if (!ctx) {
+    throw new Error("useFilterContext must be used within a FilterContextProvider");
   }
-  return context;
-};
+  return ctx;
+}
