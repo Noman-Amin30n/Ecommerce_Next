@@ -3,13 +3,14 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { TbAdjustmentsHorizontal } from "react-icons/tb";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useFilterContext } from "@/contexts/filterContext";
+import { getCookie, useFilterContext } from "@/contexts/filterContext";
 import { setMaxPriceFilterCookie } from "@/actions/filter.action";
 import useOutsideClick from "@/hooks/outsideclick";
 import ShowItemsInput from "./itemsPerPage";
 import SortBy from "./sortBy";
 import ApplyFilter from "./apply";
 import clsx from "clsx";
+import { Product } from "@/typescript/types";
 
 interface FiltersProps {
   productsApiEndpoint: string;
@@ -32,9 +33,10 @@ export default function Filters({ productsApiEndpoint }: FiltersProps) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(productsApiEndpoint);
+        const res = await fetch(productsApiEndpoint, { cache: "force-cache" });
+        if (!res.ok) throw new Error("Failed to fetch products");
         const data = await res.json();
-        const products = data.products as { price: number }[];
+        const products: Product[] = data.products;
 
         if (products.length) {
           const sorted = [...products].sort((a, b) => a.price - b.price);
@@ -44,7 +46,8 @@ export default function Filters({ productsApiEndpoint }: FiltersProps) {
           });
         }
       } catch (err) {
-        console.error("Failed to load price range:", err);
+        console.error("Failed to load price range:", (err as Error).message);
+        throw new Error((err as Error).message);
       }
     })();
   }, [productsApiEndpoint]);
@@ -101,8 +104,10 @@ function PriceFilter({ minPrice, maxPrice }: PriceFilterProps) {
 
   // ✅ Initialize max price filter once
   useEffect(() => {
-    setPriceRangeValue(maxPrice);
-    void setMaxPriceFilterCookie(maxPrice);
+    setPriceRangeValue(getCookie("maxPrice") ? Number(getCookie("maxPrice")) : maxPrice);
+    if (!getCookie("maxPrice")) {
+      setMaxPriceFilterCookie(maxPrice);
+    }
   }, [maxPrice, setPriceRangeValue]);
 
   // ✅ Update slider background dynamically

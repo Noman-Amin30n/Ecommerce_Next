@@ -3,23 +3,27 @@
 import React, { useEffect } from "react";
 import { useFilterContext } from "@/contexts/filterContext";
 import { ProductCard_NormalSkeleton } from "@/components/product_card";
+import { Product } from "@/typescript/types";
 
 type ProductClientContainerProps = {
   children: React.ReactNode;
+  products: Product[];
   skeletonCount?: number; // make fallback configurable
 };
 
 function ProductsClientContainer({
   children,
   skeletonCount = 16,
+  products,
 }: ProductClientContainerProps) {
-  const { isApplyingFilter, loading, setLoading } = useFilterContext();
+  const { isApplyingFilter, setIsApplyingFilter, loading, setLoading } = useFilterContext();
 
   // ✅ run once when component mounts
   useEffect(() => {
     setLoading(false);
-    console.log(isApplyingFilter, loading);
-  });
+    setIsApplyingFilter(false);
+    // console.table({ isApplyingFilter, loading, productsLength: products.length });
+  }, [products, setIsApplyingFilter, setLoading]);
 
   if (loading || isApplyingFilter) {
     return <ProductsContainerFallback count={skeletonCount} />;

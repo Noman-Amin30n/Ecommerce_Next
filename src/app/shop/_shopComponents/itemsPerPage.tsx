@@ -2,7 +2,7 @@
 
 import React, { startTransition, useEffect } from "react";
 import { setItemsPerPageCookie } from "@/actions/filter.action";
-import { useFilterContext } from "@/contexts/filterContext";
+import { useFilterContext, getCookie } from "@/contexts/filterContext";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -16,8 +16,10 @@ export default function ItemsPerPage({ className, defaultValue = 16 }: ItemsPerP
 
   // ✅ Initialize once
   useEffect(() => {
-    setItemsPerPage(defaultValue);
-    startTransition(() => setItemsPerPageCookie(defaultValue));
+    setItemsPerPage(getCookie("itemsPerPage") ? Number(getCookie("itemsPerPage")) : defaultValue);
+    if (!getCookie("itemsPerPage")) {
+      startTransition(() => setItemsPerPageCookie(defaultValue));
+    }
   }, [defaultValue, setItemsPerPage]);
 
   if (itemsPerPage === undefined) return <ItemsPerPageFallback />;

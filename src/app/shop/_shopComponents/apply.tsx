@@ -40,7 +40,6 @@ export default function ApplyFilter({ className }: ApplyFilterProps) {
         setPageCookie(1),
       ]);
     } finally {
-      setIsApplyingFilter(false);
       router.refresh();
     }
   }, [

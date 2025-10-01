@@ -77,9 +77,14 @@ export function FilterContextProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    startTransition(async () => {
-      await setPageCookie(page);
-    });
+    const savedItems = getCookie("itemsPerPage");
+    const savedSort = getCookie("sortBy");
+    const savedPage = getCookie("page");
+
+    if (savedItems) _setItemsPerPage(Number(savedItems));
+    if (savedSort) _setSortByCurrValue(savedSort);
+    if (savedPage) _setPage(Number(savedPage));
+    startTransition(() => setPageCookie(page));
   }, [page]);
 
   return (
@@ -95,4 +100,19 @@ export function useFilterContext() {
     );
   }
   return ctx;
+}
+
+export function getCookie(name: string): string | null {
+  const nameEQ = name + "=";
+  if (typeof window !== "undefined") {
+    const ca = document.cookie.split(";");
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === " ") c = c.substring(1, c.length); // Trim leading spaces
+      if (c.indexOf(nameEQ) === 0) {
+        return c.substring(nameEQ.length, c.length);
+      }
+    }
+  }
+  return null; // Return null if the cookie is not found
 }

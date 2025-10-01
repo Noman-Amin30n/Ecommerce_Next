@@ -21,7 +21,7 @@ const SORT_OPTIONS: SortOption[] = [
 ];
 
 export default function SortBy() {
-  const { sortByCurrValue, setSortByCurrValue, isApplyingFilter } = useFilterContext();
+  const { sortByCurrValue, setSortByCurrValue, isApplyingFilter, setIsApplyingFilter } = useFilterContext();
   const [isOpen, setIsOpen] = useState(false);
 
   const sortByRef = useRef<HTMLDivElement>(null);
@@ -36,10 +36,11 @@ export default function SortBy() {
 
   const handleSelect = useCallback(
     (value: string) => {
+      setIsApplyingFilter(true);
       setSortByCurrValue(value);
       setIsOpen(false);
     },
-    [setSortByCurrValue]
+    [ setIsApplyingFilter, setSortByCurrValue]
   );
 
   if (!sortByCurrValue) return <SortByFallback />;

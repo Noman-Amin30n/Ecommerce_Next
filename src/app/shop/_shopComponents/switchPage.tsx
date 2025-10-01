@@ -24,18 +24,18 @@ function SwitchPage({ className, products, page, itemsPerPage }: Props) {
     if (!products.length) return;
     setTotalProducts(products.length);
     setTotalProductsCookie(products.length);
-    setIsApplyingFilter(false);
-  }, [products.length, setTotalProducts, setIsApplyingFilter]);
+  }, [products.length, setTotalProducts]);
 
   const handlePageChange = useCallback(
     async (newPage: number) => {
       if (newPage === page) return;
+      setIsApplyingFilter(true);
       await setPageCookie(newPage);
       setPage(newPage);
       window.scrollTo({ top: 0, behavior: "smooth" });
       router.refresh();
     },
-    [page, setPage, router]
+    [page, setPage,setIsApplyingFilter, router]
   );
 
   if (totalPages <= 1) return null;
