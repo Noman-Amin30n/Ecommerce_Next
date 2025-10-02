@@ -15,6 +15,7 @@ import { TbUserExclamation } from "react-icons/tb";
 import { CiSearch } from "react-icons/ci";
 import { CiHeart } from "react-icons/ci";
 import { AiOutlineShoppingCart } from "react-icons/ai";
+import Link from "next/link";
 
 function MobileHeaderSideMenu() {
   return (
@@ -33,14 +34,14 @@ function MobileHeaderSideMenu() {
         </div>
         <div className="flex flex-col justify-between items-stretch h-[calc(100dvh-80px)]">
           <ul className="space-y-6 text-base text-[#fbebb5] font-medium px-6">
-            <li className="flex justify-start items-center gap-2 leading-none">
+            <Link href="/" className="flex justify-start items-center gap-2 leading-none">
               <GoHome stroke="#000" size={20} />
               <span>Home</span>
-            </li>
-            <li className="flex justify-start items-center gap-2 leading-none">
+            </Link>
+            <Link href="/shop" className="flex justify-start items-center gap-2 leading-none">
               <BsShop stroke="#000" size={20} />
               <span>Shop</span>
-            </li>
+            </Link>
             <li className="flex justify-start items-center gap-2 leading-none">
               <IoIosInformationCircleOutline stroke="#000" size={20} />
               <span>About</span>

@@ -67,7 +67,6 @@ export default async function ProductsContainer({
     <>
       {filteredProducts && currentPageProducts ? (
         <ProductsClientContainer
-          skeletonCount={itemsPerPage}
           products={currentPageProducts}
         >
           {productsLayout === "list" ? (
@@ -102,7 +101,7 @@ export default async function ProductsContainer({
           />
         </ProductsClientContainer>
       ) : (
-        <ProductsContainerFallback count={itemsPerPage} />
+        <ProductsContainerFallback />
       )}
     </>
   );

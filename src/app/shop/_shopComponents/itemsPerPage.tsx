@@ -1,7 +1,7 @@
 "use client";
 
 import React, { startTransition, useEffect } from "react";
-import { setItemsPerPageCookie } from "@/actions/filter.action";
+import { setItemsPerPageCookie, setPageCookie } from "@/actions/filter.action";
 import { useFilterContext, getCookie } from "@/contexts/filterContext";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,7 +12,7 @@ interface ItemsPerPageProps {
 }
 
 export default function ItemsPerPage({ className, defaultValue = 16 }: ItemsPerPageProps) {
-  const { itemsPerPage, setItemsPerPage, isApplyingFilter } = useFilterContext();
+  const { itemsPerPage, setItemsPerPage, isApplyingFilter, setIsApplyingFilter, totalProducts, setPage } = useFilterContext();
 
   // ✅ Initialize once
   useEffect(() => {
@@ -22,14 +22,19 @@ export default function ItemsPerPage({ className, defaultValue = 16 }: ItemsPerP
     }
   }, [defaultValue, setItemsPerPage]);
 
-  if (itemsPerPage === undefined) return <ItemsPerPageFallback />;
+  if (itemsPerPage === undefined || totalProducts === undefined) return <ItemsPerPageFallback />;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
 
-    if (value > 0 && value <= 999) {
-      startTransition(() => setItemsPerPageCookie(value));
+    if (value > 0 && value <= totalProducts) {
+      startTransition(() => {
+        setItemsPerPageCookie(value);
+        setPageCookie(1);
+      });
       setItemsPerPage(value);
+      setIsApplyingFilter(true);
+      setPage(1);
     }
   };
 

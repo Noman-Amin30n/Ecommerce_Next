@@ -13,6 +13,7 @@ import ProductsLayout from "./_shopComponents/productsLayout";
 import ProductsContainer from "./_shopComponents/productsGrid";
 import { ProductsContainerFallback } from "./_shopComponents/productsClientContainer";
 import ProductsCount, { ProductsCountSkeleton } from "./_shopComponents/productsCount";
+import StoreFeatures from "@/components/storeFeatures";
 
 const PRODUCTS_API_ENDPOINT = "https://dummyjson.com/products";
 
@@ -28,8 +29,8 @@ export default async function ShopPage() {
         logoImageUrl="/images/pageTitleLogo.png"
       />
 
-      {/* Filters + Controls */}
       <FilterContextProvider>
+        {/* Filters + Controls */}
         <section className="mt-8 bg-[#FAF4F4] py-5">
           <div className="max-w-[1440px] mx-auto px-6 flex flex-col lg:flex-row justify-between items-stretch gap-4">
             {/* Left Controls */}
@@ -68,8 +69,11 @@ export default async function ShopPage() {
             <ProductsContainer APIEndpoint={PRODUCTS_API_ENDPOINT} />
           </Suspense>
         </section>
-      </FilterContextProvider>
 
+        {/* Store Features */}
+        <StoreFeatures />
+      </FilterContextProvider>
+      
       <Footer />
     </>
   );
