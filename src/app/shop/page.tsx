@@ -1,5 +1,6 @@
 // app/shop/page.tsx
 import React, { Suspense } from "react";
+import type { Metadata } from "next";
 import Header from "@/components/header/header";
 import Footer from "@/components/footer";
 import PageTitle from "@/components/pageTitle";
@@ -15,7 +16,12 @@ import { ProductsContainerFallback } from "./_shopComponents/productsClientConta
 import ProductsCount, { ProductsCountSkeleton } from "./_shopComponents/productsCount";
 import StoreFeatures from "@/components/storeFeatures";
 
-const PRODUCTS_API_ENDPOINT = "https://dummyjson.com/products";
+export const metadata: Metadata = {
+  title: "Shop",
+  description: "Welcome to our online store",
+};
+
+const productsAPI = process.env.NEXT_PUBLIC_PRODUCTS_API || "https://dummyjson.com/products?limit=70";
 
 export default async function ShopPage() {
   return (
@@ -42,7 +48,7 @@ export default async function ShopPage() {
               </div>
 
               <div className="flex items-center gap-5 md:gap-6 lg:pr-6 lg:border-r-2 lg:border-[#9F9F9F]">
-                <Filters productsApiEndpoint={PRODUCTS_API_ENDPOINT} />
+                <Filters productsApiEndpoint={productsAPI} />
                 <div className="hidden sm:flex items-center gap-5 md:gap-6">
                   <ProductsLayout />
                 </div>
@@ -66,7 +72,7 @@ export default async function ShopPage() {
         {/* Products Grid */}
         <section className="w-full max-w-[1440px] px-6 mx-auto py-9 sm:py-12 lg:py-16">
           <Suspense fallback={<ProductsContainerFallback />}>
-            <ProductsContainer APIEndpoint={PRODUCTS_API_ENDPOINT} />
+            <ProductsContainer APIEndpoint={productsAPI} />
           </Suspense>
         </section>
 

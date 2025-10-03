@@ -4,6 +4,12 @@ import BlogCard from "@/components/blogCard/blogCard";
 import Image from "next/image";
 import { MyButton } from "@/components/buttons";
 import { ProductCard_Big, ProductCard_Normal } from "@/components/product_card";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Welcome to our online store",
+};
 
 export default function Home() {
   return (

@@ -7,6 +7,7 @@ import ProductsClientContainer, {
   ProductsContainerFallback,
 } from "./productsClientContainer";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import Link from "next/link";
 
 // ----------------------
 // Helpers
@@ -66,31 +67,33 @@ export default async function ProductsContainer({
   return (
     <>
       {filteredProducts && currentPageProducts ? (
-        <ProductsClientContainer
-          products={currentPageProducts}
-        >
+        <ProductsClientContainer products={currentPageProducts}>
           {productsLayout === "list" ? (
             <div className="flex flex-col gap-4">
               {currentPageProducts.map((product) => (
-                <ProductCardList
-                  key={product.id}
-                  imageSrc={product.images[0]}
-                  imageAlt={product.title}
-                  title={product.title}
-                  price={product.price.toString()}
-                />
+                <Link href={`/shop/${product.title.replaceAll(" ", "-")}-${product.id}`} key={product.id}>
+                  <ProductCardList
+                    key={product.id}
+                    imageSrc={product.images[0]}
+                    imageAlt={product.title}
+                    title={product.title}
+                    price={product.price.toString()}
+                  />
+                </Link>
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {currentPageProducts.map((product) => (
-                <ProductCard_Normal
-                  key={product.id}
-                  imageSrc={product.thumbnail}
-                  imageAlt={product.title}
-                  title={product.title}
-                  price={product.price.toString()}
-                />
+                <Link href={`/shop/${product.title.replaceAll(" ", "-")}-${product.id}`} key={product.id}>
+                  <ProductCard_Normal
+                    key={product.id}
+                    imageSrc={product.thumbnail}
+                    imageAlt={product.title}
+                    title={product.title}
+                    price={product.price.toString()}
+                  />
+                </Link>
               ))}
             </div>
           )}

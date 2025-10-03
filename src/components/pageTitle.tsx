@@ -1,15 +1,17 @@
 import React from "react";
 import Image from "next/image";
 import Breadcrumbs from "./breadcrumbs";
+import { cn } from "@/lib/utils";
 
 interface PageTitleProps {
     title: string;
     backgroundImageUrl: string;
     logoImageUrl: string;
+    className?: string;
 }
-function PageTitle({ title, backgroundImageUrl, logoImageUrl }: PageTitleProps) {
+function PageTitle({ title, backgroundImageUrl, logoImageUrl, className }: PageTitleProps) {
   return (
-    <section style={{ backgroundImage: `url(${backgroundImageUrl})` }} className="min-h-[316px] flex justify-center items-center bg-cover bg-center after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(to_bottom,rgba(255,255,255,1)_0px,rgba(255,255,255,0.5)_9px,rgba(255,255,255,0.5)_308px,rgba(255,255,255,1)_316px)] after:bg-opacity-40 after:backdrop-blur-[2px] relative isolate">
+    <section style={{ backgroundImage: `url(${backgroundImageUrl})` }} className={cn("min-h-[316px] flex justify-center items-center bg-cover bg-center after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(to_bottom,rgba(255,255,255,1)_0px,rgba(255,255,255,0.5)_9px,rgba(255,255,255,0.5)_308px,rgba(255,255,255,1)_316px)] after:bg-opacity-40 after:backdrop-blur-[2px] relative isolate", className)}>
       <div className="z-10 flex flex-col justify-center items-center">
         <Image
           src={logoImageUrl}
