@@ -3,13 +3,7 @@
 import React, { useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { useFilterContext } from "@/contexts/filterContext";
-import {
-  setItemsPerPageCookie,
-  setMaxPriceFilterCookie,
-  setPageCookie,
-  setSortByCookie,
-} from "@/actions/filter.action";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "lucide-react";
 
 interface ApplyFilterProps {
@@ -18,37 +12,26 @@ interface ApplyFilterProps {
 
 export default function ApplyFilter({ className }: ApplyFilterProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const {
-    itemsPerPage,
     priceRangeValue,
-    sortByCurrValue,
     isApplyingFilter,
     setIsApplyingFilter,
-    setLoading,
   } = useFilterContext();
 
   const handleApply = useCallback(async () => {
-    try {
       setIsApplyingFilter(true);
-      setLoading(true);
-
-      // ✅ Run cookie updates in parallel
-      await Promise.all([
-        setMaxPriceFilterCookie(priceRangeValue),
-        setItemsPerPageCookie(itemsPerPage),
-        setSortByCookie(sortByCurrValue),
-        setPageCookie(1),
-      ]);
-    } finally {
-      router.refresh();
-    }
+      const queryParams = new URLSearchParams(searchParams.toString());
+      if (queryParams.has("maxPrice")) queryParams.set("maxPrice", priceRangeValue.toString());
+      else queryParams.append("maxPrice", priceRangeValue.toString());
+      if (queryParams.has("page")) queryParams.set("page", "1");
+      else queryParams.append("page", "1");
+      router.push(`/shop?${queryParams.toString()}`);
   }, [
-    itemsPerPage,
     priceRangeValue,
-    sortByCurrValue,
-    setIsApplyingFilter,
-    setLoading,
     router,
+    searchParams,
+    setIsApplyingFilter,
   ]);
 
   return (

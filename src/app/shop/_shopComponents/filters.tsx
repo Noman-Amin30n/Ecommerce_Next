@@ -3,14 +3,14 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { TbAdjustmentsHorizontal } from "react-icons/tb";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getCookie, useFilterContext } from "@/contexts/filterContext";
-import { setMaxPriceFilterCookie } from "@/actions/filter.action";
+import { useFilterContext } from "@/contexts/filterContext";
 import useOutsideClick from "@/hooks/outsideclick";
 import ShowItemsInput from "./itemsPerPage";
 import SortBy from "./sortBy";
 import ApplyFilter from "./apply";
 import clsx from "clsx";
 import { Product } from "@/typescript/types";
+import { useSearchParams } from "next/navigation";
 
 interface FiltersProps {
   productsApiEndpoint: string;
@@ -23,7 +23,7 @@ interface PriceRange {
 
 export default function Filters({ productsApiEndpoint }: FiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { isApplyingFilter } = useFilterContext();
+  const {isApplyingFilter} = useFilterContext()
   const [priceRange, setPriceRange] = useState<PriceRange | null>(null);
 
   const filterRef = useRef<HTMLDivElement>(null);
@@ -33,7 +33,7 @@ export default function Filters({ productsApiEndpoint }: FiltersProps) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(productsApiEndpoint, { cache: "force-cache" });
+        const res = await fetch(`${productsApiEndpoint}?limit=70`);
         if (!res.ok) throw new Error("Failed to fetch products");
         const data = await res.json();
         const products: Product[] = data.products;
@@ -41,16 +41,17 @@ export default function Filters({ productsApiEndpoint }: FiltersProps) {
         if (products.length) {
           const sorted = [...products].sort((a, b) => a.price - b.price);
           setPriceRange({
-            minPrice: sorted[0].price,
-            maxPrice: sorted[sorted.length - 1].price,
+            minPrice: Math.floor(sorted[0].price),
+            maxPrice: Math.ceil(sorted[sorted.length - 1].price),
           });
+          console.log("max price in filter component", sorted[sorted.length - 1].price);
         }
       } catch (err) {
         console.error("Failed to load price range:", (err as Error).message);
         throw new Error((err as Error).message);
       }
     })();
-  }, [productsApiEndpoint]);
+  }, [productsApiEndpoint, setPriceRange]);
 
   if (!priceRange) return <FilterFallback />;
 
@@ -99,16 +100,14 @@ interface PriceFilterProps {
 }
 
 function PriceFilter({ minPrice, maxPrice }: PriceFilterProps) {
-  const { priceRangeValue, setPriceRangeValue, isApplyingFilter } = useFilterContext();
+  const { priceRangeValue, setPriceRangeValue } = useFilterContext();
   const sliderRef = useRef<HTMLInputElement>(null);
+  const searchParams = useSearchParams();;
 
   // ✅ Initialize max price filter once
   useEffect(() => {
-    setPriceRangeValue(getCookie("maxPrice") ? Number(getCookie("maxPrice")) : maxPrice);
-    if (!getCookie("maxPrice")) {
-      setMaxPriceFilterCookie(maxPrice);
-    }
-  }, [maxPrice, setPriceRangeValue]);
+    setPriceRangeValue(searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : maxPrice);
+  }, [ maxPrice, setPriceRangeValue, searchParams ]);
 
   // ✅ Update slider background dynamically
   useEffect(() => {
@@ -142,7 +141,6 @@ function PriceFilter({ minPrice, maxPrice }: PriceFilterProps) {
         step={1}
         value={priceRangeValue}
         onChange={handleChange}
-        disabled={isApplyingFilter}
       />
     </div>
   );

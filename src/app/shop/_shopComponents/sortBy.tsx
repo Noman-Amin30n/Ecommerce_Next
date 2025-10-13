@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useRef, useState, useEffect, startTransition, useCallback } from "react";
+import React, { useRef, useState, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { FaAngleDown } from "react-icons/fa6";
-import { Skeleton } from "@/components/ui/skeleton";
 import useOutsideClick from "@/hooks/outsideclick";
-import { setSortByCookie } from "@/actions/filter.action";
 import { useFilterContext } from "@/contexts/filterContext";
 import clsx from "clsx";
 
@@ -21,31 +20,30 @@ const SORT_OPTIONS: SortOption[] = [
 ];
 
 export default function SortBy() {
-  const { sortByCurrValue, setSortByCurrValue, isApplyingFilter, setIsApplyingFilter } = useFilterContext();
+  const searchParams = useSearchParams();
+  const sortBy = searchParams.get("sortBy");
+  const router = useRouter();
+  const { isApplyingFilter, setIsApplyingFilter } = useFilterContext();
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(sortBy || "Newest");
 
   const sortByRef = useRef<HTMLDivElement>(null);
   useOutsideClick(sortByRef as React.RefObject<HTMLDivElement>, () => setIsOpen(false));
 
-  // ✅ Sync cookie whenever sort value changes
-  useEffect(() => {
-    if (sortByCurrValue) {
-      startTransition(() => setSortByCookie(sortByCurrValue));
-    }
-  }, [sortByCurrValue]);
-
   const handleSelect = useCallback(
-    (value: string) => {
+    (value: string, label: string) => {
       setIsApplyingFilter(true);
-      setSortByCurrValue(value);
+      const queryParams = new URLSearchParams(searchParams.toString());
+      if (queryParams.has("sortBy")) queryParams.set("sortBy", value);
+      else queryParams.append("sortBy", value);
+      if (queryParams.has("page")) queryParams.set("page", "1");
+      else queryParams.append("page", "1");
+      setSelectedValue(label);
       setIsOpen(false);
+      router.push(`/shop?${queryParams.toString()}`);
     },
-    [ setIsApplyingFilter, setSortByCurrValue]
+    [setIsApplyingFilter, router, searchParams]
   );
-
-  if (!sortByCurrValue) return <SortByFallback />;
-
-  const currentOption = SORT_OPTIONS.find((opt) => opt.value === sortByCurrValue);
 
   return (
     <div className="relative isolate" ref={sortByRef}>
@@ -56,7 +54,7 @@ export default function SortBy() {
         className="flex justify-between items-center gap-4 cursor-pointer text-[#9F9F9F] bg-white min-h-[55px] px-8 w-full"
       >
         <span className="text-sm sm:text-base lg:text-[20px]">
-          {currentOption?.label ?? "Sort"}
+          {selectedValue}
         </span>
         <FaAngleDown className="text-sm sm:text-base" />
       </button>
@@ -71,7 +69,7 @@ export default function SortBy() {
           <button
             key={value}
             type="button"
-            onClick={() => handleSelect(value)}
+            onClick={() => handleSelect(value, label)}
             className="px-8 py-2 text-left hover:bg-blue-50 hover:text-black text-sm sm:text-base lg:text-[20px] transition-all duration-200 ease-in-out"
           >
             {label}
@@ -80,8 +78,4 @@ export default function SortBy() {
       </div>
     </div>
   );
-}
-
-function SortByFallback() {
-  return <Skeleton className="self-stretch w-[170px] min-h-[55px]" />;
 }

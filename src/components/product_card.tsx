@@ -85,6 +85,23 @@ export function ProductCardList({
   );
 }
 
+export function ProductCardListSkeleton() {
+  return (
+    <div className="flex flex-row items-center gap-6 rounded-2xl shadow-sm bg-white p-4">
+      {/* Image skeleton */}
+      <div className="w-full min-w-[200px] max-w-[250px]">
+        <Skeleton className="w-full h-[200px] rounded-xl" />
+      </div>
+
+      {/* Content skeleton */}
+      <div className="flex flex-col flex-grow justify-between space-y-3">
+        <Skeleton className="h-6 w-3/4" /> {/* title */}
+        <Skeleton className="h-6 w-1/3" /> {/* price */}
+      </div>
+    </div>
+  )
+}
+
 interface ProductCard_BigProps {
   imageSrc: string;
   imageAlt: string;

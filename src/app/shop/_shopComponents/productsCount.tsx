@@ -1,14 +1,12 @@
-// app/shop/_shopComponents/productsCount.tsx
+"use client";
 import React from "react";
-import { cookies } from "next/headers";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useFilterContext } from "@/contexts/filterContext";
 
-export default async function ProductsCount() {
-  const cookieStore = await cookies();
-
-  const totalProducts = parseNumber(cookieStore.get("totalProducts")?.value);
-  const page = parseNumber(cookieStore.get("page")?.value);
-  const itemsPerPage = parseNumber(cookieStore.get("itemsPerPage")?.value);
+export default function ProductsCount({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
+  const { totalProducts } = useFilterContext();
+  const page = parseNumber(searchParams?.page ? String(searchParams.page) : "1");
+  const itemsPerPage = parseNumber(searchParams?.itemsPerPage ? String(searchParams.itemsPerPage) : "16");
 
   if (!totalProducts || !page || !itemsPerPage) {
     return <ProductsCountSkeleton />;

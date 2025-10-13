@@ -6,39 +6,30 @@ import React, {
   useState,
   ReactNode,
   useCallback,
-  useEffect,
-  startTransition,
 } from "react";
-import { setPageCookie } from "@/actions/filter.action";
+import { useSearchParams } from "next/navigation";
 
 // Define the shape of the context
 
 interface FilterContextType {
   priceRangeValue: number;
   setPriceRangeValue: (value: number) => void;
-  itemsPerPage: number;
-  setItemsPerPage: (value: number) => void;
-  sortByCurrValue: string;
-  setSortByCurrValue: (value: string) => void;
-  isApplyingFilter: boolean;
-  setIsApplyingFilter: (value: boolean) => void;
-  page: number;
-  setPage: (value: number) => void;
   totalProducts: number;
   setTotalProducts: (value: number) => void;
-  loading: boolean;
-  setLoading: (value: boolean) => void;
+  isApplyingFilter: boolean;
+  setIsApplyingFilter: (value: boolean) => void;
 }
 
 const FilterContext = createContext<FilterContextType | null>(null);
 
 export function FilterContextProvider({ children }: { children: ReactNode }) {
-  const [priceRangeValue, _setPriceRangeValue] = useState(0);
-  const [itemsPerPage, _setItemsPerPage] = useState(16);
-  const [sortByCurrValue, _setSortByCurrValue] = useState("createdAt");
+  const searchParams = useSearchParams();
+
+  // ✅ Initialize state from URL search params or default values
+  const [priceRangeValue, _setPriceRangeValue] = useState(
+    searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : 0
+  );
   const [isApplyingFilter, _setIsApplyingFilter] = useState(false);
-  const [loading, _setLoading] = useState(true);
-  const [page, _setPage] = useState(1);
   const [totalProducts, _setTotalProducts] = useState(0);
 
   // ✅ Wrap setters in useCallback to prevent unnecessary re-renders
@@ -46,46 +37,20 @@ export function FilterContextProvider({ children }: { children: ReactNode }) {
     (v: number) => _setPriceRangeValue(v),
     []
   );
-  const setItemsPerPage = useCallback((v: number) => _setItemsPerPage(v), []);
-  const setSortByCurrValue = useCallback(
-    (v: string) => _setSortByCurrValue(v),
-    []
-  );
   const setIsApplyingFilter = useCallback(
     (v: boolean) => _setIsApplyingFilter(v),
     []
   );
-  const setLoading = useCallback((v: boolean) => _setLoading(v), []);
-  const setPage = useCallback((v: number) => _setPage(v), []);
   const setTotalProducts = useCallback((v: number) => _setTotalProducts(v), []);
 
   const value: FilterContextType = {
     priceRangeValue,
     setPriceRangeValue,
-    itemsPerPage,
-    setItemsPerPage,
-    sortByCurrValue,
-    setSortByCurrValue,
     isApplyingFilter,
     setIsApplyingFilter,
-    page,
-    setPage,
     totalProducts,
     setTotalProducts,
-    loading,
-    setLoading,
   };
-
-  useEffect(() => {
-    const savedItems = getCookie("itemsPerPage");
-    const savedSort = getCookie("sortBy");
-    const savedPage = getCookie("page");
-
-    if (savedItems) _setItemsPerPage(Number(savedItems));
-    if (savedSort) _setSortByCurrValue(savedSort);
-    if (savedPage) _setPage(Number(savedPage));
-    startTransition(() => setPageCookie(page));
-  }, [page]);
 
   return (
     <FilterContext.Provider value={value}>{children}</FilterContext.Provider>
@@ -100,19 +65,4 @@ export function useFilterContext() {
     );
   }
   return ctx;
-}
-
-export function getCookie(name: string): string | null {
-  const nameEQ = name + "=";
-  if (typeof window !== "undefined") {
-    const ca = document.cookie.split(";");
-    for (let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) === " ") c = c.substring(1, c.length); // Trim leading spaces
-      if (c.indexOf(nameEQ) === 0) {
-        return c.substring(nameEQ.length, c.length);
-      }
-    }
-  }
-  return null; // Return null if the cookie is not found
 }

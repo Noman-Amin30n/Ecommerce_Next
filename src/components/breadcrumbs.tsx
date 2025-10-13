@@ -13,14 +13,12 @@ import Link from "next/link";
 function Breadcrumbs() {
   const pathname = usePathname();
   const pathSegments = pathname.split("/");
-  // console.log(pathSegments);
   let currentPath = "";
   return (
     <Breadcrumb className="mt-5">
       <BreadcrumbList>
         {pathSegments.map((segment, index) => {
           currentPath += currentPath === "/" ? segment : `/${segment}`;
-          console.log(currentPath);
           return (
             <BreadcrumbItem key={index}>
               {index === pathSegments.length - 1 ? (

@@ -1,10 +1,10 @@
 "use client";
 
-import React, { startTransition, useEffect } from "react";
-import { setItemsPerPageCookie, setPageCookie } from "@/actions/filter.action";
-import { useFilterContext, getCookie } from "@/contexts/filterContext";
+import React, { useRef } from "react";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useFilterContext } from "@/contexts/filterContext";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface ItemsPerPageProps {
   className?: string;
@@ -12,29 +12,26 @@ interface ItemsPerPageProps {
 }
 
 export default function ItemsPerPage({ className, defaultValue = 16 }: ItemsPerPageProps) {
-  const { itemsPerPage, setItemsPerPage, isApplyingFilter, setIsApplyingFilter, totalProducts, setPage } = useFilterContext();
-
-  // ✅ Initialize once
-  useEffect(() => {
-    setItemsPerPage(getCookie("itemsPerPage") ? Number(getCookie("itemsPerPage")) : defaultValue);
-    if (!getCookie("itemsPerPage")) {
-      startTransition(() => setItemsPerPageCookie(defaultValue));
-    }
-  }, [defaultValue, setItemsPerPage]);
-
-  if (itemsPerPage === undefined || totalProducts === undefined) return <ItemsPerPageFallback />;
+  const router = useRouter();
+  const timeOutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchParams = useSearchParams();
+  const itemsPerPageParam = searchParams.get("itemsPerPage");
+  const { totalProducts, isApplyingFilter, setIsApplyingFilter } = useFilterContext();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
+    const value = e.target.value ? Number(e.target.value) : defaultValue;
 
     if (value > 0 && value <= totalProducts) {
-      startTransition(() => {
-        setItemsPerPageCookie(value);
-        setPageCookie(1);
-      });
-      setItemsPerPage(value);
       setIsApplyingFilter(true);
-      setPage(1);
+      if (timeOutRef.current) clearTimeout(timeOutRef.current);
+      timeOutRef.current = setTimeout(() => {
+        const queryParams = new URLSearchParams(searchParams.toString());
+        if (queryParams.has("itemsPerPage")) queryParams.set("itemsPerPage", value.toString());
+        else queryParams.append("itemsPerPage", value.toString());
+        if (queryParams.has("page")) queryParams.set("page", "1");
+        else queryParams.append("page", "1");
+        router.push(`/shop?${queryParams.toString()}`);
+      }, 500);
     }
   };
 
@@ -56,14 +53,10 @@ export default function ItemsPerPage({ className, defaultValue = 16 }: ItemsPerP
         "w-[55px] px-2 min-h-[55px] bg-white text-[#9F9F9F] text-center focus:outline-none appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-sm sm:text-base lg:text-[20px]",
         className
       )}
-      value={itemsPerPage}
+      defaultValue={itemsPerPageParam || defaultValue}
       onKeyDown={handleKeyDown}
       onChange={handleChange}
       disabled={isApplyingFilter}
     />
   );
-}
-
-function ItemsPerPageFallback() {
-  return <Skeleton className="self-stretch w-[55px] min-h-[55px]" />;
 }

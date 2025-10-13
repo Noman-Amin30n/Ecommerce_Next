@@ -1,27 +1,9 @@
 import React from "react";
-import { cookies } from "next/headers";
 import { Product } from "@/typescript/types";
 import { ProductCard_Normal, ProductCardList } from "@/components/product_card";
 import SwitchPage from "./switchPage";
-import ProductsClientContainer, {
-  ProductsContainerFallback,
-} from "./productsClientContainer";
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import ProductsClientContainer, { ProductsContainerFallback } from "./productsClientContainer";
 import Link from "next/link";
-
-// ----------------------
-// Helpers
-// ----------------------
-function parseCookies(cookieStore: ReadonlyRequestCookies) {
-  return {
-    sortBy: cookieStore.get("sortBy")?.value ?? "createdAt",
-    itemsPerPage: Number(cookieStore.get("itemsPerPage")?.value) || 16,
-    page: Number(cookieStore.get("page")?.value) || 1,
-    productsLayout: cookieStore.get("productsLayout")?.value ?? "grid",
-    maxPrice:
-      Number(cookieStore.get("maxPrice")?.value) || Number.MAX_SAFE_INTEGER,
-  };
-}
 
 function paginate<T>(items: T[], page: number, perPage: number) {
   const start = (page - 1) * perPage;
@@ -34,24 +16,40 @@ function paginate<T>(items: T[], page: number, perPage: number) {
 // ----------------------
 export default async function ProductsContainer({
   APIEndpoint,
+  searchParams,
 }: {
   APIEndpoint: string;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
   let products: Product[] | null = null;
-  const cookieStore = await cookies();
-  const { sortBy, itemsPerPage, page, productsLayout, maxPrice } =
-    parseCookies(cookieStore);
 
   // ✅ Server-side fetch with sorting
+  const sortBy = searchParams.sortBy || "createdAt";
+  const page = Number(searchParams.page) || 1;
+  const itemsPerPage = Number(searchParams.itemsPerPage) || 16;
+  let maxPrice = Number(searchParams.maxPrice);
+  const productsLayout = searchParams.productsLayout || "grid";
   const res = await fetch(
-    `${APIEndpoint}?limit=70&sortBy=${sortBy}&order=${
-      sortBy === "title" ? "asc" : "desc"
-    }`,
-    { cache: "force-cache", next: { tags: ["getProducts"] } }
+    `${APIEndpoint}?limit=70`
   );
   if (res.ok) {
-    const data = await res.json();
-    products = data.products;
+    const data: Product[] = (await res.json()).products;
+    products = data.sort((a, b) => {
+      if (sortBy === "title") {
+        // String comparison (A–Z)
+        return a.title.localeCompare(b.title);
+      }
+
+      const aVal = a[sortBy as keyof Product];
+      const bVal = b[sortBy as keyof Product];
+
+      // Handle numbers or other comparable types
+      if (aVal === bVal) return 0;
+      return aVal > bVal ? -1 : 1;
+    });
+
+    if (!maxPrice || maxPrice <= 0)
+      maxPrice = products?.sort((a, b) => b.price - a.price)[0].price || 0;
   } else {
     throw new Error("Failed to fetch products");
   }
@@ -65,13 +63,18 @@ export default async function ProductsContainer({
     : null;
 
   return (
-    <>
+    <ProductsClientContainer products={currentPageProducts as Product[]}>
       {filteredProducts && currentPageProducts ? (
-        <ProductsClientContainer products={currentPageProducts}>
+        <>
           {productsLayout === "list" ? (
             <div className="flex flex-col gap-4">
               {currentPageProducts.map((product) => (
-                <Link href={`/shop/${product.title.replaceAll(" ", "-")}-${product.id}`} key={product.id}>
+                <Link
+                  href={`/shop/${product.title.replaceAll(" ", "-")}-${
+                    product.id
+                  }`}
+                  key={product.id}
+                >
                   <ProductCardList
                     key={product.id}
                     imageSrc={product.images[0]}
@@ -85,7 +88,12 @@ export default async function ProductsContainer({
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {currentPageProducts.map((product) => (
-                <Link href={`/shop/${product.title.replaceAll(" ", "-")}-${product.id}`} key={product.id}>
+                <Link
+                  href={`/shop/${product.title.replaceAll(" ", "-")}-${
+                    product.id
+                  }`}
+                  key={product.id}
+                >
                   <ProductCard_Normal
                     key={product.id}
                     imageSrc={product.thumbnail}
@@ -99,13 +107,11 @@ export default async function ProductsContainer({
           )}
           <SwitchPage
             products={filteredProducts}
-            page={page}
-            itemsPerPage={itemsPerPage}
           />
-        </ProductsClientContainer>
+        </>
       ) : (
         <ProductsContainerFallback />
       )}
-    </>
+    </ProductsClientContainer>
   );
 }

@@ -2,40 +2,41 @@
 
 import React, { useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Product } from "@/typescript/types";
 import { useFilterContext } from "@/contexts/filterContext";
-import { setPageCookie, setTotalProductsCookie } from "@/actions/filter.action";
 
 interface Props {
   className?: string;
   products: Product[];
-  page: number;
-  itemsPerPage: number;
 }
 
-function SwitchPage({ className, products, page, itemsPerPage }: Props) {
+function SwitchPage({ className, products }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const page = Number(searchParams.get("page") || 1);
+  const itemsPerPage = Number(searchParams.get("itemsPerPage") || 16);
+  const { setIsApplyingFilter } = useFilterContext()
   const totalPages = Math.ceil(products.length / itemsPerPage);
-  const { setPage, setTotalProducts, setIsApplyingFilter } = useFilterContext();
+  const { setTotalProducts } = useFilterContext();
 
   // ✅ Sync product count once when length changes
   useEffect(() => {
     if (!products.length) return;
     setTotalProducts(products.length);
-    setTotalProductsCookie(products.length);
   }, [products.length, setTotalProducts]);
 
   const handlePageChange = useCallback(
     async (newPage: number) => {
       if (newPage === page) return;
-      setIsApplyingFilter(true);
-      await setPageCookie(newPage);
-      setPage(newPage);
+      setIsApplyingFilter(true)
+      const queryParams = new URLSearchParams(searchParams.toString());
+      if (queryParams.has("page")) queryParams.set("page", newPage.toString());
+      else queryParams.append("page", newPage.toString());
       window.scrollTo({ top: 0, behavior: "smooth" });
-      router.refresh();
+      router.push(`/shop?${queryParams.toString()}`);
     },
-    [page, setPage,setIsApplyingFilter, router]
+    [page, router, searchParams, setIsApplyingFilter]
   );
 
   if (totalPages <= 1) return null;

@@ -13,7 +13,7 @@ import Filters from "./_shopComponents/filters";
 import ProductsLayout from "./_shopComponents/productsLayout";
 import ProductsContainer from "./_shopComponents/productsGrid";
 import { ProductsContainerFallback } from "./_shopComponents/productsClientContainer";
-import ProductsCount, { ProductsCountSkeleton } from "./_shopComponents/productsCount";
+import ProductsCount from "./_shopComponents/productsCount";
 import StoreFeatures from "@/components/storeFeatures";
 
 export const metadata: Metadata = {
@@ -23,7 +23,8 @@ export const metadata: Metadata = {
 
 const productsAPI = process.env.NEXT_PUBLIC_PRODUCTS_API || "https://dummyjson.com/products?limit=70";
 
-export default async function ShopPage() {
+export default async function ShopPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const resolvedSearchParams = await searchParams;
   return (
     <>
       <Header className="bg-white sticky top-0 z-[998]" />
@@ -42,9 +43,7 @@ export default async function ShopPage() {
             {/* Left Controls */}
             <div className="flex flex-row sm:items-center gap-5 md:gap-6">
               <div className="text-sm sm:text-base text-center order-1">
-                <Suspense fallback={<ProductsCountSkeleton />}>
-                  <ProductsCount />
-                </Suspense>
+                <ProductsCount searchParams={resolvedSearchParams}/>
               </div>
 
               <div className="flex items-center gap-5 md:gap-6 lg:pr-6 lg:border-r-2 lg:border-[#9F9F9F]">
@@ -72,7 +71,7 @@ export default async function ShopPage() {
         {/* Products Grid */}
         <section className="w-full max-w-[1440px] px-6 mx-auto py-9 sm:py-12 lg:py-16">
           <Suspense fallback={<ProductsContainerFallback />}>
-            <ProductsContainer APIEndpoint={productsAPI} />
+            <ProductsContainer APIEndpoint={productsAPI} searchParams={resolvedSearchParams} />
           </Suspense>
         </section>
 

@@ -2,8 +2,9 @@
 
 import React, { useEffect } from "react";
 import { useFilterContext } from "@/contexts/filterContext";
-import { ProductCard_NormalSkeleton } from "@/components/product_card";
+import { ProductCard_NormalSkeleton, ProductCardListSkeleton } from "@/components/product_card";
 import { Product } from "@/typescript/types";
+import { useSearchParams } from "next/navigation";
 
 type ProductClientContainerProps = {
   children: React.ReactNode;
@@ -14,16 +15,15 @@ function ProductsClientContainer({
   children,
   products,
 }: ProductClientContainerProps) {
-  const { isApplyingFilter, setIsApplyingFilter, loading, setLoading } = useFilterContext();
+  const { isApplyingFilter, setIsApplyingFilter } =
+    useFilterContext();
 
   // ✅ run once when component mounts
   useEffect(() => {
-    setLoading(false);
     setIsApplyingFilter(false);
-    // console.table({ isApplyingFilter, loading, productsLength: products.length });
-  }, [products, setIsApplyingFilter, setLoading]);
+  }, [products, setIsApplyingFilter]);
 
-  if (loading || isApplyingFilter) {
+  if (isApplyingFilter) {
     return <ProductsContainerFallback />;
   }
 
@@ -31,12 +31,25 @@ function ProductsClientContainer({
 }
 
 export function ProductsContainerFallback() {
+  const searchParams = useSearchParams();
+  const productsLayout = searchParams.get("productsLayout") || "grid";
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {Array.from({ length: 16 }).map((_, index) => (
-        <ProductCard_NormalSkeleton key={index} />
-      ))}
-    </div>
+    <>
+      {productsLayout === "grid" ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 16 }).map((_, index) => (
+            <ProductCard_NormalSkeleton key={index} />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {Array.from({ length: 16 }).map((_, index) => (
+            <ProductCardListSkeleton key={index} />
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 
