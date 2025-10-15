@@ -2,7 +2,9 @@ import React from "react";
 import { Product } from "@/typescript/types";
 import { ProductCard_Normal, ProductCardList } from "@/components/product_card";
 import SwitchPage from "./switchPage";
-import ProductsClientContainer, { ProductsContainerFallback } from "./productsClientContainer";
+import ProductsClientContainer, {
+  ProductsContainerFallback,
+} from "./productsClientContainer";
 import Link from "next/link";
 
 function paginate<T>(items: T[], page: number, perPage: number) {
@@ -14,6 +16,7 @@ function paginate<T>(items: T[], page: number, perPage: number) {
 // ----------------------
 // Server Component
 // ----------------------
+
 export default async function ProductsContainer({
   APIEndpoint,
   searchParams,
@@ -29,30 +32,36 @@ export default async function ProductsContainer({
   const itemsPerPage = Number(searchParams.itemsPerPage) || 16;
   let maxPrice = Number(searchParams.maxPrice);
   const productsLayout = searchParams.productsLayout || "grid";
-  const res = await fetch(
-    `${APIEndpoint}?limit=70`
-  );
+  const res = await fetch(`${APIEndpoint}?limit=70`);
   if (res.ok) {
     const data: Product[] = (await res.json()).products;
     products = data.sort((a, b) => {
-      if (sortBy === "title") {
-        // String comparison (A–Z)
-        return a.title.localeCompare(b.title);
+      const sortableFields = ["price", "title", "createdAt", "rating"];
+      if (!sortableFields.includes(sortBy as string)) return 0;
+      switch (sortBy) {
+        case "title":
+          return a.title.localeCompare(b.title);
+        case "createdAt":
+          return (
+            new Date(b.meta.createdAt).getTime() -
+            new Date(a.meta.createdAt).getTime()
+          );
+        case "price":
+          return b.price - a.price; // descending
+        case "rating":
+          return b.rating - a.rating; // descending
+        default:
+          return 0;
       }
-
-      const aVal = a[sortBy as keyof Product];
-      const bVal = b[sortBy as keyof Product];
-
-      // Handle numbers or other comparable types
-      if (aVal === bVal) return 0;
-      return aVal > bVal ? -1 : 1;
     });
 
-    if (!maxPrice || maxPrice <= 0)
-      maxPrice = products?.sort((a, b) => b.price - a.price)[0].price || 0;
+    if (!maxPrice || maxPrice <= 0) {
+      maxPrice = [...products].sort((a, b) => b.price - a.price)[0].price || 0;
+    }
   } else {
     throw new Error("Failed to fetch products");
   }
+  console.log(products);
 
   // ✅ Filter + paginate
   const filteredProducts = products
@@ -105,9 +114,7 @@ export default async function ProductsContainer({
               ))}
             </div>
           )}
-          <SwitchPage
-            products={filteredProducts}
-          />
+          <SwitchPage products={filteredProducts} />
         </>
       ) : (
         <ProductsContainerFallback />
