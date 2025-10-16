@@ -31,7 +31,7 @@ export default function ItemsPerPage({ className, defaultValue = 16 }: ItemsPerP
         if (queryParams.has("page")) queryParams.set("page", "1");
         else queryParams.append("page", "1");
         router.push(`/shop?${queryParams.toString()}`);
-      }, 500);
+      }, 2000);
     }
   };
 
