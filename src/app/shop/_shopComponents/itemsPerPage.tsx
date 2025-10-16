@@ -22,16 +22,16 @@ export default function ItemsPerPage({ className, defaultValue = 16 }: ItemsPerP
     const value = e.target.value ? Number(e.target.value) : defaultValue;
 
     if (value > 0 && value <= totalProducts) {
-      setIsApplyingFilter(true);
       if (timeOutRef.current) clearTimeout(timeOutRef.current);
       timeOutRef.current = setTimeout(() => {
+        setIsApplyingFilter(true);
         const queryParams = new URLSearchParams(searchParams.toString());
         if (queryParams.has("itemsPerPage")) queryParams.set("itemsPerPage", value.toString());
         else queryParams.append("itemsPerPage", value.toString());
         if (queryParams.has("page")) queryParams.set("page", "1");
         else queryParams.append("page", "1");
         router.push(`/shop?${queryParams.toString()}`);
-      }, 2000);
+      }, 900);
     }
   };
 
