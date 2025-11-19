@@ -16,8 +16,14 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
-    ]
+    ],
+    unoptimized: process.env.NODE_ENV === "development",
   },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["*"],
+    },
+  }
 };
 
 export default nextConfig;

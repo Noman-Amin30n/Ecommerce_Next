@@ -11,7 +11,7 @@ function Header({ className }: { className?: string }) {
   return (
     <header
       className={cn(
-        "min-h-[80px] md:min-h-[100px] px-6 flex items-center",
+        "min-h-14 md:min-h-[100px] px-6 flex items-center",
         className
       )}
     >
@@ -29,7 +29,7 @@ function Header({ className }: { className?: string }) {
           <CiHeart stroke="#000" size={24} strokeWidth={1} />
           <SideCart />
         </div>
-        <div className="md:hidden">
+        <div className="md:hidden flex item-center">
           <MobileHeaderSideMenu />
         </div>
       </div>

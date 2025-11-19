@@ -16,7 +16,7 @@ export async function ProductCard_Normal({
   price,
 }: ProductCard_1Props) {
   return (
-    <div className="flex flex-col justify-between items-end gap-4 rounded-2xl shadow-sm hover:shadow-md transition-all bg-white p-4">
+    <div className="flex flex-col justify-between items-end gap-4 shadow-sm hover:shadow-md transition-all bg-white p-4">
       <div className="w-3/4">
         <Image
           src={imageSrc}
@@ -62,7 +62,7 @@ export function ProductCardList({
   price,
 }: ProductCard_1Props) {
   return (
-    <div className="flex flex-row items-center gap-6 rounded-2xl shadow-sm hover:shadow-md transition-all bg-white">
+    <div className="flex flex-row items-center gap-6 shadow-sm hover:shadow-md transition-all bg-white">
       {/* Image */}
       <div className="w-full min-w-[200px] max-w-[250px]">
         <Image

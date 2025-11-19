@@ -21,9 +21,15 @@ export const metadata: Metadata = {
   description: "Welcome to our online store",
 };
 
-const productsAPI = process.env.NEXT_PUBLIC_PRODUCTS_API || "https://dummyjson.com/products?limit=70";
+const productsAPI =
+  process.env.NEXT_PUBLIC_PRODUCTS_API ||
+  "https://dummyjson.com/products?limit=70";
 
-export default async function ShopPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+export default async function ShopPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const resolvedSearchParams = await searchParams;
   return (
     <>
@@ -38,12 +44,12 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
 
       <FilterContextProvider>
         {/* Filters + Controls */}
-        <section className="mt-8 bg-[#FAF4F4] py-5">
-          <div className="max-w-[1440px] mx-auto px-6 flex flex-col lg:flex-row justify-between items-stretch gap-4">
+        <main className="mt-8 bg-[#FAF4F4] px-6 py-5">
+          <section className="max-w-[1440px] mx-auto flex flex-col lg:flex-row justify-between items-stretch gap-4">
             {/* Left Controls */}
-            <div className="flex flex-row sm:items-center gap-5 md:gap-6">
+            <section className="flex flex-row sm:items-center gap-5 md:gap-6">
               <div className="text-sm sm:text-base text-center order-1">
-                <ProductsCount searchParams={resolvedSearchParams}/>
+                <ProductsCount searchParams={resolvedSearchParams} />
               </div>
 
               <div className="flex items-center gap-5 md:gap-6 lg:pr-6 lg:border-r-2 lg:border-[#9F9F9F]">
@@ -52,10 +58,10 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                   <ProductsLayout />
                 </div>
               </div>
-            </div>
+            </section>
 
             {/* Right Controls */}
-            <div className="hidden lg:flex items-center gap-6 text-xl">
+            <section className="hidden lg:flex items-center gap-6 text-xl">
               <div className="flex items-center gap-2">
                 <span>Show</span>
                 <ItemsPerPage defaultValue={16} />
@@ -64,21 +70,26 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                 <span>Sort by</span>
                 <SortBy />
               </div>
-            </div>
-          </div>
-        </section>
+            </section>
+          </section>
+        </main>
 
         {/* Products Grid */}
-        <section className="w-full max-w-[1440px] px-6 mx-auto py-9 sm:py-12 lg:py-16">
-          <Suspense fallback={<ProductsContainerFallback />}>
-            <ProductsContainer APIEndpoint={productsAPI} searchParams={resolvedSearchParams} />
-          </Suspense>
-        </section>
+        <main className="px-6">
+          <section className="w-full max-w-[1440px] mx-auto py-9 sm:py-12 lg:py-16">
+            <Suspense fallback={<ProductsContainerFallback />}>
+              <ProductsContainer
+                APIEndpoint={productsAPI}
+                searchParams={resolvedSearchParams}
+              />
+            </Suspense>
+          </section>
+        </main>
 
         {/* Store Features */}
         <StoreFeatures />
       </FilterContextProvider>
-      
+
       <Footer />
     </>
   );
