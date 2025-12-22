@@ -49,12 +49,20 @@ export default async function Page({ params }: Props) {
                 <span className="text-xs md:text-[13px] text-[#9F9F9F]">{product.reviews.length} Customer Review</span>
               </div>
 
+              {/* Product Description */}
               <p className="text-xs md:text-[13px] leading-normal">{product.description.length > 150 ? product.description.slice(0, 150) + "..." : product.description}</p>
 
               {/* Product Options */}
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 mt-4 md:mt-5">
                 {/* Size Options */}
-                
+                <div className="space-y-2">
+                  <p>Size</p>
+                  <div className="flex gap-3">
+                    {["L", "XL", "XS"].map((size, index) => (
+                      <button key={index} className="border border-gray-300 rounded px-3 py-1">{size}</button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </section>

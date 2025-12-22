@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
     serverActions: {
       allowedOrigins: ["*"],
     },
-  }
+  },
 };
 
 export default nextConfig;

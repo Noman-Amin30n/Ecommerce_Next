@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from 'next/font/google'
-import './globals.css'
+import { Inter, Poppins } from "next/font/google";
+import ClientSessionProvider from "@/components/session";
+import "./globals.css";
 
 const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-})
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-poppins',
-  display: 'swap',
-})
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-poppins",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -30,9 +31,9 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} ${inter.variable} antialiased w-full font-poppins`}
       >
-        <div className="max-w-[2560px] mx-auto">
-          {children}
-        </div>
+        <ClientSessionProvider>
+          <div className="max-w-[2560px] mx-auto">{children}</div>
+        </ClientSessionProvider>
       </body>
     </html>
   );
