@@ -1,6 +1,7 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import TiptapEditor from "@/components/TiptapEditor";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ProductCreateSchema,
@@ -9,7 +10,14 @@ import {
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ImageUpload from "./ImageUpload";
-import { Save, ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Save,
+  ArrowLeft,
+  Plus,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import Link from "next/link";
 
 interface Category {
@@ -30,7 +38,9 @@ export default function ProductForm({
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [expandedVariants, setExpandedVariants] = useState<Set<number>>(new Set());
+  const [expandedVariants, setExpandedVariants] = useState<Set<number>>(
+    new Set()
+  );
 
   const {
     register,
@@ -38,6 +48,7 @@ export default function ProductForm({
     formState: { errors },
     setValue,
     watch,
+    control,
   } = useForm<ProductCreateInput>({
     resolver: zodResolver(ProductCreateSchema),
     defaultValues: initialData || {
@@ -53,8 +64,7 @@ export default function ProductForm({
 
   const images = watch("images") || [];
   const tags = watch("tags") || [];
-  const colors = watch("colors") || [];
-  const sizes = watch("sizes") || [];
+
   const variants = watch("variants") || [];
   const title = watch("title") || "";
 
@@ -98,6 +108,27 @@ export default function ProductForm({
   async function onSubmit(data: ProductCreateInput) {
     setLoading(true);
     setError(null);
+
+    // Auto-calculate top-level attributes from variants
+    if (data.variants && data.variants.length > 0) {
+      const distinctColors = Array.from(
+        new Set(
+          data.variants
+            .map((v) => v.color)
+            .filter((c): c is string => !!c && c.trim() !== "")
+        )
+      );
+      const distinctSizes = Array.from(
+        new Set(
+          data.variants
+            .map((v) => v.size)
+            .filter((s): s is string => !!s && s.trim() !== "")
+        )
+      );
+
+      data.colors = distinctColors;
+      data.sizes = distinctSizes;
+    }
 
     try {
       const url = productId
@@ -147,8 +178,8 @@ export default function ProductForm({
       title: "",
       price: 0,
       compareAtPrice: 0,
-      colors: [],
-      sizes: [],
+      color: "",
+      size: "",
       images: [],
       quantity: 0,
     };
@@ -174,31 +205,6 @@ export default function ProductForm({
       newExpanded.add(index);
     }
     setExpandedVariants(newExpanded);
-  }
-
-  function addVariantArrayItem(variantIndex: number, field: "colors" | "sizes", value: string) {
-    if (!value.trim()) return;
-    const variant = variants[variantIndex];
-    const currentArray = variant[field] || [];
-    if (!currentArray.includes(value.trim())) {
-      const updatedVariants = [...variants];
-      updatedVariants[variantIndex] = {
-        ...variant,
-        [field]: [...currentArray, value.trim()],
-      };
-      setValue("variants", updatedVariants);
-    }
-  }
-
-  function removeVariantArrayItem(variantIndex: number, field: "colors" | "sizes", itemIndex: number) {
-    const variant = variants[variantIndex];
-    const currentArray = variant[field] || [];
-    const updatedVariants = [...variants];
-    updatedVariants[variantIndex] = {
-      ...variant,
-      [field]: currentArray.filter((_, i) => i !== itemIndex),
-    };
-    setValue("variants", updatedVariants);
   }
 
   return (
@@ -292,10 +298,16 @@ export default function ProductForm({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Description
               </label>
-              <textarea
-                {...register("description")}
-                rows={5}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <TiptapEditor
+                    value={field.value || ""}
+                    onChange={field.onChange}
+                    disabled={loading}
+                  />
+                )}
               />
             </div>
           </div>
@@ -318,7 +330,9 @@ export default function ProductForm({
           {/* Variants */}
           <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">Product Variants</h2>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Product Variants
+              </h2>
               <button
                 type="button"
                 onClick={addVariant}
@@ -331,13 +345,18 @@ export default function ProductForm({
 
             {variants.length === 0 && (
               <p className="text-sm text-gray-500 italic">
-                No variants added. Click &quot;Add Variant&quot; to create product variants with different SKUs, prices, colors, sizes, etc.
+                No variants added. Click &quot;Add Variant&quot; to create
+                product variants with different SKUs, prices, colors, sizes,
+                etc.
               </p>
             )}
 
             <div className="space-y-3">
               {variants.map((variant, index) => (
-                <div key={index} className="border border-gray-300 rounded-lg overflow-hidden">
+                <div
+                  key={index}
+                  className="border border-gray-300 rounded-lg overflow-hidden"
+                >
                   <div
                     className="flex items-center justify-between bg-gray-50 px-4 py-3 cursor-pointer hover:bg-gray-100"
                     onClick={() => toggleVariantExpanded(index)}
@@ -349,7 +368,8 @@ export default function ProductForm({
                         <ChevronDown size={20} className="text-gray-600" />
                       )}
                       <span className="font-medium text-gray-900">
-                        Variant {index + 1}: {variant.title || variant.sku || "Untitled"}
+                        Variant {index + 1}:{" "}
+                        {variant.title || variant.sku || "Untitled"}
                       </span>
                     </div>
                     <button
@@ -397,7 +417,9 @@ export default function ProductForm({
                             Price *
                           </label>
                           <input
-                            {...register(`variants.${index}.price` as const, { valueAsNumber: true })}
+                            {...register(`variants.${index}.price` as const, {
+                              valueAsNumber: true,
+                            })}
                             type="number"
                             step="0.01"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -409,7 +431,10 @@ export default function ProductForm({
                             Compare At Price
                           </label>
                           <input
-                            {...register(`variants.${index}.compareAtPrice` as const, { valueAsNumber: true })}
+                            {...register(
+                              `variants.${index}.compareAtPrice` as const,
+                              { valueAsNumber: true }
+                            )}
                             type="number"
                             step="0.01"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -421,83 +446,40 @@ export default function ProductForm({
                             Quantity
                           </label>
                           <input
-                            {...register(`variants.${index}.quantity` as const, { valueAsNumber: true })}
+                            {...register(
+                              `variants.${index}.quantity` as const,
+                              { valueAsNumber: true }
+                            )}
                             type="number"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                           />
                         </div>
                       </div>
 
-                      {/* Variant Colors */}
+                      {/* Variant Color */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Colors
+                          Color
                         </label>
                         <input
+                          {...register(`variants.${index}.color` as const)}
                           type="text"
-                          placeholder="Add color and press Enter..."
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              addVariantArrayItem(index, "colors", e.currentTarget.value);
-                              e.currentTarget.value = "";
-                            }
-                          }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-2"
+                          placeholder="e.g., Red"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                         />
-                        <div className="flex flex-wrap gap-2">
-                          {(variant.colors || []).map((color, colorIndex) => (
-                            <span
-                              key={colorIndex}
-                              className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
-                            >
-                              {color}
-                              <button
-                                type="button"
-                                onClick={() => removeVariantArrayItem(index, "colors", colorIndex)}
-                                className="hover:text-purple-900"
-                              >
-                                ×
-                              </button>
-                            </span>
-                          ))}
-                        </div>
                       </div>
 
-                      {/* Variant Sizes */}
+                      {/* Variant Size */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Sizes
+                          Size
                         </label>
                         <input
+                          {...register(`variants.${index}.size` as const)}
                           type="text"
-                          placeholder="Add size and press Enter..."
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              addVariantArrayItem(index, "sizes", e.currentTarget.value);
-                              e.currentTarget.value = "";
-                            }
-                          }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-2"
+                          placeholder="e.g., Large"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                         />
-                        <div className="flex flex-wrap gap-2">
-                          {(variant.sizes || []).map((size, sizeIndex) => (
-                            <span
-                              key={sizeIndex}
-                              className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                            >
-                              {size}
-                              <button
-                                type="button"
-                                onClick={() => removeVariantArrayItem(index, "sizes", sizeIndex)}
-                                className="hover:text-green-900"
-                              >
-                                ×
-                              </button>
-                            </span>
-                          ))}
-                        </div>
                       </div>
 
                       {/* Variant Images */}
@@ -559,82 +541,6 @@ export default function ProductForm({
                       type="button"
                       onClick={() => removeArrayItem("tags", index)}
                       className="hover:text-blue-900"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Colors */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Colors
-              </label>
-              <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  placeholder="Add color..."
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addArrayItem("colors", e.currentTarget.value);
-                      e.currentTarget.value = "";
-                    }
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {colors.map((color, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
-                  >
-                    {color}
-                    <button
-                      type="button"
-                      onClick={() => removeArrayItem("colors", index)}
-                      className="hover:text-purple-900"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Sizes */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Sizes
-              </label>
-              <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  placeholder="Add size..."
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addArrayItem("sizes", e.currentTarget.value);
-                      e.currentTarget.value = "";
-                    }
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {sizes.map((size, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                  >
-                    {size}
-                    <button
-                      type="button"
-                      onClick={() => removeArrayItem("sizes", index)}
-                      className="hover:text-green-900"
                     >
                       ×
                     </button>

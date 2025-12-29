@@ -1,24 +1,29 @@
 import React from "react";
 import type { Metadata } from "next";
-import { Product } from "@/typescript/types";
 import { notFound } from "next/navigation";
 import Header from "@/components/header/header";
 import Breadcrumbs from "@/components/breadcrumbs";
-import ProductGallery from "@/components/productGallery";
-import RatingStars from "@/components/rating";
-
-const productsAPI =
-  process.env.NEXT_PUBLIC_PRODUCTS_API || "https://dummyjson.com/products";
+import ProductDetailsClient from "../_shopComponents/ProductDetailsClient";
+import { connectMongoose } from "@/lib/mongoose";
+import Product from "@/models/product";
 
 type Props = {
   params: Promise<{ productSlug: string }>;
 };
 
+async function getProduct(slug: string) {
+  await connectMongoose();
+  const product = await Product.findOne({ slug }).lean();
+  if (!product) return null;
+  // Serialize Mongoose document to plain object for Client Component
+  return JSON.parse(JSON.stringify(product));
+}
+
 export default async function Page({ params }: Props) {
   const { productSlug } = await params;
-  const product: Product | null = await getProduct(productSlug);
+  const product = await getProduct(productSlug);
+
   if (!product) return notFound();
-  console.log(product);
 
   return (
     <>
@@ -32,58 +37,14 @@ export default async function Page({ params }: Props) {
             <Breadcrumbs forPage="singleProduct" productTitle={product.title} />
           </section>
 
-          {/* Product Details */}
-          <section className="w-full flex flex-col md:flex-row md:gap-10 xl:gap-20">
-            {/* Product Gallery */}
-            <ProductGallery product={product} />
-
-            {/* Product Info */}
-            <div className="basis-full md:basis-1/2 xl:pr-[200px] py-4 md:py-8">
-              <h1 className="text-[28px] md:text-[36px] lg:text-[42px]">{product.title}</h1>
-              <p className="text-[#9F9F9F] font-medium text-lg md:text-xl lg:text-2xl">Rs. {product.price}</p>
-
-              {/* Product Rating */}
-              <div className="flex items-center gap-6 py-4">
-                <RatingStars rating={product.rating} size={20} />
-                <span className="border-l border-l-[#9F9F9F] self-stretch md:h-[30px] block"></span>
-                <span className="text-xs md:text-[13px] text-[#9F9F9F]">{product.reviews.length} Customer Review</span>
-              </div>
-
-              {/* Product Description */}
-              <p className="text-xs md:text-[13px] leading-normal">{product.description.length > 150 ? product.description.slice(0, 150) + "..." : product.description}</p>
-
-              {/* Product Options */}
-              <div className="flex flex-col gap-4 mt-4 md:mt-5">
-                {/* Size Options */}
-                <div className="space-y-2">
-                  <p>Size</p>
-                  <div className="flex gap-3">
-                    {["L", "XL", "XS"].map((size, index) => (
-                      <button key={index} className="border border-gray-300 rounded px-3 py-1">{size}</button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Product Details Client Component */}
+          <section className="w-full">
+            <ProductDetailsClient product={product} />
           </section>
         </section>
       </main>
     </>
   );
-}
-
-// Fetch product data
-async function getProduct(productSlug: string) {
-  const productId = productSlug.split("-").pop();
-  const product: Product | null = await fetch(`${productsAPI}/${productId}`)
-    .then((res) => res.json())
-    .catch(() => null);
-  if (
-    !product ||
-    product.title.replaceAll(" ", "-") + `-${product.id}` !== productSlug
-  )
-    return null;
-  return product;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -92,7 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!product) {
     return {
       title: "Product Not Found",
-      description: "No product ID provided.",
+      description: "No product found.",
     };
   }
 
@@ -102,17 +63,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: product.title,
       description: product.description,
-      images: [product.thumbnail],
+      images: product.images || [],
     },
   };
 }
 
-// ✅ Pre-generate all possible product paths at build time
-export async function generateStaticParams() {
-  const res = await fetch(`${productsAPI}?limit=70`);
-  const products: Product[] = (await res.json()).products;
-
-  return products.map((product: Product) => ({
-    productSlug: `${product.title.replaceAll(" ", "-")}-${product.id}`,
-  }));
-}
+// Optional: generateStaticParams if needed, but for now we rely on dynamic rendering + DB

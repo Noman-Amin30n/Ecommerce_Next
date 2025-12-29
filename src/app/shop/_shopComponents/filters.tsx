@@ -9,11 +9,13 @@ import ShowItemsInput from "./itemsPerPage";
 import SortBy from "./sortBy";
 import ApplyFilter from "./apply";
 import clsx from "clsx";
-import { Product } from "@/typescript/types";
+// import { Product } from "@/typescript/types";
 import { useSearchParams } from "next/navigation";
 
 interface FiltersProps {
-  productsApiEndpoint: string;
+  productsApiEndpoint?: string; // Kept for compatibility but unused for fetching
+  minPrice: number;
+  maxPrice: number;
 }
 
 interface PriceRange {
@@ -21,39 +23,17 @@ interface PriceRange {
   maxPrice: number;
 }
 
-export default function Filters({ productsApiEndpoint }: FiltersProps) {
+export default function Filters({ minPrice, maxPrice }: FiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const {isApplyingFilter} = useFilterContext()
-  const [priceRange, setPriceRange] = useState<PriceRange | null>(null);
+  const { isApplyingFilter } = useFilterContext();
+  // const [priceRange, setPriceRange] = useState<PriceRange | null>(null);
 
   const filterRef = useRef<HTMLDivElement>(null);
-  useOutsideClick(filterRef as React.RefObject<HTMLDivElement>, () => setIsOpen(false));
+  useOutsideClick(filterRef as React.RefObject<HTMLDivElement>, () =>
+    setIsOpen(false)
+  );
 
-  // ✅ Fetch price range on mount
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch(`${productsApiEndpoint}?limit=70`);
-        if (!res.ok) throw new Error("Failed to fetch products");
-        const data = await res.json();
-        const products: Product[] = data.products;
-
-        if (products.length) {
-          const sorted = [...products].sort((a, b) => a.price - b.price);
-          setPriceRange({
-            minPrice: Math.floor(sorted[0].price),
-            maxPrice: Math.ceil(sorted[sorted.length - 1].price),
-          });
-          console.log("max price in filter component", sorted[sorted.length - 1].price);
-        }
-      } catch (err) {
-        console.error("Failed to load price range:", (err as Error).message);
-        throw new Error((err as Error).message);
-      }
-    })();
-  }, [productsApiEndpoint, setPriceRange]);
-
-  if (!priceRange) return <FilterFallback />;
+  // No internal fetching anymore
 
   return (
     <div className="relative">
@@ -72,7 +52,7 @@ export default function Filters({ productsApiEndpoint }: FiltersProps) {
           isOpen ? "translate-y-2 scale-y-100" : "scale-y-0"
         )}
       >
-        <PriceFilter minPrice={priceRange.minPrice} maxPrice={priceRange.maxPrice} />
+        <PriceFilter minPrice={minPrice} maxPrice={maxPrice} />
 
         {/* Mobile-only filters */}
         <div className="mt-4 flex lg:hidden items-stretch gap-6 bg-[#FAF4F4] py-2 px-3">
@@ -81,7 +61,9 @@ export default function Filters({ productsApiEndpoint }: FiltersProps) {
             <ShowItemsInput defaultValue={16} />
           </div>
           <div className="flex flex-col gap-[2px]">
-            <span className="text-sm sm:text-base font-medium pl-1">Sort By</span>
+            <span className="text-sm sm:text-base font-medium pl-1">
+              Sort By
+            </span>
             <SortBy />
           </div>
         </div>
@@ -102,19 +84,26 @@ interface PriceFilterProps {
 function PriceFilter({ minPrice, maxPrice }: PriceFilterProps) {
   const { priceRangeValue, setPriceRangeValue } = useFilterContext();
   const sliderRef = useRef<HTMLInputElement>(null);
-  const searchParams = useSearchParams();;
+  const searchParams = useSearchParams();
 
   // ✅ Initialize max price filter once
   useEffect(() => {
-    setPriceRangeValue(searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : maxPrice);
-  }, [ maxPrice, setPriceRangeValue, searchParams ]);
+    setPriceRangeValue(
+      searchParams.get("maxPrice")
+        ? Number(searchParams.get("maxPrice"))
+        : maxPrice
+    );
+  }, [maxPrice, setPriceRangeValue, searchParams]);
 
   // ✅ Update slider background dynamically
   useEffect(() => {
     const slider = sliderRef.current;
     if (!slider) return;
 
-    const value = ((Number(slider.value) - Number(slider.min)) / (Number(slider.max) - Number(slider.min))) * 100;
+    const value =
+      ((Number(slider.value) - Number(slider.min)) /
+        (Number(slider.max) - Number(slider.min))) *
+      100;
     slider.style.background = `linear-gradient(to right, #fb923c 0%, #fb923c ${value}%, #fed7aa ${value}%, #fed7aa 100%)`;
   }, [priceRangeValue]);
 
@@ -147,5 +136,7 @@ function PriceFilter({ minPrice, maxPrice }: PriceFilterProps) {
 }
 
 export function FilterFallback() {
-  return <Skeleton className="self-stretch w-[66px] sm:w-[80px] rounded-none" />;
+  return (
+    <Skeleton className="self-stretch w-[66px] sm:w-[80px] rounded-none" />
+  );
 }

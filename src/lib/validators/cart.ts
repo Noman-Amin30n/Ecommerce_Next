@@ -4,6 +4,9 @@ import { z } from "zod";
 export const CartItemSchema = z.object({
   product: z.string().min(1),
   variantSku: z.string().optional(),
+  image: z.string().optional(),
+  color: z.string().optional(),
+  size: z.string().optional(),
   quantity: z.number().int().positive(),
   unitPrice: z.number().nonnegative(),
 });

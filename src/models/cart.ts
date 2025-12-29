@@ -4,6 +4,9 @@ import mongoose, { Document, Model, Schema, model } from "mongoose";
 export interface CartItem {
   product: mongoose.Types.ObjectId;
   variantSku?: string;
+  image?: string;
+  color?: string;
+  size?: string;
   quantity: number;
   unitPrice: number;
 }
@@ -21,6 +24,9 @@ const CartItemSchema = new Schema<CartItem>(
   {
     product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     variantSku: { type: String },
+    image: { type: String },
+    color: { type: String },
+    size: { type: String },
     quantity: { type: Number, required: true },
     unitPrice: { type: Number, required: true },
   },

@@ -5,7 +5,7 @@ import Header from "@/components/header/header";
 import PageTitle from "@/components/pageTitle";
 import StoreFeatures from "@/components/storeFeatures";
 import { signIn, useSession } from "next-auth/react";
-import { Loader2, Edit2, Save, X, Camera} from "lucide-react";
+import { Loader2, Edit2, Save, X, Camera } from "lucide-react";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -33,6 +33,9 @@ function Page() {
     type: "success" | "error";
     text: string;
   } | null>(null);
+  const [profileFetchingError, setProfileFetchingError] = useState<
+    string | null
+  >(null);
   const [avatarBgColor, setAvatarBgColor] = useState<string>("");
 
   // Image upload state
@@ -136,9 +139,13 @@ function Page() {
             setEditedName(data.user.name || "");
           } else {
             console.error("Failed to fetch user profile");
+            setProfileFetchingError("Failed to fetch user profile");
           }
         } catch (error) {
           console.error("Error fetching user profile:", error);
+          setProfileFetchingError(
+            "An unexpected error occurred. Please try again."
+          );
         }
       }
     };
@@ -283,7 +290,7 @@ function Page() {
 
   return (
     <>
-      <Header profilePic={userData?.image}/>
+      <Header profilePic={userData?.image} />
       <PageTitle
         title="My Account"
         backgroundImageUrl="/images/pageTitleBg.jpg"
@@ -295,154 +302,175 @@ function Page() {
             <div className="md:basis-1/2 mx-auto sm:px-7 md:px-10 py-8 flex items-center justify-center">
               <Loader2 className="animate-spin h-12 w-12" />
             </div>
-          ) : sessionStatus === "authenticated" && userData ? (
+          ) : sessionStatus === "authenticated" ? (
             // Profile View for Authenticated Users
-            <div className="md:basis-1/2 mx-auto sm:px-7 md:px-10 py-8 flex flex-col gap-6 md:gap-8 lg:gap-10">
-              <h2 className="font-semibold text-[28px] md:text-[36px] text-center">
-                My Profile
-              </h2>
+            <>
+              {userData ? (
+                <div className="md:basis-1/2 sm:px-7 md:px-10 py-8 flex flex-col gap-6 md:gap-8 lg:gap-10">
+                  <h2 className="font-semibold text-[28px] md:text-[36px]">
+                    My Profile
+                  </h2>
 
-              {/* Avatar Section */}
-              <div className="flex items-center gap-4 self-center">
-                <div className="relative group">
-                  <Avatar className="w-20 h-20 md:w-24 md:h-24 cursor-pointer">
-                    <AvatarImage
-                      src={userData.image || ""}
-                      alt={userData.name || ""}
-                    />
-                    <AvatarFallback
-                      style={{ backgroundColor: avatarBgColor }}
-                      className="text-white font-semibold text-2xl md:text-3xl"
-                    >
-                      {getUserInitials(userData.name)}
-                    </AvatarFallback>
-                  </Avatar>
+                  {/* Avatar Section */}
+                  <div className="flex items-center gap-4">
+                    <div className="relative group">
+                      <Avatar className="w-20 h-20 md:w-24 md:h-24 cursor-pointer">
+                        <AvatarImage
+                          src={userData.image || ""}
+                          alt={userData.name || ""}
+                        />
+                        <AvatarFallback
+                          style={{ backgroundColor: avatarBgColor }}
+                          className="text-white font-semibold text-2xl md:text-3xl"
+                        >
+                          {getUserInitials(userData.name)}
+                        </AvatarFallback>
+                      </Avatar>
 
-                  {/* Upload Overlay */}
-                  <label
-                    htmlFor="avatar-upload"
-                    className={`absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full ${isUploadingImage ? "opacity-100" : "opacity-0"} group-hover:opacity-100 transition-opacity cursor-pointer`}
-                  >
-                    {isUploadingImage ? (
-                      <Loader2 className="animate-spin text-white" size={24} />
-                    ) : (
-                      <Camera className="text-white" size={24} />
-                    )}
-                  </label>
+                      {/* Upload Overlay */}
+                      <label
+                        htmlFor="avatar-upload"
+                        className={`absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full ${
+                          isUploadingImage ? "opacity-100" : "opacity-0"
+                        } group-hover:opacity-100 transition-opacity cursor-pointer`}
+                      >
+                        {isUploadingImage ? (
+                          <Loader2
+                            className="animate-spin text-white"
+                            size={24}
+                          />
+                        ) : (
+                          <Camera className="text-white" size={24} />
+                        )}
+                      </label>
 
-                  {/* Hidden File Input */}
-                  <input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    disabled={isUploadingImage}
-                    className="hidden"
-                  />
-                </div>
+                      {/* Hidden File Input */}
+                      <input
+                        id="avatar-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={isUploadingImage}
+                        className="hidden"
+                      />
+                    </div>
 
-                <div>
-                  <p className="text-lg md:text-xl font-medium">
-                    {userData.name || "No name set"}
-                  </p>
-                  <p className="text-sm md:text-base text-gray-600">
-                    {userData.email}
-                  </p>
-                  {uploadError && (
-                    <p className="text-xs md:text-sm text-red-600 mt-1">
-                      {uploadError}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Profile Form */}
-              <div className="space-y-4 md:space-y-6">
-                <div>
-                  <label
-                    htmlFor="profileName"
-                    className="block text-[14px] md:text-base font-medium mb-2"
-                  >
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="profileName"
-                    value={editedName}
-                    className="w-full px-4 h-[48px] sm:h-[56px] lg:h-[75px] border border-[#9F9F9F] rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9F9F9F] disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    onChange={(e) => setEditedName(e.target.value)}
-                    disabled={!isEditMode || isUpdatingProfile}
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="profileEmail"
-                    className="block text-[14px] md:text-base font-medium mb-2"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="profileEmail"
-                    value={userData.email}
-                    className="w-full px-4 h-[48px] sm:h-[56px] lg:h-[75px] border border-[#9F9F9F] rounded-lg md:rounded-xl bg-gray-100 cursor-not-allowed"
-                    disabled
-                  />
-                  <p className="text-xs md:text-sm text-gray-500 mt-1">
-                    Email cannot be changed
-                  </p>
-                </div>
-
-                {profileMessage && (
-                  <div
-                    className={`p-4 rounded-lg ${
-                      profileMessage.type === "success"
-                        ? "bg-green-50 text-green-800 border border-green-200"
-                        : "bg-red-50 text-red-800 border border-red-200"
-                    }`}
-                  >
-                    {profileMessage.text}
-                  </div>
-                )}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3 md:gap-4 self-center">
-                {!isEditMode ? (
-                  <button
-                    className="px-6 md:px-10 h-9 sm:h-12 lg:h-16 border border-black md:text-lg lg:text-xl rounded-lg md:rounded-[16px] lg:rounded-[20px] flex items-center justify-center gap-2 hover:bg-black hover:text-white transition-colors"
-                    onClick={() => setIsEditMode(true)}
-                  >
-                    <Edit2 size={20} />
-                    Edit Profile
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      className="px-6 md:px-10 h-9 sm:h-12 lg:h-16 bg-black text-white md:text-lg lg:text-xl rounded-lg md:rounded-[16px] lg:rounded-[20px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors"
-                      onClick={handleUpdateProfile}
-                      disabled={isUpdatingProfile}
-                    >
-                      {isUpdatingProfile ? (
-                        <Loader2 className="animate-spin" size={20} />
-                      ) : (
-                        <Save size={20} />
+                    <div>
+                      <p className="text-lg md:text-xl font-medium">
+                        {userData.name || "No name set"}
+                      </p>
+                      <p className="text-sm md:text-base text-gray-600 break-all">
+                        {userData.email}
+                      </p>
+                      {uploadError && (
+                        <p className="text-xs md:text-sm text-red-600 mt-1">
+                          {uploadError}
+                        </p>
                       )}
-                      {isUpdatingProfile ? "Saving..." : "Save Changes"}
-                    </button>
-                    <button
-                      className="px-6 md:px-10 h-9 sm:h-12 lg:h-16 border border-gray-400 md:text-lg lg:text-xl rounded-lg md:rounded-[16px] lg:rounded-[20px] flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
-                      onClick={handleCancelEdit}
-                      disabled={isUpdatingProfile}
-                    >
-                      <X size={20} />
-                      Cancel
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
+                    </div>
+                  </div>
+
+                  {/* Profile Form */}
+                  <div className="space-y-4 md:space-y-6">
+                    <div>
+                      <label
+                        htmlFor="profileName"
+                        className="block text-[14px] md:text-base font-medium mb-2"
+                      >
+                        Name
+                      </label>
+                      <input
+                        type="text"
+                        id="profileName"
+                        value={editedName}
+                        className="w-full px-4 h-[48px] sm:h-[56px] lg:h-[75px] border border-[#9F9F9F] rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9F9F9F] disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        onChange={(e) => setEditedName(e.target.value)}
+                        disabled={!isEditMode || isUpdatingProfile}
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="profileEmail"
+                        className="block text-[14px] md:text-base font-medium mb-2"
+                      >
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        id="profileEmail"
+                        value={userData.email}
+                        className="w-full px-4 h-[48px] sm:h-[56px] lg:h-[75px] border border-[#9F9F9F] rounded-lg md:rounded-xl bg-gray-100 cursor-not-allowed"
+                        disabled
+                      />
+                      <p className="text-xs md:text-sm text-gray-500 mt-1">
+                        Email cannot be changed
+                      </p>
+                    </div>
+
+                    {profileMessage && (
+                      <div
+                        className={`p-4 rounded-lg ${
+                          profileMessage.type === "success"
+                            ? "bg-green-50 text-green-800 border border-green-200"
+                            : "bg-red-50 text-red-800 border border-red-200"
+                        }`}
+                      >
+                        {profileMessage.text}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 md:gap-4">
+                    {!isEditMode ? (
+                      <button
+                        className="px-6 md:px-10 h-9 sm:h-12 lg:h-16 border border-black md:text-lg lg:text-xl rounded-lg md:rounded-[16px] lg:rounded-[20px] flex items-center justify-center gap-2 hover:bg-black hover:text-white transition-colors"
+                        onClick={() => setIsEditMode(true)}
+                      >
+                        <Edit2 size={20} />
+                        Edit Profile
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          className="px-6 md:px-10 h-9 sm:h-12 lg:h-16 bg-black text-white md:text-lg lg:text-xl rounded-lg md:rounded-[16px] lg:rounded-[20px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors"
+                          onClick={handleUpdateProfile}
+                          disabled={isUpdatingProfile}
+                        >
+                          {isUpdatingProfile ? (
+                            <Loader2 className="animate-spin" size={20} />
+                          ) : (
+                            <Save size={20} />
+                          )}
+                          {isUpdatingProfile ? "Saving..." : "Save Changes"}
+                        </button>
+                        <button
+                          className="px-6 md:px-10 h-9 sm:h-12 lg:h-16 border border-gray-400 md:text-lg lg:text-xl rounded-lg md:rounded-[16px] lg:rounded-[20px] flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
+                          onClick={handleCancelEdit}
+                          disabled={isUpdatingProfile}
+                        >
+                          <X size={20} />
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {profileFetchingError ? (
+                    <p className="bg-red-50 text-red-800 border border-red-200 p-4 rounded-lg mx-auto">
+                      {profileFetchingError}
+                    </p>
+                  ) : (
+                    <div className="md:basis-1/2 mx-auto sm:px-7 md:px-10 py-8 flex items-center justify-center">
+                      <Loader2 className="animate-spin h-12 w-12" />
+                    </div>
+                  )}
+                </>
+              )}
+            </>
           ) : (
             // Login Form for Unauthenticated Users
             <>
@@ -487,7 +515,11 @@ function Page() {
                   onClick={handleEmailSignIn}
                   disabled={isSigningIn}
                 >
-                  {isSigningIn ? <Loader2 className="animate-spin" /> : "Log In"}
+                  {isSigningIn ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    "Log In"
+                  )}
                 </button>
                 <div className="flex justify-start items-center gap-8">
                   <Image

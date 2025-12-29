@@ -6,8 +6,8 @@ export interface Variant {
   title?: string;
   price: number;
   compareAtPrice?: number;
-  colors?: string[];
-  sizes?: string[];
+  color?: string;
+  size?: string;
   images?: string[];
   quantity?: number;
 }
@@ -39,8 +39,8 @@ const VariantSchema = new Schema<Variant>(
     title: { type: String },
     price: { type: Number, required: true },
     compareAtPrice: { type: Number },
-    colors: { type: [String], default: [] },
-    sizes: { type: [String], default: [] },
+    color: { type: String },
+    size: { type: String },
     images: { type: [String], default: [] },
     quantity: { type: Number, default: 0 },
   },

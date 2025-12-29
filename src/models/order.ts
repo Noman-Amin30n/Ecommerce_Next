@@ -7,6 +7,9 @@ export interface OrderItem {
   product: mongoose.Types.ObjectId;
   title: string;
   variantSku?: string;
+  image?: string;
+  color?: string;
+  size?: string;
   unitPrice: number;
   quantity: number;
   total: number;
@@ -46,6 +49,9 @@ const OrderItemSchema = new Schema<OrderItem>(
     product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     title: { type: String, required: true },
     variantSku: { type: String },
+    image: { type: String },
+    color: { type: String },
+    size: { type: String },
     unitPrice: { type: Number, required: true },
     quantity: { type: Number, required: true },
     total: { type: Number, required: true },

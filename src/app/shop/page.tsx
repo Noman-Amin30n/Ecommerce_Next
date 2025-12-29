@@ -21,9 +21,8 @@ export const metadata: Metadata = {
   description: "Welcome to our online store",
 };
 
-const productsAPI =
-  process.env.NEXT_PUBLIC_PRODUCTS_API ||
-  "https://dummyjson.com/products?limit=70";
+import { connectMongoose } from "@/lib/mongoose";
+import Product from "@/models/product";
 
 export default async function ShopPage({
   searchParams,
@@ -31,6 +30,25 @@ export default async function ShopPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const resolvedSearchParams = await searchParams;
+
+  await connectMongoose();
+
+  // Fetch min and max price for filters
+  const priceStats = await Product.aggregate([
+    {
+      $group: {
+        _id: null,
+        minPrice: { $min: "$price" },
+        maxPrice: { $max: "$price" },
+      },
+    },
+  ]);
+
+  const minPrice =
+    priceStats.length > 0 ? Math.floor(priceStats[0].minPrice) : 0;
+  const maxPrice =
+    priceStats.length > 0 ? Math.ceil(priceStats[0].maxPrice) : 0;
+
   return (
     <>
       <Header className="bg-white sticky top-0 z-[998]" />
@@ -53,7 +71,8 @@ export default async function ShopPage({
               </div>
 
               <div className="flex items-center gap-5 md:gap-6 lg:pr-6 lg:border-r-2 lg:border-[#9F9F9F]">
-                <Filters productsApiEndpoint={productsAPI} />
+                {/* Pass DB-fetched stats to Filters */}
+                <Filters minPrice={minPrice} maxPrice={maxPrice} />
                 <div className="hidden sm:flex items-center gap-5 md:gap-6">
                   <ProductsLayout />
                 </div>
@@ -78,10 +97,7 @@ export default async function ShopPage({
         <main className="px-6">
           <section className="w-full max-w-[1440px] mx-auto py-9 sm:py-12 lg:py-16">
             <Suspense fallback={<ProductsContainerFallback />}>
-              <ProductsContainer
-                APIEndpoint={productsAPI}
-                searchParams={resolvedSearchParams}
-              />
+              <ProductsContainer searchParams={resolvedSearchParams} />
             </Suspense>
           </section>
         </main>

@@ -5,8 +5,8 @@ export const VariantSchema = z.object({
   title: z.string().optional(),
   price: z.number().nonnegative(),
   compareAtPrice: z.number().nonnegative().optional(),
-  colors: z.array(z.string()).optional(),
-  sizes: z.array(z.string()).optional(),
+  color: z.string().optional(),
+  size: z.string().optional(),
   images: z.array(z.url()).optional(),
   quantity: z.number().int().nonnegative().optional(),
 });

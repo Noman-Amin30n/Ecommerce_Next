@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { TbUserExclamation } from "react-icons/tb";
 import { CiSearch } from "react-icons/ci";
 import { CiHeart } from "react-icons/ci";
-import { LogIn, UserPen, UserPlus } from "lucide-react";
+import { LockKeyhole, LogIn, UserPen, UserPlus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -24,9 +24,8 @@ import { LogOut } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 
 function Header({ className, profilePic }: { className?: string; profilePic?: string }) {
-  console.log("profile pic", profilePic);
   const { data: session, status: sessionStatus } = useSession();
-  const [avatar, setAvatar] = useState<string>(profilePic || session?.user?.image || "");
+  const [avatar, setAvatar] = useState<string>(profilePic || "");
   const [avatarBgColor, setAvatarBgColor] = useState<string>("");
 
   const generateRandomColor = () => {
@@ -128,9 +127,19 @@ function Header({ className, profilePic }: { className?: string; profilePic?: st
                 {sessionStatus === "authenticated" ? (
                   <>
                     <DropdownMenuLabel asChild>My Account</DropdownMenuLabel>
+                    {session.user.role === "admin" && (
+                      <Link href={"/admin"}>
+                        <DropdownMenuItem className="px-4 py-3 cursor-pointer text-base hover:bg-[#FAF4F4]">
+                          Admin Panel
+                          <DropdownMenuShortcut>
+                            <LockKeyhole size={16} />
+                          </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                      </Link>
+                    )}
                     <Link href={"/account"}>
                       <DropdownMenuItem className="px-4 py-3 cursor-pointer text-base hover:bg-[#FAF4F4]">
-                        Profile
+                        My Account
                         <DropdownMenuShortcut>
                           <UserPen size={16} />
                         </DropdownMenuShortcut>
@@ -174,7 +183,7 @@ function Header({ className, profilePic }: { className?: string; profilePic?: st
           <SideCart />
         </div>
         <div className="md:hidden flex item-center">
-          <MobileHeaderSideMenu />
+          <MobileHeaderSideMenu avatar={avatar} avatarBgColor={avatarBgColor} getUserInitials={getUserInitials} />
         </div>
       </div>
     </header>

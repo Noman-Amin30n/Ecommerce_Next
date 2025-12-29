@@ -4,6 +4,9 @@ export const OrderItemSchema = z.object({
   product: z.string().min(1),
   title: z.string().min(1),
   variantSku: z.string().optional(),
+  image: z.string().optional(),
+  color: z.string().optional(),
+  size: z.string().optional(),
   unitPrice: z.number().nonnegative(),
   quantity: z.number().int().positive(),
 });
