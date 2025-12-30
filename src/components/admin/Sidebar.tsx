@@ -28,35 +28,48 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile menu button */}
+      {/* Mobile Menu Button - Styled more cleanly */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-800 text-white rounded-md"
+        className="lg:hidden fixed top-5 left-5 z-50 p-2.5 bg-gray-900/90 backdrop-blur-md text-white rounded-xl shadow-lg border border-gray-800 active:scale-95 transition-all"
       >
-        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
       </button>
 
-      {/* Sidebar */}
+      {/* Sidebar - Glassmorphism overhaul */}
       <aside
         className={`
-          fixed lg:static inset-y-0 left-0 z-40
-          w-64 bg-gray-900 text-white
-          transform transition-transform duration-300 ease-in-out
+          fixed lg:sticky top-0 inset-y-0 left-0 z-40
+          w-64 bg-gray-900/95 lg:bg-gray-900 backdrop-blur-xl text-white
+          transform transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
+          border-r border-gray-800/50
           ${
             isMobileMenuOpen
-              ? "translate-x-0"
+              ? "translate-x-0 shadow-2xl"
               : "-translate-x-full lg:translate-x-0"
           }
         `}
       >
         <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="p-6 border-b border-gray-800">
-            <h1 className="text-2xl font-bold">Admin Panel</h1>
+          {/* Logo Section - Premium look */}
+          <div className="p-8 border-b border-gray-800/50">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <LayoutDashboard className="text-white" size={20} />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                  Store Admin
+                </h1>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-black">
+                  Control Panel
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2">
+          {/* Navigation - Better spacing and active states */}
+          <nav className="flex-1 p-6 space-y-2 overflow-y-auto custom-scrollbar">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -67,38 +80,63 @@ export default function Sidebar() {
                   href={item.href}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`
-                    flex items-center gap-3 px-4 py-3 rounded-lg
-                    transition-colors duration-200
+                    group relative flex items-center gap-3 px-4 py-3.5 rounded-xl
+                    transition-all duration-300 ease-out
                     ${
                       isActive
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                        ? "bg-gradient-to-r from-blue-600/20 to-indigo-600/10 text-blue-400 border border-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.1)]"
+                        : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
                     }
                   `}
                 >
-                  <Icon size={20} />
-                  <span className="font-medium">{item.label}</span>
+                  {/* Active Indicator Pillar */}
+                  {isActive && (
+                    <div className="absolute left-0 w-1 h-6 bg-blue-500 rounded-r-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+                  )}
+
+                  <Icon
+                    size={20}
+                    className={`transition-colors duration-300 ${
+                      isActive ? "text-blue-500" : "group-hover:text-blue-400"
+                    }`}
+                  />
+                  <span className="font-semibold text-sm tracking-wide">
+                    {item.label}
+                  </span>
+
+                  {/* Hover micro-indicator */}
+                  {!isActive && (
+                    <div className="absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+                    </div>
+                  )}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Footer */}
-          <div className="p-4 border-t border-gray-800">
+          {/* Footer - Social/System Status look */}
+          <div className="p-6 border-t border-gray-800/50 bg-black/20">
             <Link
               href="/"
-              className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-white transition-colors"
+              className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all group"
             >
-              <span>← Back to Store</span>
+              <div className="p-1.5 rounded-lg bg-gray-800 group-hover:bg-blue-600/20 transition-colors">
+                <Menu
+                  size={16}
+                  className="rotate-90 group-hover:text-blue-400"
+                />
+              </div>
+              <span className="text-sm font-medium">View Live Store</span>
             </Link>
           </div>
         </div>
       </aside>
 
-      {/* Overlay for mobile */}
+      {/* Modern Backdrop Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-30 lg:hidden animate-in fade-in duration-300"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

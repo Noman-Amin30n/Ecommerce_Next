@@ -78,8 +78,12 @@ export async function POST(req: Request) {
 
         const product = await Product.create(data);
 
-        // Create inventory record for main product if quantity is provided
-        if (data.quantity !== undefined && data.quantity > 0) {
+        // Create inventory record for main product if quantity is provided AND no variants exist
+        if (
+            (!data.variants || data.variants.length === 0) &&
+            data.quantity !== undefined &&
+            data.quantity > 0
+        ) {
             const Inventory = (await import("@/models/inventory")).default;
             await Inventory.create({
                 product: product._id,
@@ -91,14 +95,26 @@ export async function POST(req: Request) {
         // Create inventory records for variants
         if (data.variants && data.variants.length > 0) {
             const Inventory = (await import("@/models/inventory")).default;
-            const variantInventoryRecords = data.variants
-                .filter(v => v.quantity !== undefined && v.quantity > 0)
-                .map(v => ({
-                    product: product._id,
-                    variantSku: v.sku,
-                    quantity: v.quantity || 0,
-                    reserved: 0,
-                }));
+            const variantInventoryRecords = data.variants.flatMap(v => {
+                if (v.sizes && v.sizes.length > 0) {
+                    return v.sizes
+                        .filter(s => s.quantity !== undefined && s.quantity > 0)
+                        .map(s => ({
+                            product: product._id,
+                            variantSku: s.sku,
+                            quantity: s.quantity || 0,
+                            reserved: 0,
+                        }));
+                } else if (v.sku && v.quantity !== undefined && v.quantity > 0) {
+                    return [{
+                        product: product._id,
+                        variantSku: v.sku,
+                        quantity: v.quantity || 0,
+                        reserved: 0,
+                    }];
+                }
+                return [];
+            });
             
             if (variantInventoryRecords.length > 0) {
                 await Inventory.insertMany(variantInventoryRecords);

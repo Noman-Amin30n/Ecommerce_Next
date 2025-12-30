@@ -121,219 +121,273 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
-      <div className="flex justify-between items-start">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Categories</h1>
-          <p className="text-gray-600 mt-1">Manage product categories</p>
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+            Categories
+          </h1>
+          <p className="text-sm text-gray-500 mt-1 font-medium">
+            Structure and organize your product hierarchy.
+          </p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className={`flex items-center gap-2 px-6 py-3 font-bold rounded-xl transition-all active:scale-95 ${
+            showForm
+              ? "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40"
+          }`}
         >
-          <Plus size={20} />
-          Add Category
+          {showForm ? (
+            <Loader2 size={20} className="rotate-45" />
+          ) : (
+            <Plus size={20} strokeWidth={2.5} />
+          )}
+          {showForm ? "Close Form" : "New Category"}
         </button>
       </div>
 
-      {/* Success/Error Message */}
+      {/* Modern Alerts */}
       {message && (
         <div
-          className={`flex items-center gap-3 p-4 rounded-lg border ${
+          className={`flex items-center gap-4 p-4 rounded-2xl border animate-in slide-in-from-top-2 duration-300 ${
             message.type === "success"
-              ? "bg-green-50 border-green-200 text-green-800"
-              : "bg-red-50 border-red-200 text-red-800"
+              ? "bg-emerald-50/50 border-emerald-100 text-emerald-800"
+              : "bg-red-50/50 border-red-100 text-red-800"
           }`}
         >
-          {message.type === "success" ? (
-            <CheckCircle size={20} className="flex-shrink-0" />
-          ) : (
-            <XCircle size={20} className="flex-shrink-0" />
-          )}
-          <p className="flex-1">{message.text}</p>
+          <div
+            className={`p-2 rounded-xl ${
+              message.type === "success" ? "bg-emerald-100" : "bg-red-100"
+            }`}
+          >
+            {message.type === "success" ? (
+              <CheckCircle size={18} />
+            ) : (
+              <XCircle size={18} />
+            )}
+          </div>
+          <p className="flex-1 font-medium text-sm">{message.text}</p>
           <button
             onClick={() => setMessage(null)}
-            className="text-gray-500 hover:text-gray-700"
+            className="p-1 hover:bg-black/5 rounded-lg transition-colors"
           >
             ×
           </button>
         </div>
       )}
 
-      {/* Create Form */}
-      {showForm && (
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            New Category
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Name *
-              </label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                required
-                disabled={creating}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Slug *
-              </label>
-              <input
-                type="text"
-                value={formData.slug}
-                onChange={(e) =>
-                  setFormData({ ...formData, slug: e.target.value })
-                }
-                required
-                disabled={creating}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-gray-50"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Auto-generated from name (editable)
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Parent Category
-              </label>
-              <Select
-                value={formData.parent}
-                onValueChange={(value) => {
-                  if (value === "none") {
-                    setFormData({ ...formData, parent: "" });
-                  } else {
-                    setFormData({ ...formData, parent: value });
-                  }
-                }}
-                disabled={creating}
-              >
-                <SelectTrigger className="w-full focus:border-blue-500 focus:shadow-sm transition-all">
-                  <SelectValue placeholder="None" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  {categories.map(
-                    (category) =>
-                      category.name !== "Uncategorized" && (
-                        <SelectItem key={category._id} value={category._id}>
-                          {category.name}
-                        </SelectItem>
-                      )
-                  )}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-gray-500 mt-1">
-                Optional: Select a parent category to create a subcategory
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                rows={3}
-                disabled={creating}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              />
-            </div>
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                disabled={creating}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {creating ? (
-                  <>
-                    <Loader2 size={20} className="animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  "Create Category"
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                disabled={creating}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+        {/* Create Form Section */}
+        {showForm && (
+          <div className="xl:col-span-4 animate-in slide-in-from-left-4 duration-500">
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-24">
+              <h2 className="text-xl font-bold text-gray-900 tracking-tight mb-6">
+                Create New
+              </h2>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    Category Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Menswear"
+                    value={formData.name}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    required
+                    disabled={creating}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all outline-none font-medium"
+                  />
+                </div>
 
-      {/* Categories List */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Slug
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Description
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Parent
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="px-6 py-8 text-center text-gray-500"
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    Custom Slug
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.slug}
+                    onChange={(e) =>
+                      setFormData({ ...formData, slug: e.target.value })
+                    }
+                    required
+                    disabled={creating}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all outline-none font-mono text-xs font-bold"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    Parent Hierarchy
+                  </label>
+                  <Select
+                    value={formData.parent}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        parent: value === "none" ? "" : value,
+                      })
+                    }
+                    disabled={creating}
                   >
-                    Loading...
-                  </td>
-                </tr>
-              ) : categories.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="px-6 py-8 text-center text-gray-500"
-                  >
-                    No categories found
-                  </td>
-                </tr>
-              ) : (
-                categories.map((category) => (
-                  <tr key={category._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
-                      {category.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {category.slug}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {category.description || "—"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {category.parent?.name || "—"}
-                    </td>
+                    <SelectTrigger className="w-full h-12 bg-gray-50 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium">
+                      <SelectValue placeholder="Root Level" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-gray-200">
+                      <SelectItem value="none" className="font-medium">
+                        Root Level (None)
+                      </SelectItem>
+                      {categories.map(
+                        (cat) =>
+                          cat.name !== "Uncategorized" && (
+                            <SelectItem
+                              key={cat._id}
+                              value={cat._id}
+                              className="font-medium"
+                            >
+                              {cat.name}
+                            </SelectItem>
+                          )
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    Description
+                  </label>
+                  <textarea
+                    placeholder="Briefly describe this category..."
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                    rows={4}
+                    disabled={creating}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all outline-none font-medium resize-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-lg shadow-black/10"
+                >
+                  {creating ? (
+                    <>
+                      <Loader2 size={20} className="animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Publish Category"
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Categories List Section */}
+        <div
+          className={`${
+            showForm ? "xl:col-span-8" : "xl:col-span-12"
+          } transition-all duration-500`}
+        >
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-gray-50/50 border-b border-gray-100">
+                    <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-black text-gray-400">
+                      Core Info
+                    </th>
+                    <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-black text-gray-400">
+                      Parent
+                    </th>
+                    <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-black text-gray-400">
+                      Description
+                    </th>
+                    <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-black text-gray-400 text-right">
+                      Identifier
+                    </th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {loading ? (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-20 text-center">
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                          <p className="text-sm font-medium text-gray-400">
+                            Scanning categories...
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : categories.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-20 text-center">
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300">
+                            <Plus size={32} />
+                          </div>
+                          <div>
+                            <p className="text-gray-900 font-bold">
+                              Empty Catalog
+                            </p>
+                            <p className="text-sm text-gray-400 mt-0.5">
+                              Start organizing by creating your first category.
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    categories.map((category) => (
+                      <tr
+                        key={category._id}
+                        className="hover:bg-blue-50/20 transition-all group"
+                      >
+                        <td className="px-6 py-5">
+                          <div className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                            {category.name}
+                          </div>
+                          <div className="text-[10px] font-mono font-bold text-gray-400 mt-0.5 lowercase">
+                            /{category.slug}
+                          </div>
+                        </td>
+                        <td className="px-6 py-5">
+                          {category.parent ? (
+                            <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-blue-100">
+                              {category.parent.name}
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">
+                              Root
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-5">
+                          <div className="text-xs text-gray-500 font-medium max-w-xs truncate">
+                            {category.description || "—"}
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 text-right">
+                          <code className="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded font-mono">
+                            {category._id.slice(-8).toUpperCase()}
+                          </code>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>

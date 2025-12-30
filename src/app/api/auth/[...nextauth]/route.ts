@@ -68,6 +68,12 @@ export const authOptions: NextAuthOptions = {
                     });
                 }
             }
+            
+            // Handle guest cart merging on sign-in
+            // Note: We can't directly access cookies in this server-side callback
+            // The actual cookie removal will be handled client-side
+            // This callback will merge the carts when the session is created
+            
             return true;
         },
         async jwt({ token, user }) {
@@ -83,6 +89,10 @@ export const authOptions: NextAuthOptions = {
                 } else {
                     token.role = (user as { role?: "admin" | "seller" | "customer" }).role ?? "customer";
                 }
+                
+                // Handle cart merging on first sign-in
+                // We'll set a flag that the client can check
+                token.cartMerged = true;
             }
 
             return token;

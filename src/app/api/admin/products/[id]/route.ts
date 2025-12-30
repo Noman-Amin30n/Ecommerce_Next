@@ -60,8 +60,8 @@ export async function PUT(
 
         const Inventory = (await import("@/models/inventory")).default;
 
-        // Update main product inventory
-        if (data.quantity !== undefined) {
+        // Update main product inventory ONLY IF no variants exist
+        if (data.quantity !== undefined && (!data.variants || data.variants.length === 0)) {
             await Inventory.findOneAndUpdate(
                 { product: productId, variantSku: { $exists: false } },
                 { 
@@ -70,6 +70,9 @@ export async function PUT(
                 },
                 { upsert: true, setDefaultsOnInsert: true }
             );
+        } else if (data.variants && data.variants.length > 0) {
+            // If variants exist, ensure main product inventory is removed (if it was there before)
+            await Inventory.deleteOne({ product: productId, variantSku: { $exists: false } });
         }
 
         // Sync variant inventories
@@ -85,30 +88,39 @@ export async function PUT(
                 existingInventories.map(inv => [inv.variantSku, inv])
             );
 
-            // Update or create inventory for each variant
-            for (const variant of data.variants) {
-                if (variant.quantity !== undefined && variant.quantity >= 0) {
-                    const existing = existingMap.get(variant.sku);
+            // Update or create inventory for each size in each variant, or the variant itself if no sizes
+            const allInventoryItems = data.variants.flatMap(v => {
+                if (v.sizes && v.sizes.length > 0) {
+                    return v.sizes.map(s => ({ sku: s.sku, quantity: s.quantity }));
+                } else if (v.sku) {
+                    return [{ sku: v.sku, quantity: v.quantity }];
+                }
+                return [];
+            });
+
+            for (const item of allInventoryItems) {
+                if (item.quantity !== undefined && item.quantity >= 0 && item.sku) {
+                    const existing = existingMap.get(item.sku);
                     
                     if (existing) {
                         // Update existing - preserve reserved amount
                         await Inventory.findByIdAndUpdate(existing._id, {
-                            quantity: variant.quantity,
+                            quantity: item.quantity,
                         });
                     } else {
                         // Create new inventory record
                         await Inventory.create({
                             product: productId,
-                            variantSku: variant.sku,
-                            quantity: variant.quantity,
+                            variantSku: item.sku,
+                            quantity: item.quantity,
                             reserved: 0,
                         });
                     }
-                    existingMap.delete(variant.sku);
+                    existingMap.delete(item.sku);
                 }
             }
 
-            // Delete inventory records for removed variants
+            // Delete inventory records for removed variant SKUs
             const removedSkus = Array.from(existingMap.keys()).filter((sku): sku is string => sku !== undefined);
             if (removedSkus.length > 0) {
                 await Inventory.deleteMany({
@@ -184,6 +196,13 @@ export async function DELETE(
         // Also delete associated inventory records
         const Inventory = (await import("@/models/inventory")).default;
         await Inventory.deleteMany({ product: productId });
+
+        // Also remove from all user/guest carts
+        const Cart = (await import("@/models/cart")).default;
+        await Cart.updateMany(
+            { "items.product": productId },
+            { $pull: { items: { product: productId } } }
+        );
 
         return NextResponse.json({ success: true });
     } catch (e) {

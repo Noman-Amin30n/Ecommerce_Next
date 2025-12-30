@@ -5,7 +5,10 @@ export interface CartItem {
   product: mongoose.Types.ObjectId;
   variantSku?: string;
   image?: string;
-  color?: string;
+  color?: {
+    label: string;
+    value: string;
+  };
   size?: string;
   quantity: number;
   unitPrice: number;
@@ -25,7 +28,10 @@ const CartItemSchema = new Schema<CartItem>(
     product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     variantSku: { type: String },
     image: { type: String },
-    color: { type: String },
+    color: {
+      label: { type: String },
+      value: { type: String },
+    },
     size: { type: String },
     quantity: { type: Number, required: true },
     unitPrice: { type: Number, required: true },

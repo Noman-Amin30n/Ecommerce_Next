@@ -42,9 +42,8 @@ export async function POST(req: Request) {
       );
       return NextResponse.json({ cart: updated });
     } else {
-      // guest cart: require sessionId in URL
-      const url = new URL(req.url);
-      const sessionId = url.searchParams.get("sessionId");
+      // guest cart: require sessionId in request body
+      const sessionId = body.sessionId;
       if (!sessionId) return NextResponse.json({ error: "Missing sessionId for guest cart" }, { status: 400 });
 
       const updated = await Cart.findOneAndUpdate(
