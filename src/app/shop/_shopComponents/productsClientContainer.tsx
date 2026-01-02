@@ -3,12 +3,12 @@
 import React, { useEffect } from "react";
 import { useFilterContext } from "@/contexts/filterContext";
 import { ProductCard_NormalSkeleton, ProductCardListSkeleton } from "@/components/product_card";
-import { Product } from "@/typescript/types";
 import { useSearchParams } from "next/navigation";
+import { IProduct } from "@/models/product";
 
 type ProductClientContainerProps = {
   children: React.ReactNode;
-  products: Product[];
+  products: IProduct[];
 };
 
 function ProductsClientContainer({

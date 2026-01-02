@@ -1,5 +1,4 @@
 import React from "react";
-import { Product } from "@/typescript/types"; // Import type
 import { ProductCard_Normal, ProductCardList } from "@/components/product_card";
 import SwitchPage from "./switchPage";
 import ProductsClientContainer from "./productsClientContainer";
@@ -80,7 +79,7 @@ export default async function ProductsContainer({
   ]);
 
   // Transform Mongoose docs to match the 'Product' interface + slug
-  const products: Product[] = productsRaw.map((p) => {
+  const products: IProduct[] = productsRaw.map((p) => {
     // Explicitly casting p to unknown then to a compatible shape if needed,
     // but since we imported IProduct, we can use that if .lean() returns it properly.
     // However, lean() returns a Plain Old JavaScript Object (POJO).
@@ -119,7 +118,7 @@ export default async function ProductsContainer({
       images: doc.images || [],
       slug: doc.slug, // Ensure slug is passed if extended Product type uses it, otherwise it's extra
       variants: doc.variants || [], // Pass variants if needed by UI
-    } as unknown as Product;
+    } as unknown as IProduct;
     // Note: The 'Product' type in types.ts is very dummyjson specific.
     // We are polyfilling missing fields to match it and satisfy TS.
   });
@@ -161,12 +160,11 @@ export default async function ProductsContainer({
             <div className="flex flex-col gap-4">
               {products.map((product) => (
                 <Link
-                  // @ts-expect-error: slug is mapped but not in strict Product type yet
-                  href={`/shop/${product.slug || product.id}`}
-                  key={product.id}
+                  href={`/shop/${product.slug || String(product._id)}`}
+                  key={String(product._id)}
                 >
                   <ProductCardList
-                    key={product.id}
+                    key={String(product._id)}
                     imageSrc={product.images[0]}
                     imageAlt={product.title}
                     title={product.title}
@@ -179,14 +177,13 @@ export default async function ProductsContainer({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {products.map((product) => (
                 <Link
-                  // @ts-expect-error: slug is mapped but not in strict Product type yet
-                  href={`/shop/${product.slug || product.id}`}
-                  key={product.id}
+                  href={`/shop/${product.slug || String(product._id)}`}
+                  key={String(product._id)}
                 >
                   {" "}
                   <ProductCard_Normal
-                    key={product.id}
-                    imageSrc={product.thumbnail}
+                    key={String(product._id)}
+                    imageSrc={product.images[0]}
                     imageAlt={product.title}
                     title={product.title}
                     price={product.price.toString()}

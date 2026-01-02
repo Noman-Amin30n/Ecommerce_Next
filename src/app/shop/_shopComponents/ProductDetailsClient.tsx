@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import Cookies from "js-cookie";
 import ProductGallery from "@/components/productGallery";
 import RatingStars from "@/components/rating";
 import { Loader2 } from "lucide-react";

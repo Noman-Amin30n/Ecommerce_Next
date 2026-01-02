@@ -3,12 +3,12 @@
 import React, { useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Product } from "@/typescript/types";
+import { IProduct } from "@/models/product";
 import { useFilterContext } from "@/contexts/filterContext";
 
 interface Props {
   className?: string;
-  products: Product[];
+  products: IProduct[];
 }
 
 function SwitchPage({ className, products }: Props) {

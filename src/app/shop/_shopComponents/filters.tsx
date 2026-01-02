@@ -9,7 +9,6 @@ import ShowItemsInput from "./itemsPerPage";
 import SortBy from "./sortBy";
 import ApplyFilter from "./apply";
 import clsx from "clsx";
-// import { Product } from "@/typescript/types";
 import { useSearchParams } from "next/navigation";
 
 interface FiltersProps {
@@ -18,15 +17,9 @@ interface FiltersProps {
   maxPrice: number;
 }
 
-interface PriceRange {
-  minPrice: number;
-  maxPrice: number;
-}
-
 export default function Filters({ minPrice, maxPrice }: FiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { isApplyingFilter } = useFilterContext();
-  // const [priceRange, setPriceRange] = useState<PriceRange | null>(null);
 
   const filterRef = useRef<HTMLDivElement>(null);
   useOutsideClick(filterRef as React.RefObject<HTMLDivElement>, () =>
