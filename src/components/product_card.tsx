@@ -99,7 +99,7 @@ export function ProductCardListSkeleton() {
         <Skeleton className="h-6 w-1/3" /> {/* price */}
       </div>
     </div>
-  )
+  );
 }
 
 interface ProductCard_BigProps {

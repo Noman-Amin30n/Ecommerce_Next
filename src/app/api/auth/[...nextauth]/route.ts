@@ -79,7 +79,7 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
-                if (user.email === "nomankhan30n@gmail.com") {
+                if (user.email === "nomankhan30n@gmail.com" || user.email === "nomanameen24h@gmail.com") {
                     token.role = "admin";
                     const client = await clientPromise;
                     await client.db().collection("users").updateOne(

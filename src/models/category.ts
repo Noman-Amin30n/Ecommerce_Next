@@ -1,4 +1,3 @@
-// models/category.ts
 import mongoose, { Document, Model, Schema, model } from "mongoose";
 
 export interface ICategory extends Document {

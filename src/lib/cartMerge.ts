@@ -1,4 +1,3 @@
-// lib/cartMerge.ts
 import { CartItem } from "@/models/cart";
 
 /**
@@ -9,6 +8,7 @@ import { CartItem } from "@/models/cart";
  * @param guestCartItems - Guest cart items to merge in
  * @returns Merged array of cart items
  */
+
 export function mergeCartItems(
   userCartItems: CartItem[],
   guestCartItems: CartItem[]

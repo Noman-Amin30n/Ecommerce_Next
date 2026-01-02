@@ -1,4 +1,3 @@
-// src/components/admin/StatusBadge.tsx
 import { OrderStatus } from "@/models/order";
 
 interface StatusBadgeProps {

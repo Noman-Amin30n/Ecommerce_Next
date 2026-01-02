@@ -1,4 +1,3 @@
-// src/lib/rateLimiter.ts
 type Bucket = { tokens: number; lastRefill: number };
 
 const BUCKETS = new Map<string, Bucket>();

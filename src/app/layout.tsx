@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import ClientSessionProvider from "@/components/session";
+import { CartProvider } from "@/contexts/CartContext";
 import "./globals.css";
 
 const inter = Inter({
@@ -32,7 +33,9 @@ export default function RootLayout({
         className={`${poppins.variable} ${inter.variable} antialiased w-full font-poppins`}
       >
         <ClientSessionProvider>
-          <div className="max-w-[2560px] mx-auto">{children}</div>
+          <CartProvider>
+            <div className="max-w-[2560px] mx-auto">{children}</div>
+          </CartProvider>
         </ClientSessionProvider>
       </body>
     </html>

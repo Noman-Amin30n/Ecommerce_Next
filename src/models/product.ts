@@ -1,4 +1,3 @@
-// models/product.ts
 import mongoose, { Document, Model, Schema, model } from "mongoose";
 
 export interface SizeVariant {
@@ -43,7 +42,6 @@ export interface IProduct extends Document {
   isPublished: boolean;
   createdAt: Date;
   updatedAt: Date;
-  searchKeywords?: string[];
 }
 
 const ColorSchema = new Schema(
@@ -98,12 +96,11 @@ const ProductSchema = new Schema<IProduct>(
     sizes: { type: [String], default: [] },
     sku: { type: String },
     isPublished: { type: Boolean, default: false },
-    searchKeywords: { type: [String], default: [] },
   },
   { timestamps: true }
 );
 
-ProductSchema.index({ title: "text", description: "text", searchKeywords: "text" });
+ProductSchema.index({ title: "text", description: "text", tags: "text" });
 
 const Product: Model<IProduct> = (mongoose.models.Product as Model<IProduct>) || model<IProduct>("Product", ProductSchema);
 export default Product;

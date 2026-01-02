@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { ArrowLeft, Package } from "lucide-react";
 import Link from "next/link";
@@ -22,6 +22,7 @@ interface OrderItem {
     images: string[];
   };
   title: string;
+  image: string;
   variantSku?: string;
   unitPrice: number;
   quantity: number;
@@ -61,7 +62,6 @@ interface Order {
 
 export default function OrderDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const orderId = params.id as string;
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
@@ -160,7 +160,7 @@ export default function OrderDetailPage() {
                   <div className="w-20 h-20 relative rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                     {item.product?.images?.[0] && (
                       <Image
-                        src={item.product.images[0]}
+                        src={item.image}
                         alt={item.title}
                         fill
                         className="object-cover"

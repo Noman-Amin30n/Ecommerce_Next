@@ -1,4 +1,3 @@
-// models/order.ts
 import mongoose, { Document, Model, Schema, model } from "mongoose";
 
 export type OrderStatus = "pending" | "paid" | "shipped" | "delivered" | "cancelled" | "refunded";
@@ -49,7 +48,7 @@ const OrderItemSchema = new Schema<OrderItem>(
     product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     title: { type: String, required: true },
     variantSku: { type: String },
-    image: { type: String },
+    image: { type: String }, 
     color: { type: String },
     size: { type: String },
     unitPrice: { type: Number, required: true },

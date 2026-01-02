@@ -14,10 +14,6 @@ export async function proxy(request: NextRequest) {
             secret: process.env.NEXTAUTH_SECRET,
         });
 
-        console.log("Full token:", JSON.stringify(token, null, 2));
-        console.log("Token role:", token?.role);
-        console.log("Is admin?", token?.role === "admin");
-
         if (!token) {
             console.log("No token found - redirecting to /");
             return NextResponse.redirect(new URL("/account", request.url));

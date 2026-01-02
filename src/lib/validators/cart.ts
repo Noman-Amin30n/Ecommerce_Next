@@ -1,4 +1,3 @@
-// src/lib/validators/cart.ts
 import { z } from "zod";
 
 export const CartItemSchema = z.object({

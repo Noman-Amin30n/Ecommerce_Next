@@ -1,4 +1,3 @@
-// lib/validators/review.ts
 import { z } from "zod";
 
 // Regex for validating URLs (basic pattern)

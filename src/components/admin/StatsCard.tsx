@@ -1,4 +1,3 @@
-// src/components/admin/StatsCard.tsx
 import { LucideIcon } from "lucide-react";
 
 interface StatsCardProps {

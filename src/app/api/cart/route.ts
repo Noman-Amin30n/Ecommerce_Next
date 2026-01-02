@@ -15,9 +15,9 @@ export async function GET(req: Request) {
 
     let cart;
     if (session?.user?.email) {
-      cart = await Cart.findOne({ user: session.user.id }).lean();
+      cart = await Cart.findOne({ user: session.user.id }).populate("items.product").lean();
     } else if (sessionId) {
-      cart = await Cart.findOne({ sessionId }).lean();
+      cart = await Cart.findOne({ sessionId }).populate("items.product").lean();
     } else {
       return NextResponse.json({ items: [] });
     }

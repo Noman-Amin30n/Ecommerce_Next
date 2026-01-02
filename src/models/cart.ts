@@ -1,4 +1,3 @@
-// models/cart.ts
 import mongoose, { Document, Model, Schema, model } from "mongoose";
 
 export interface CartItem {

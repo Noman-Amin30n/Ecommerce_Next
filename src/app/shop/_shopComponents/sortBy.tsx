@@ -28,7 +28,9 @@ export default function SortBy() {
   const [selectedValue, setSelectedValue] = useState(sortBy || "Newest");
 
   const sortByRef = useRef<HTMLDivElement>(null);
-  useOutsideClick(sortByRef as React.RefObject<HTMLDivElement>, () => setIsOpen(false));
+  useOutsideClick(sortByRef as React.RefObject<HTMLDivElement>, () =>
+    setIsOpen(false)
+  );
 
   const handleSelect = useCallback(
     (value: string, label: string) => {
@@ -62,7 +64,8 @@ export default function SortBy() {
       <div
         className={clsx(
           "absolute right-0 top-full bg-white text-[#9F9F9F] flex flex-col cursor-pointer origin-top transition-all duration-300 ease-in-out transform opacity-0 scale-y-0 z-10",
-          isOpen && "scale-y-100 translate-y-1 opacity-100 border-l-[3px] shadow-lg border-[#fbebb5]"
+          isOpen &&
+            "scale-y-100 translate-y-1 opacity-100 border-l-[3px] shadow-lg border-[#fbebb5]"
         )}
       >
         {SORT_OPTIONS.map(({ label, value }) => (

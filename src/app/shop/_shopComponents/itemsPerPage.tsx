@@ -11,12 +11,16 @@ interface ItemsPerPageProps {
   defaultValue?: number;
 }
 
-export default function ItemsPerPage({ className, defaultValue = 16 }: ItemsPerPageProps) {
+export default function ItemsPerPage({
+  className,
+  defaultValue = 16,
+}: ItemsPerPageProps) {
   const router = useRouter();
   const timeOutRef = useRef<NodeJS.Timeout | null>(null);
   const searchParams = useSearchParams();
   const itemsPerPageParam = searchParams.get("itemsPerPage");
-  const { totalProducts, isApplyingFilter, setIsApplyingFilter } = useFilterContext();
+  const { totalProducts, isApplyingFilter, setIsApplyingFilter } =
+    useFilterContext();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value ? Number(e.target.value) : defaultValue;
@@ -26,7 +30,8 @@ export default function ItemsPerPage({ className, defaultValue = 16 }: ItemsPerP
       timeOutRef.current = setTimeout(() => {
         setIsApplyingFilter(true);
         const queryParams = new URLSearchParams(searchParams.toString());
-        if (queryParams.has("itemsPerPage")) queryParams.set("itemsPerPage", value.toString());
+        if (queryParams.has("itemsPerPage"))
+          queryParams.set("itemsPerPage", value.toString());
         else queryParams.append("itemsPerPage", value.toString());
         if (queryParams.has("page")) queryParams.set("page", "1");
         else queryParams.append("page", "1");
