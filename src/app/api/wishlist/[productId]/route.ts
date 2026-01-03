@@ -1,13 +1,13 @@
 // src/app/api/wishlist/[productId]/route.ts
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import Wishlist, { IWishlistItem } from "@/models/wishlist";
 import { getSessionForRequest, requireAuth } from "@/lib/auth";
 import { handleError } from "@/lib/errors";
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ productId: string }> }) {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     requireAuth(session);
 

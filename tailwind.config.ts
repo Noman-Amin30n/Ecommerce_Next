@@ -58,11 +58,17 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-		fontFamily: {
-			inter: ['var(--font-inter)', 'sans-serif'],
-			poppins: ['var(--font-poppins)', 'serif'],
-		}
+  		fontFamily: {
+  			inter: [
+  				'var(--font-inter)',
+  				'sans-serif'
+  			],
+  			poppins: [
+  				'var(--font-poppins)',
+  				'serif'
+  			]
+  		}
   	}
   },
-  plugins: [tailwindcssAnimate, typography],
+  plugins: [tailwindcssAnimate, typography, require("tailwindcss-animate")],
 } satisfies Config;

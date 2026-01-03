@@ -1,6 +1,6 @@
 // src/app/api/cart/route.ts
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import Cart from "@/models/cart";
 import { UpdateCartSchema } from "@/lib/validators/cart";
 import { getSessionForRequest } from "@/lib/auth";
@@ -8,7 +8,7 @@ import { handleError } from "@/lib/errors";
 
 export async function GET(req: Request) {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     const url = new URL(req.url);
     const sessionId = url.searchParams.get("sessionId") ?? undefined;
@@ -29,7 +29,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     const body = await req.json();
     const parsed = UpdateCartSchema.parse(body);

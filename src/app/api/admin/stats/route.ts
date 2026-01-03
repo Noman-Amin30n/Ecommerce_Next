@@ -1,6 +1,6 @@
 // src/app/api/admin/stats/route.ts
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import { getSessionForRequest, requireAuth } from "@/lib/auth";
 import { handleError } from "@/lib/errors";
 import Product from "@/models/product";
@@ -10,7 +10,7 @@ import User from "@/models/user";
 export async function GET() {
     try {
         console.log("=== /api/admin/stats called ===");
-        await connectMongoose();
+        await initDb();
         console.log("MongoDB connected");
 
         const session = await getSessionForRequest();

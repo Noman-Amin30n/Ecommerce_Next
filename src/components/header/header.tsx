@@ -122,7 +122,7 @@ function Header({ className, profilePic }: { className?: string; profilePic?: st
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="rounded-md p-0 min-w-[200px]"
+                className="rounded-md p-0 min-w-[200px] z-[998]"
               >
                 {sessionStatus === "authenticated" ? (
                   <>

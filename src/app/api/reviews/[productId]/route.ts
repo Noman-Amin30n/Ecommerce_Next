@@ -1,6 +1,6 @@
 // src/app/api/reviews/[productId]/route.ts
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import Review, { IReview } from "@/models/review";
 import { handleError } from "@/lib/errors";
 import { calculateRatingStats } from "@/lib/reviewHelpers/client";
@@ -20,7 +20,7 @@ export async function GET(
   { params }: { params: Promise<{ productId: string }> }
 ) {
   try {
-    await connectMongoose();
+    await initDb();
     const { productId } = await params;
 
     // Validate productId

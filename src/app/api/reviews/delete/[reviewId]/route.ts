@@ -1,6 +1,6 @@
 // src/app/api/reviews/delete/[reviewId]/route.ts
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import Review from "@/models/review";
 import { getSessionForRequest, requireAuth } from "@/lib/auth";
 import { handleError, ApiError } from "@/lib/errors";
@@ -17,7 +17,7 @@ export async function DELETE(
   { params }: { params: Promise<{ reviewId: string }> }
 ) {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     requireAuth(session);
 

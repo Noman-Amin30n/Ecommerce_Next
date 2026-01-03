@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import Review from "@/models/review";
 import User from "@/models/user";
 import { CreateReviewSchema } from "@/lib/validators/review";
@@ -19,7 +19,7 @@ import mongoose from "mongoose";
  */
 export async function GET(req: NextRequest) {
   try {
-    await connectMongoose();
+    await initDb();
 
     const searchParams = req.nextUrl.searchParams;
     const productId = searchParams.get("productId");
@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: Request) {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     requireAuth(session);
 

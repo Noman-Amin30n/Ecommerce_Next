@@ -1,13 +1,13 @@
 // src/app/api/orders/[id]/route.ts
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import Order from "@/models/order";
 import { getSessionForRequest, requireAuth, requireRole } from "@/lib/auth";
 import { handleError, ApiError } from "@/lib/errors";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     requireAuth(session);
 
@@ -26,7 +26,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     requireRole(session, ["admin"]);
 

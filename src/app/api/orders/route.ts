@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import mongoose from "mongoose";
 import Order from "@/models/order";
 import { CreateOrderSchema } from "@/lib/validators/order";
@@ -10,7 +10,7 @@ import Inventory from "@/models/inventory";
 
 export async function GET() {
     try {
-        await connectMongoose();
+        await initDb();
         const session = await getSessionForRequest();
         requireAuth(session);
 
@@ -29,7 +29,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
     try {
-        await connectMongoose();
+        await initDb();
         const session = await getSessionForRequest();
         requireAuth(session);
 

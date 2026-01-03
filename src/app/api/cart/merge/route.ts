@@ -1,6 +1,6 @@
 // src/app/api/cart/merge/route.ts
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import Cart from "@/models/cart";
 import { getSessionForRequest } from "@/lib/auth";
 import { handleError } from "@/lib/errors";
@@ -8,7 +8,7 @@ import { mergeCartItems } from "@/lib/cartMerge";
 
 export async function POST(req: Request) {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     
     // Only authenticated users can merge carts

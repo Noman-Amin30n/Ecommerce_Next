@@ -1,6 +1,6 @@
 // src/app/api/admin/users/[id]/route.ts
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import { getSessionForRequest, requireAuth } from "@/lib/auth";
 import { handleError } from "@/lib/errors";
 import User from "@/models/user";
@@ -15,7 +15,7 @@ export async function PATCH(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        await connectMongoose();
+        await initDb();
         const session = await getSessionForRequest();
         requireAuth(session);
 

@@ -51,7 +51,7 @@ export default async function ShopPage({
 
   return (
     <>
-      <Header className="bg-white sticky top-0 z-[998]" />
+      <Header className="bg-white sticky top-0 z-[997] isolate" />
 
       {/* Page title */}
       <PageTitle

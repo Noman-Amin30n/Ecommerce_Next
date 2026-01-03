@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import { getSessionForRequest, requireAuth } from "@/lib/auth";
 import { handleError } from "@/lib/errors";
 import Product from "@/models/product";
@@ -7,7 +7,7 @@ import { ProductCreateSchema } from "@/lib/validators/product";
 
 export async function GET(req: Request) {
     try {
-        await connectMongoose();
+        await initDb();
         const session = await getSessionForRequest();
         requireAuth(session);
 
@@ -65,7 +65,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     try {
-        await connectMongoose();
+        await initDb();
         const session = await getSessionForRequest();
         requireAuth(session);
 

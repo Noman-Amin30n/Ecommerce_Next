@@ -1,6 +1,6 @@
 // src/app/api/wishlist/route.ts
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import Wishlist, { IWishlistItem } from "@/models/wishlist";
 import { getSessionForRequest, requireAuth } from "@/lib/auth";
 import { handleError } from "@/lib/errors";
@@ -8,7 +8,7 @@ import { WishlistAddSchema } from "@/lib/validators/wishlist";
 
 export async function GET() {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     requireAuth(session);
 
@@ -28,7 +28,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     requireAuth(session);
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import User from "@/models/user";
 import { UpdateProfileSchema } from "@/lib/validators/user";
 import { getSessionForRequest, requireAuth } from "@/lib/auth";
@@ -7,7 +7,7 @@ import { handleError, ApiError } from "@/lib/errors";
 
 export async function GET() {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     requireAuth(session);
     const user = await User.findOne({ email: session.user.email }).lean();
@@ -20,7 +20,7 @@ export async function GET() {
 
 export async function PUT(req: Request) {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     requireAuth(session);
 

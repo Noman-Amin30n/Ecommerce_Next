@@ -1,6 +1,6 @@
 // Public API for product listing and details
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import Product from "@/models/product";
 import { handleError, ApiError } from "@/lib/errors";
 import { allowRequest } from "@/lib/rateLimiter";
@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     if (!allowRequest(req.headers.get("x-forwarded-for") ?? "unknown")) {
       throw new ApiError("Too many requests", 429);
     }
-    await connectMongoose();
+    await initDb();
     const url = new URL(req.url);
     
     // Check if requesting by slug

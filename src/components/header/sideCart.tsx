@@ -25,7 +25,7 @@ function SideCart() {
           </span>
         )}
       </SheetTrigger>
-      <SheetContent className="isolate z-[1000] p-0 flex flex-col justify-start gap-0 w-[417px] lg:max-w-[417px] overflow-hidden">
+      <SheetContent className="z-[1000] p-0 flex flex-col justify-start gap-0 w-[417px] lg:max-w-[417px] overflow-hidden">
         <section className="p-7 flex flex-col justify-start items-stretch grow overflow-y-auto">
           <div className="flex justify-between items-center gap-3">
             <h2 className="text-[24px] font-semibold leading-none">

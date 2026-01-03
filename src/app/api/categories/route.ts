@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectMongoose } from "@/lib/mongoose";
+import { initDb } from "@/app/api/_db";
 import Category from "@/models/category";
 import { CategoryCreateSchema } from "@/lib/validators/category";
 import { getSessionForRequest, requireRole } from "@/lib/auth";
@@ -7,7 +7,7 @@ import { handleError } from "@/lib/errors";
 
 export async function GET() {
   try {
-    await connectMongoose();
+    await initDb();
     const categories = await Category.find().lean();
     return NextResponse.json({ categories });
   } catch (e) {
@@ -17,7 +17,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    await connectMongoose();
+    await initDb();
     const session = await getSessionForRequest();
     requireRole(session, ["admin", "seller"]);
 
