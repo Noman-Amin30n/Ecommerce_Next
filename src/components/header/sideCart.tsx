@@ -11,12 +11,15 @@ import { IoMdCloseCircle } from "react-icons/io";
 import Image from "next/image";
 import { useCart } from "@/contexts/CartContext";
 import Link from "next/link";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 function SideCart() {
   const { cartItems, cartCount, subtotal, removeFromCart } = useCart();
+  const [open, setOpen] = useState(false);
 
   return (
-    <Sheet>
+    <Sheet modal={false} open={open} onOpenChange={setOpen}>
       <SheetTrigger className="relative flex items-center">
         <AiOutlineShoppingCart stroke="#000" size={24} />
         {cartCount > 0 && (
@@ -25,7 +28,18 @@ function SideCart() {
           </span>
         )}
       </SheetTrigger>
-      <SheetContent className="z-[1000] p-0 flex flex-col justify-start gap-0 w-[417px] lg:max-w-[417px] overflow-hidden">
+      {open && (
+        <div
+          data-state={open ? "open" : "closed"}
+          onClick={() => setOpen(false)}
+          className={cn(
+            "fixed inset-0 z-40 bg-black/80",
+            "data-[state=open]:animate-in data-[state=closed]:animate-out",
+            "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0"
+          )}
+        />
+      )}
+      <SheetContent className="z-[998] p-0 flex flex-col justify-start gap-0 w-[417px] lg:max-w-[417px] overflow-hidden">
         <section className="p-7 flex flex-col justify-start items-stretch grow overflow-y-auto">
           <div className="flex justify-between items-center gap-3">
             <h2 className="text-[24px] font-semibold leading-none">
