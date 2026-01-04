@@ -53,8 +53,9 @@ export const authOptions: NextAuthOptions = {
                 // Try to find an existing user by email
                 const client = await clientPromise;
                 const existingUser = await client.db().collection("users").findOne({ email: user.email });
+                const existingAccount = await client.db().collection("accounts").findOne({ providerAccountId: account.providerAccountId });
 
-                if (existingUser && !existingUser.accounts?.some((a: Account) => a.provider === account.provider)) {
+                if (existingUser && !existingAccount) {
                     // Link the new OAuth account to the existing user
                     await client.db().collection("accounts").insertOne({
                         provider: account.provider,
@@ -79,7 +80,7 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
-                if (user.email === "nomankhan30n@gmail.com" || user.email === "nomanameen24h@gmail.com") {
+                if (user.email === "nomankhan30n@gmail.com") {
                     token.role = "admin";
                     const client = await clientPromise;
                     await client.db().collection("users").updateOne(

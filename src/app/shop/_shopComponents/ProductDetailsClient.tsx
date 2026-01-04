@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
 import ProductGallery from "@/components/productGallery";
 import RatingStars from "@/components/rating";
 import { Loader2 } from "lucide-react";
@@ -63,7 +62,6 @@ interface ProductDetailsClientProps {
 export default function ProductDetailsClient({
   product,
 }: ProductDetailsClientProps) {
-  const { data: session } = useSession();
   const [selectedColor, setSelectedColor] = useState<string>(""); // Store hex value
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
@@ -211,7 +209,7 @@ export default function ProductDetailsClient({
         size: selectedSize,
       });
 
-      alert("Added to cart successfully!");
+      // alert("Added to cart successfully!");
     } catch (error) {
       console.error(error);
       alert("Error adding to cart");
