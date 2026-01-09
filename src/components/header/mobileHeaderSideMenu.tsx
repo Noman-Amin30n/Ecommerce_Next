@@ -11,13 +11,13 @@ import { GoHome } from "react-icons/go";
 import { BsShop } from "react-icons/bs";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { MdOutlineContactMail } from "react-icons/md";
-import { CiSearch } from "react-icons/ci";
 import { CiHeart } from "react-icons/ci";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import Link from "next/link";
 import { Lock, LogIn, LogOut, UserPen, UserPlus, X } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { signOut, useSession } from "next-auth/react";
+import SearchDialog from "./searchDialog";
 
 interface IMobileHeaderSideMenu {
   avatar?: string;
@@ -89,7 +89,7 @@ function MobileHeaderSideMenu({
                   {session.user.role === "admin" && (
                     <Link
                       href="/admin"
-                      className="basis-[100px] grow flex justify-center items-center gap-2 py-3 px-5 rounded-full bg-[#FF5714] text-white shadow-md"
+                      className="basis-[100px] grow flex justify-center items-center gap-2 py-3 px-5 bg-[#FF5714] text-white shadow-md"
                     >
                       <span>
                         <Lock size={16} />
@@ -102,7 +102,7 @@ function MobileHeaderSideMenu({
                       session.user.role === "admin"
                         ? "basis-[100px] border border-[#050505] text-[#050505]"
                         : "basis-full bg-[#050505] text-white"
-                    } grow flex justify-center items-center gap-2 px-5 py-3 rounded-full shadow-md`}
+                    } grow flex justify-center items-center gap-2 px-5 py-3 shadow-md`}
                     onClick={() => signOut()}
                   >
                     <span>
@@ -115,14 +115,14 @@ function MobileHeaderSideMenu({
                 <>
                   <Link
                     href="/account"
-                    className="basis-[100px] grow flex justify-center items-center gap-2 py-3 px-5 rounded-full bg-[#FF5714] text-white shadow-md"
+                    className="basis-[100px] grow flex justify-center items-center gap-2 py-3 px-5 bg-[#FF5714] text-white shadow-md"
                   >
                     <LogIn size={16} />
                     <span>Login</span>
                   </Link>
                   <Link
                     href="/account"
-                    className="basis-[100px] grow flex justify-center items-center gap-2 py-3 px-5 rounded-full border border-[#050505] text-[#050505] shadow-md"
+                    className="basis-[100px] grow flex justify-center items-center gap-2 py-3 px-5 border border-[#050505] text-[#050505] shadow-md"
                   >
                     <UserPlus size={16} />
                     <span>Register</span>
@@ -134,7 +134,7 @@ function MobileHeaderSideMenu({
           <div
             className={`grid ${
               sessionStatus === "authenticated" ? "grid-cols-4" : "grid-cols-3"
-            } gap-4 bg-white text-[#FF5714] px-6 py-5`}
+            } gap-4 bg-white text-[#050505] px-6 py-5`}
           >
             {sessionStatus === "authenticated" && (
               <div className="flex justify-center items-center">
@@ -150,7 +150,7 @@ function MobileHeaderSideMenu({
               </div>
             )}
             <div className="flex justify-center items-center">
-              <CiSearch size={28} strokeWidth={1} />
+              <SearchDialog />
             </div>
             <div className="flex justify-center items-center">
               <CiHeart size={28} strokeWidth={1} />

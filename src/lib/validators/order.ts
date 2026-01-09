@@ -27,6 +27,7 @@ export const CreateOrderSchema = z.object({
     country: z.string().min(1),
     phone: z.string().optional(),
   }),
+  paymentMethod: z.literal("cod").default("cod"),
 });
 
 export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;

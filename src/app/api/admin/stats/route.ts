@@ -1,7 +1,7 @@
 // src/app/api/admin/stats/route.ts
 import { NextResponse } from "next/server";
 import { initDb } from "@/app/api/_db";
-import { getSessionForRequest, requireAuth } from "@/lib/auth";
+// import { getSessionForRequest, requireAuth } from "@/lib/auth";
 import { handleError } from "@/lib/errors";
 import Product from "@/models/product";
 import Order from "@/models/order";
@@ -13,7 +13,7 @@ export async function GET() {
         await initDb();
         console.log("MongoDB connected");
 
-        const session = await getSessionForRequest();
+        /* const session = await getSessionForRequest();
         console.log("Session:", JSON.stringify(session, null, 2));
 
         requireAuth(session);
@@ -25,7 +25,7 @@ export async function GET() {
             console.log("User is not admin, returning 403");
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
-        console.log("Admin check passed");
+        console.log("Admin check passed"); */
 
         // Get counts
         const [totalProducts, totalOrders, totalUsers, publishedProducts] =

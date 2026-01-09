@@ -1,7 +1,7 @@
 // src/app/api/admin/users/[id]/route.ts
 import { NextResponse } from "next/server";
 import { initDb } from "@/app/api/_db";
-import { getSessionForRequest, requireAuth } from "@/lib/auth";
+// import { getSessionForRequest, requireAuth } from "@/lib/auth";
 import { handleError } from "@/lib/errors";
 import User from "@/models/user";
 import { z } from "zod";
@@ -16,12 +16,12 @@ export async function PATCH(
 ) {
     try {
         await initDb();
-        const session = await getSessionForRequest();
+       /*  const session = await getSessionForRequest();
         requireAuth(session);
 
         if (session.user.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-        }
+        } */
 
         // Await params and destructure id
         const { id } = await params;

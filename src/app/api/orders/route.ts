@@ -76,6 +76,10 @@ export async function POST(req: Request) {
             currency: parsed.currency ?? process.env.DEFAULT_CURRENCY ?? "USD",
             shippingAddress: parsed.shippingAddress,
             status: "pending",
+            payment: {
+                provider: "Cash on Delivery",
+                status: "pending",
+            },
         });
 
         // Reduce/reserve inventory - production: do inside transaction

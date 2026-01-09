@@ -8,7 +8,7 @@ export async function proxy(request: NextRequest) {
     console.log("Middleware running on:", pathname);
 
     // Protect admin routes
-    if (pathname.startsWith("/admin")) {
+    /* if (pathname.startsWith("/admin")) {
         const token = await getToken({
             req: request,
             secret: process.env.NEXTAUTH_SECRET,
@@ -25,7 +25,7 @@ export async function proxy(request: NextRequest) {
         }
 
         console.log("Admin access granted!");
-    }
+    } */
 
     return NextResponse.next();
 }

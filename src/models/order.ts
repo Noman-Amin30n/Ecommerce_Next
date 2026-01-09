@@ -80,7 +80,7 @@ const OrderSchema = new Schema<IOrder>(
       phone: { type: String },
     },
     payment: {
-      provider: { type: String },
+      provider: { type: String, default: "Cash on Delivery" },
       providerId: { type: String },
       status: { type: String },
     },

@@ -24,6 +24,8 @@ interface OrderItem {
   title: string;
   image: string;
   variantSku?: string;
+  color?: string;
+  size?: string;
   unitPrice: number;
   quantity: number;
   total: number;
@@ -54,7 +56,6 @@ interface Order {
   };
   payment?: {
     provider: string;
-    providerId?: string;
     status?: string;
   };
   createdAt: string;
@@ -174,6 +175,28 @@ export default function OrderDetailPage() {
                         SKU: {item.variantSku}
                       </p>
                     )}
+                    {(item.color || item.size) && (
+                      <div className="flex gap-2 mt-1">
+                        {item.color && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-sm text-gray-500">
+                              Color:
+                            </span>
+                            <div
+                              className="w-4 h-4 rounded-full border border-gray-200"
+                              style={{ backgroundColor: item.color }}
+                              title={item.color}
+                            />
+                          </div>
+                        )}
+                        {item.size && (
+                          <p className="text-sm text-gray-500">
+                            Size:{" "}
+                            <span className="text-gray-700">{item.size}</span>
+                          </p>
+                        )}
+                      </div>
+                    )}
                     <p className="text-sm text-gray-600 mt-1">
                       PKR {item.unitPrice.toLocaleString()} × {item.quantity}
                     </p>
@@ -271,11 +294,6 @@ export default function OrderDetailPage() {
                   <span className="text-gray-600">Provider:</span>{" "}
                   {order.payment.provider}
                 </p>
-                {order.payment.providerId && (
-                  <p className="text-sm text-gray-500">
-                    ID: {order.payment.providerId}
-                  </p>
-                )}
                 {order.payment.status && (
                   <p>
                     <span className="text-gray-600">Status:</span>{" "}

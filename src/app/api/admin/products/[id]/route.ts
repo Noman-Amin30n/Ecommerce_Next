@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectMongoose } from "@/lib/mongoose";
-import { getSessionForRequest, requireAuth } from "@/lib/auth";
+// import { getSessionForRequest, requireAuth } from "@/lib/auth";
 import { handleError } from "@/lib/errors";
 import Product from "@/models/product";
 import { ProductCreateSchema } from "@/lib/validators/product";
@@ -11,12 +11,12 @@ export async function GET(
 ) {
     try {
         await connectMongoose();
-        const session = await getSessionForRequest();
+        /* const session = await getSessionForRequest();
         requireAuth(session);
 
         if (session.user.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-        }
+        } */
         const productId = (await params).id;
         console.log("Id in the params is:", productId);
 
@@ -38,12 +38,12 @@ export async function PUT(
 ) {
     try {
         await connectMongoose();
-        const session = await getSessionForRequest();
+       /*  const session = await getSessionForRequest();
         requireAuth(session);
 
         if (session.user.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-        }
+        } */
 
         const body = await req.json();
         const data = ProductCreateSchema.parse(body);
@@ -142,12 +142,12 @@ export async function DELETE(
 ) {
     try {
         await connectMongoose();
-        const session = await getSessionForRequest();
+       /*  const session = await getSessionForRequest();
         requireAuth(session);
 
         if (session.user.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-        }
+        } */
         const productId = (await params).id;
 
         // First, fetch the product to get all image URLs

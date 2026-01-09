@@ -20,23 +20,18 @@ function SideCart() {
 
   return (
     <Sheet modal={false} open={open} onOpenChange={setOpen}>
-      <SheetTrigger className="relative flex items-center">
+      <SheetTrigger className="relative flex items-center hover:scale-110 transition-transform duration-200 cursor-pointer">
         <AiOutlineShoppingCart stroke="#000" size={24} />
         {cartCount > 0 && (
-          <span className="absolute -top-2 -right-2 bg-[#B88E2F] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+          <span className="absolute -top-2 -right-2 bg-[#FF5714] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
             {cartCount}
           </span>
         )}
       </SheetTrigger>
       {open && (
         <div
-          data-state={open ? "open" : "closed"}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998] animate-in fade-in-0 duration-200"
           onClick={() => setOpen(false)}
-          className={cn(
-            "fixed inset-0 z-40 bg-black/80",
-            "data-[state=open]:animate-in data-[state=closed]:animate-out",
-            "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0"
-          )}
         />
       )}
       <SheetContent className="z-[998] p-0 flex flex-col justify-start gap-0 w-[417px] lg:max-w-[417px] overflow-hidden">

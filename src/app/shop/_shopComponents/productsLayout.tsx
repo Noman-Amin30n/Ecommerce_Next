@@ -37,12 +37,12 @@ function ProductsLayout() {
       >
         <span
           className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full box-content p-[2px] rounded-sm ${
-            productsLayout === "grid" ? "bg-orange-300" : ""
+            productsLayout === "grid" ? "bg-[#88D9E6]" : ""
           } -z-10`}
         ></span>
         <TbLayoutGridFilled
           className={`text-xl sm:text-[25px] ${
-            productsLayout === "grid" ? "text-green-700" : ""
+            productsLayout === "grid" ? "text-[#050505]" : ""
           } cursor-pointer`}
         />
       </div>
@@ -52,12 +52,12 @@ function ProductsLayout() {
       >
         <span
           className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full box-content p-[2px] rounded-sm ${
-            productsLayout === "list" ? "bg-orange-300" : ""
+            productsLayout === "list" ? "bg-[#88D9E6]" : ""
           } -z-10`}
         ></span>
         <TfiLayoutListThumbAlt
           className={`text-xl sm:text-[25px] ${
-            productsLayout === "list" ? "text-green-700" : ""
+            productsLayout === "list" ? "text-[#050505]" : ""
           } cursor-pointer`}
         />
       </div>

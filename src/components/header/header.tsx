@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { TbUserExclamation } from "react-icons/tb";
-import { CiSearch } from "react-icons/ci";
 import { CiHeart } from "react-icons/ci";
 import { LockKeyhole, LogIn, UserPen, UserPlus } from "lucide-react";
 
@@ -17,16 +16,32 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import MobileHeaderSideMenu from "./mobileHeaderSideMenu";
 import SideCart from "./sideCart";
+import SearchDialog from "./searchDialog";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
+import { usePathname } from "next/navigation";
 
-function Header({ className, profilePic }: { className?: string; profilePic?: string }) {
+function Header({
+  className,
+  profilePic,
+}: {
+  className?: string;
+  profilePic?: string;
+}) {
   const { data: session, status: sessionStatus } = useSession();
   const [avatar, setAvatar] = useState<string>(profilePic || "");
   const [avatarBgColor, setAvatarBgColor] = useState<string>("");
+  const pathName = usePathname()
+
+  const navigationLinks = [
+    { label: "Home", href: "/" },
+    { label: "Shop", href: "/shop" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+  ];
 
   const generateRandomColor = () => {
     const colors = [
@@ -76,7 +91,7 @@ function Header({ className, profilePic }: { className?: string; profilePic?: st
           console.error("Failed to fetch user profile:", error);
         }
       } else if (sessionStatus === "authenticated" && profilePic) {
-        setAvatar(profilePic)
+        setAvatar(profilePic);
       }
     })();
   }, [sessionStatus, profilePic]);
@@ -92,23 +107,28 @@ function Header({ className, profilePic }: { className?: string; profilePic?: st
       <div className="max-w-[1440px] mx-auto flex justify-end md:justify-between items-center grow">
         <div className="hidden md:block"></div>
         <div className="hidden md:flex justify-between items-center font-medium gap-[75px]">
-          <Link href="/">Home</Link>
-          <Link href="/shop">Shop</Link>
-          <p>About</p>
-          <p>Contact</p>
+          {navigationLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className={cn(
+                "hover:text-[#FF5714] transition-colors duration-200",
+                pathName === link.href && "text-[#FF5714]"
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
         <div className="hidden md:flex justify-between items-center gap-7">
           {sessionStatus === "loading" ? (
-            <Skeleton className="w-10 h-10 rounded-full"/>
+            <Skeleton className="w-10 h-10 rounded-full" />
           ) : (
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger className="focus:outline-none">
                 {sessionStatus === "authenticated" ? (
                   <Avatar className="w-10 h-10">
-                    <AvatarImage
-                      src={avatar}
-                      alt={session.user.name || ""}
-                    />
+                    <AvatarImage src={avatar} alt={session.user.name || ""} />
                     <AvatarFallback
                       style={{ backgroundColor: avatarBgColor }}
                       className="text-white font-semibold"
@@ -178,12 +198,16 @@ function Header({ className, profilePic }: { className?: string; profilePic?: st
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          <CiSearch stroke="#000" size={24} strokeWidth={1} />
-          <CiHeart stroke="#000" size={24} strokeWidth={1} />
+          <SearchDialog />
+          <CiHeart stroke="#000" size={24} strokeWidth={1} className="hover:scale-110 transition-transform duration-200 cursor-pointer" />
           <SideCart />
         </div>
         <div className="md:hidden flex item-center">
-          <MobileHeaderSideMenu avatar={avatar} avatarBgColor={avatarBgColor} getUserInitials={getUserInitials} />
+          <MobileHeaderSideMenu
+            avatar={avatar}
+            avatarBgColor={avatarBgColor}
+            getUserInitials={getUserInitials}
+          />
         </div>
       </div>
     </header>
