@@ -7,7 +7,7 @@ import {
   ProductCreateSchema,
   ProductCreateInput,
 } from "@/lib/validators/product";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import ImageUpload from "./ImageUpload";
 import {
@@ -42,6 +42,9 @@ export default function ProductForm({
     new Set()
   );
 
+  // Store Files locally until save
+  const fileMap = useRef<Map<string, File>>(new Map());
+
   const {
     register,
     handleSubmit,
@@ -64,6 +67,20 @@ export default function ProductForm({
       ...initialData,
     },
   });
+
+  // Handle initialData.category if it's an object (populated) or string
+  useEffect(() => {
+    if (initialData?.category) {
+      const catValue =
+        typeof initialData.category === "object" &&
+        initialData.category !== null &&
+        "_id" in initialData.category
+          ? (initialData.category as unknown as Category)._id
+          : initialData.category;
+
+      setValue("category", catValue);
+    }
+  }, [initialData, setValue]);
 
   const tags = watch("tags") || [];
 
@@ -107,76 +124,153 @@ export default function ProductForm({
     }
   }
 
+  // Helper: Upload file to cloudinary and return URL
+  async function uploadFile(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", "products");
+
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) throw new Error("Failed to upload image");
+    const data = await res.json();
+    return data.secure_url;
+  }
+
+  // Handle generic image changes: Convert Files to Blob URLs for preview/state
+  function handleImageChange(
+    newImages: (string | File)[],
+    field: "images" | `variants.${number}.images`
+  ) {
+    const processedImages = newImages.map((item) => {
+      if (typeof item === "string") return item;
+
+      // Check if we already have a blob url for this file to avoid dups?
+      // Diff to check reference equality but strict equality works for same file object from same input event usually.
+      // Simpler: just create new one.
+      const url = URL.createObjectURL(item);
+      fileMap.current.set(url, item);
+      return url;
+    });
+
+    setValue(field, processedImages, { shouldDirty: true });
+  }
+
   async function onSubmit(data: ProductCreateInput) {
     setLoading(true);
     setError(null);
 
-    // Auto-calculate top-level attributes from variants
-    if (data.variants && data.variants.length > 0) {
-      const distinctColors = Array.from(
-        new Map(
-          data.variants
-            .map((v) => v.color)
-            .filter(
-              (c): c is { label: string; value: string } =>
-                !!c && !!c.value && !!c.label && c.label.trim() !== ""
-            )
-            .map((c) => [c.value, c])
-        ).values()
-      );
-
-      const distinctSizes = Array.from(
-        new Set(
-          data.variants
-            .flatMap((v) => v.sizes || [])
-            .map((s) => s.size)
-            .filter((s): s is string => !!s && s.trim() !== "")
-        )
-      );
-
-      data.colors = distinctColors;
-      data.sizes = distinctSizes;
-
-      // Set main price and quantity from variants
-      if (data.variants.length > 0) {
-        const firstVariant = data.variants[0];
-        const firstSize =
-          firstVariant.sizes && firstVariant.sizes.length > 0
-            ? firstVariant.sizes[0]
-            : null;
-
-        data.price = firstSize ? firstSize.price : firstVariant.price || 0;
-        data.compareAtPrice = firstSize
-          ? firstSize.compareAtPrice
-          : firstVariant.compareAtPrice;
-        data.sku = firstSize ? firstSize.sku : firstVariant.sku;
-
-        let totalQuantity = 0;
-        data.variants.forEach((v) => {
-          if (v.sizes && v.sizes.length > 0) {
-            v.sizes.forEach((s) => {
-              totalQuantity += Number(s.quantity) || 0;
-            });
-          } else {
-            totalQuantity += Number(v.quantity) || 0;
-          }
-        });
-        data.quantity = totalQuantity;
+    try {
+      // 1. Upload Pending Main Images
+      if (data.images && data.images.length > 0) {
+        const uploadedImages = await Promise.all(
+          data.images.map(async (img) => {
+            if (img.startsWith("blob:") && fileMap.current.has(img)) {
+              const file = fileMap.current.get(img)!;
+              const secureUrl = await uploadFile(file);
+              // Clean up blob to free memory? optional but good practice
+              URL.revokeObjectURL(img);
+              fileMap.current.delete(img);
+              return secureUrl;
+            }
+            return img;
+          })
+        );
+        data.images = uploadedImages;
       }
 
-      // Collect all variant images and merge into main product images for the gallery
-      const variantImages = data.variants
-        .flatMap((v) => v.images || [])
-        .filter((img): img is string => !!img && img.trim() !== "");
+      // 2. Upload Pending Variant Images
+      if (data.variants && data.variants.length > 0) {
+        data.variants = await Promise.all(
+          data.variants.map(async (variant) => {
+            if (variant.images && variant.images.length > 0) {
+              const uploadedVariantImages = await Promise.all(
+                variant.images.map(async (img) => {
+                  if (img.startsWith("blob:") && fileMap.current.has(img)) {
+                    const file = fileMap.current.get(img)!;
+                    const secureUrl = await uploadFile(file);
+                    URL.revokeObjectURL(img);
+                    fileMap.current.delete(img);
+                    return secureUrl;
+                  }
+                  return img;
+                })
+              );
+              return { ...variant, images: uploadedVariantImages };
+            }
+            return variant;
+          })
+        );
+      }
 
-      // Filter out any duplicates
-      data.images = Array.from(new Set(variantImages));
-    } else {
-      // If no variants, ensure images array exists
-      data.images = data.images || [];
-    }
+      // Auto-calculate top-level attributes from variants
+      if (data.variants && data.variants.length > 0) {
+        const distinctColors = Array.from(
+          new Map(
+            data.variants
+              .map((v) => v.color)
+              .filter(
+                (c): c is { label: string; value: string } =>
+                  !!c && !!c.value && !!c.label && c.label.trim() !== ""
+              )
+              .map((c) => [c.value, c])
+          ).values()
+        );
 
-    try {
+        const distinctSizes = Array.from(
+          new Set(
+            data.variants
+              .flatMap((v) => v.sizes || [])
+              .map((s) => s.size)
+              .filter((s): s is string => !!s && s.trim() !== "")
+          )
+        );
+
+        data.colors = distinctColors;
+        data.sizes = distinctSizes;
+
+        // Set main price and quantity from variants
+        if (data.variants.length > 0) {
+          const firstVariant = data.variants[0];
+          const firstSize =
+            firstVariant.sizes && firstVariant.sizes.length > 0
+              ? firstVariant.sizes[0]
+              : null;
+
+          data.price = firstSize ? firstSize.price : firstVariant.price || 0;
+          data.compareAtPrice = firstSize
+            ? firstSize.compareAtPrice
+            : firstVariant.compareAtPrice;
+          data.sku = firstSize ? firstSize.sku : firstVariant.sku;
+
+          let totalQuantity = 0;
+          data.variants.forEach((v) => {
+            if (v.sizes && v.sizes.length > 0) {
+              v.sizes.forEach((s) => {
+                totalQuantity += Number(s.quantity) || 0;
+              });
+            } else {
+              totalQuantity += Number(v.quantity) || 0;
+            }
+          });
+          data.quantity = totalQuantity;
+        }
+
+        // Collect all variant images and merge into main product images for the gallery
+        const variantImages = data.variants
+          .flatMap((v) => v.images || [])
+          .filter((img): img is string => !!img && img.trim() !== "");
+
+        // Filter out any duplicates
+        data.images = Array.from(new Set(variantImages));
+      } else {
+        // If no variants, ensure images array exists
+        data.images = data.images || [];
+      }
+
       const url = productId
         ? `/api/admin/products/${productId}`
         : "/api/admin/products";
@@ -221,29 +315,16 @@ export default function ProductForm({
   async function addVariant() {
     const currentImages = watch("images") || [];
 
-    // If adding the VERY FIRST variant, delete main product images from Cloudinary
+    // If adding the VERY FIRST variant, clear main product images (they will be managed by variants)
     if (variants.length === 0 && currentImages.length > 0) {
       if (
         confirm(
-          "Adding variants will remove and delete your main product images from Cloudinary. Continue?"
+          "Adding variants will move image management to the variant level. Main images will be cleared. Continue?"
         )
       ) {
-        const deletePromises = currentImages.map(async (url) => {
-          try {
-            await fetch(
-              `/api/upload?imageCloudURL=${encodeURIComponent(url)}`,
-              {
-                method: "DELETE",
-              }
-            );
-          } catch (err) {
-            console.error("Failed to delete stale main image:", url, err);
-          }
-        });
-        await Promise.allSettled(deletePromises);
         setValue("images", []);
       } else {
-        return; // Cancel variant addition
+        return;
       }
     }
 
@@ -471,7 +552,9 @@ export default function ProductForm({
                   <ImageUpload
                     id="main-product-images"
                     images={watch("images") || []}
-                    onChange={(newImages) => setValue("images", newImages)}
+                    onChange={(newImages) =>
+                      handleImageChange(newImages, "images")
+                    }
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-2 px-1">
@@ -652,14 +735,12 @@ export default function ProductForm({
                               <ImageUpload
                                 id={`variant-${index}-images`}
                                 images={variant.images || []}
-                                onChange={(newImages) => {
-                                  const updatedVariants = [...variants];
-                                  updatedVariants[index] = {
-                                    ...variant,
-                                    images: newImages,
-                                  };
-                                  setValue("variants", updatedVariants);
-                                }}
+                                onChange={(newImages) =>
+                                  handleImageChange(
+                                    newImages,
+                                    `variants.${index}.images`
+                                  )
+                                }
                               />
                             </div>
                           </div>
@@ -990,17 +1071,22 @@ export default function ProductForm({
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Category *
               </label>
-              <select
-                {...register("category")}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all outline-none appearance-none cursor-pointer"
-              >
-                <option value="">Select Category</option>
-                {categories.map((cat) => (
-                  <option key={cat._id} value={cat._id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  {...register("category")}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all outline-none appearance-none cursor-pointer"
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat._id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
+                  <ChevronDown size={20} />
+                </div>
+              </div>
               {errors.category && (
                 <p className="text-sm text-red-600 mt-2">
                   {errors.category.message}

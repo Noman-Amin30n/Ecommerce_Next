@@ -34,7 +34,7 @@ export default function RootLayout({
       >
         <ClientSessionProvider>
           <CartProvider>
-            <div className="max-w-[2560px] mx-auto">{children}</div>
+            <div className="max-w-[2560px] mx-auto inner-body">{children}</div>
           </CartProvider>
         </ClientSessionProvider>
       </body>

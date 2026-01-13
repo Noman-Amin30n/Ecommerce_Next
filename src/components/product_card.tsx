@@ -16,7 +16,7 @@ export async function ProductCard_Normal({
   price,
 }: ProductCard_1Props) {
   return (
-    <div className="flex flex-col justify-between items-end gap-4 shadow-sm hover:shadow-md transition-all bg-white p-4">
+    <div className="flex h-full flex-col justify-start items-end gap-4 shadow-sm hover:shadow-md transition-all bg-white p-4">
       <div className="w-3/4">
         <Image
           src={imageSrc}
@@ -28,8 +28,13 @@ export async function ProductCard_Normal({
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
         />
       </div>
-      <div className="self-stretch flex flex-col justify-end items-start">
-        <p className="leading-normal text-sm md:text-base mb-3">{title}</p>
+      <div className="self-stretch flex flex-col items-start justify-between grow">
+        <p
+          className="leading-normal text-sm md:text-base mb-3 line-clamp-2"
+          title={title}
+        >
+          {title}
+        </p>
         <p className="font-medium text-lg md:text-[24px] leading-normal">
           Rs. {price}
         </p>

@@ -9,8 +9,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuShortcut,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -34,7 +33,7 @@ function Header({
   const { data: session, status: sessionStatus } = useSession();
   const [avatar, setAvatar] = useState<string>(profilePic || "");
   const [avatarBgColor, setAvatarBgColor] = useState<string>("");
-  const pathName = usePathname()
+  const pathName = usePathname();
 
   const navigationLinks = [
     { label: "Home", href: "/" },
@@ -96,7 +95,6 @@ function Header({
     })();
   }, [sessionStatus, profilePic]);
 
-  console.log("Session in Header:", session);
   return (
     <header
       className={cn(
@@ -113,7 +111,9 @@ function Header({
               href={link.href}
               className={cn(
                 "hover:text-[#FF5714] transition-colors duration-200",
-                pathName === link.href && "text-[#FF5714]"
+                link.href === "/"
+                  ? pathName === "/" && "text-[#FF5714]"
+                  : pathName.startsWith(link.href) && "text-[#FF5714]"
               )}
             >
               {link.label}
@@ -142,55 +142,91 @@ function Header({
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="rounded-md p-0 min-w-[200px] z-[998]"
+                className="rounded-xl p-2 min-w-[240px] z-[998] bg-white/80 backdrop-blur-md border border-gray-100 shadow-xl"
               >
                 {sessionStatus === "authenticated" ? (
                   <>
-                    <DropdownMenuLabel asChild>My Account</DropdownMenuLabel>
+                    <div className="px-3 py-4 flex items-center gap-3 border-b border-gray-100 mb-2">
+                      <Avatar className="w-10 h-10 border-2 border-white shadow-sm">
+                        <AvatarImage
+                          src={avatar}
+                          alt={session.user.name || ""}
+                        />
+                        <AvatarFallback
+                          style={{ backgroundColor: avatarBgColor }}
+                          className="text-white font-semibold text-xs"
+                        >
+                          {getUserInitials(session.user.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <p className="text-sm font-bold text-gray-900 truncate max-w-[150px]">
+                          {session.user.name}
+                        </p>
+                        <p className="text-[11px] text-gray-500 truncate max-w-[150px]">
+                          {session.user.email}
+                        </p>
+                      </div>
+                    </div>
+
                     {session.user.role === "admin" && (
                       <Link href={"/admin"}>
-                        <DropdownMenuItem className="px-4 py-3 cursor-pointer text-base hover:bg-[#FAF4F4]">
+                        <DropdownMenuItem className="px-3 py-2.5 cursor-pointer text-sm font-medium text-gray-700 hover:bg-[#FF5714]/10 hover:text-[#FF5714] transition-all rounded-lg mb-1 group">
+                          <LockKeyhole
+                            size={18}
+                            className="mr-2 group-hover:scale-110 transition-transform"
+                          />
                           Admin Panel
-                          <DropdownMenuShortcut>
-                            <LockKeyhole size={16} />
-                          </DropdownMenuShortcut>
                         </DropdownMenuItem>
                       </Link>
                     )}
                     <Link href={"/account"}>
-                      <DropdownMenuItem className="px-4 py-3 cursor-pointer text-base hover:bg-[#FAF4F4]">
+                      <DropdownMenuItem className="px-3 py-2.5 cursor-pointer text-sm font-medium text-gray-700 hover:bg-[#FF5714]/10 hover:text-[#FF5714] transition-all rounded-lg mb-1 group">
+                        <UserPen
+                          size={18}
+                          className="mr-2 group-hover:scale-110 transition-transform"
+                        />
                         My Account
-                        <DropdownMenuShortcut>
-                          <UserPen size={16} />
-                        </DropdownMenuShortcut>
                       </DropdownMenuItem>
                     </Link>
+                    <DropdownMenuSeparator className="bg-gray-100 my-1" />
                     <DropdownMenuItem
-                      className="px-4 py-3 cursor-pointer text-base hover:bg-[#FAF4F4]"
+                      className="px-3 py-2.5 cursor-pointer text-sm font-medium text-red-600 hover:bg-red-50 transition-all rounded-lg group"
                       onClick={() => signOut()}
                     >
+                      <LogOut
+                        size={18}
+                        className="mr-2 group-hover:translate-x-1 transition-transform"
+                      />
                       Logout
-                      <DropdownMenuShortcut>
-                        <LogOut size={16} />
-                      </DropdownMenuShortcut>
                     </DropdownMenuItem>
                   </>
                 ) : (
                   <>
+                    <div className="p-3 mb-2">
+                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
+                        Welcome
+                      </p>
+                      <p className="text-sm text-gray-600 px-1">
+                        Sign in to manage your orders and profile.
+                      </p>
+                    </div>
                     <Link href="/account">
-                      <DropdownMenuItem className="px-4 py-3 cursor-pointer text-base hover:bg-[#FAF4F4]">
-                        Register
-                        <DropdownMenuShortcut>
-                          <UserPlus size={16} />
-                        </DropdownMenuShortcut>
+                      <DropdownMenuItem className="px-3 py-2.5 cursor-pointer text-sm font-medium text-gray-700 hover:bg-[#FF5714]/10 hover:text-[#FF5714] transition-all rounded-lg mb-1 group">
+                        <LogIn
+                          size={18}
+                          className="mr-2 group-hover:translate-x-1 transition-transform"
+                        />
+                        Login
                       </DropdownMenuItem>
                     </Link>
                     <Link href="/account">
-                      <DropdownMenuItem className="px-4 py-3 cursor-pointer text-base hover:bg-[#FAF4F4]">
-                        Login
-                        <DropdownMenuShortcut>
-                          <LogIn size={16} />
-                        </DropdownMenuShortcut>
+                      <DropdownMenuItem className="px-3 py-2.5 cursor-pointer text-sm font-medium text-[#FF5714] bg-[#FF5714]/5 hover:bg-[#FF5714]/10 transition-all rounded-lg group">
+                        <UserPlus
+                          size={18}
+                          className="mr-2 group-hover:scale-110 transition-transform"
+                        />
+                        Create Account
                       </DropdownMenuItem>
                     </Link>
                   </>
@@ -199,7 +235,12 @@ function Header({
             </DropdownMenu>
           )}
           <SearchDialog />
-          <CiHeart stroke="#000" size={24} strokeWidth={1} className="hover:scale-110 transition-transform duration-200 cursor-pointer" />
+          <CiHeart
+            stroke="#000"
+            size={24}
+            strokeWidth={1}
+            className="hover:scale-110 transition-transform duration-200 cursor-pointer"
+          />
           <SideCart />
         </div>
         <div className="md:hidden flex item-center">

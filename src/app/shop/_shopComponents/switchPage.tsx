@@ -1,35 +1,29 @@
 "use client";
 
-import React, { useEffect, useCallback } from "react";
+import React, { useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
-import { IProduct } from "@/models/product";
 import { useFilterContext } from "@/contexts/filterContext";
 
 interface Props {
   className?: string;
-  products: IProduct[];
+  totalItems: number;
 }
 
-function SwitchPage({ className, products }: Props) {
+function SwitchPage({ className, totalItems }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page") || 1);
   const itemsPerPage = Number(searchParams.get("itemsPerPage") || 16);
-  const { setIsApplyingFilter } = useFilterContext()
-  const totalPages = Math.ceil(products.length / itemsPerPage);
-  const { setTotalProducts } = useFilterContext();
+  const { setIsApplyingFilter } = useFilterContext();
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  // ✅ Sync product count once when length changes
-  useEffect(() => {
-    if (!products.length) return;
-    setTotalProducts(products.length);
-  }, [products.length, setTotalProducts]);
+  // Note: Total count update is now handled by TotalCountUpdaterClient in parent
 
   const handlePageChange = useCallback(
     async (newPage: number) => {
       if (newPage === page) return;
-      setIsApplyingFilter(true)
+      setIsApplyingFilter(true);
       const queryParams = new URLSearchParams(searchParams.toString());
       if (queryParams.has("page")) queryParams.set("page", newPage.toString());
       else queryParams.append("page", newPage.toString());

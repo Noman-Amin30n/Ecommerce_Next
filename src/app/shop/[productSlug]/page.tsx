@@ -40,6 +40,7 @@ export default async function Page({ params }: Props) {
           {/* Product Details Client Component */}
           <section className="w-full">
             <ProductDetailsClient product={product} />
+            <div className="w-full h-[100vh]"></div>
           </section>
         </section>
       </main>

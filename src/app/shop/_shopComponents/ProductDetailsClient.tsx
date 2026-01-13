@@ -267,13 +267,13 @@ export default function ProductDetailsClient({
   } as const;
 
   return (
-    <div className="w-full flex flex-col md:flex-row gap-8 lg:gap-12 xl:gap-16 py-6 md:py-10">
+    <div className="w-full flex flex-col md:flex-row gap-8 lg:gap-12 xl:gap-16 py-6 md:py-10 md:items-start">
       {/* Product Gallery */}
       <ProductGallery product={galleryProduct} />
 
       {/* Product Info */}
       <div className="basis-full md:basis-1/2 xl:pr-[200px] py-4 md:py-8">
-        <h1 className="text-[28px] md:text-[36px] lg:text-[42px]">
+        <h1 className="text-[28px] md:text-[36px] lg:text-[42px] leading-tight break-words">
           {product.title}
         </h1>
         <div className="flex items-center gap-4">

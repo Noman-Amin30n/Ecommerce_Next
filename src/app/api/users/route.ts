@@ -27,14 +27,25 @@ export async function PUT(req: Request) {
     const body = await req.json();
     const parsed = UpdateProfileSchema.parse(body);
 
-    const updated = await User.findOneAndUpdate(
-      { email: session.user.email },
-      { $set: parsed },
-      { new: true }
-    ).lean();
+    const user = await User.findOne({ email: session.user.email });
+    if (!user) throw new ApiError("User not found", 404);
 
-    if (!updated) throw new ApiError("User not found", 404);
-    return NextResponse.json({ user: updated });
+    if (parsed.name) user.name = parsed.name;
+    if (parsed.image) user.image = parsed.image;
+    if (parsed.address) {
+      const userObj = user.toObject();
+      const existingAddress = userObj.address || {};
+
+      user.address = {
+        ...existingAddress,
+        ...parsed.address,
+      };
+      user.markModified("address");
+    }
+
+    await user.save();
+
+    return NextResponse.json({ user });
   } catch (e) {
     return handleError(e);
   }

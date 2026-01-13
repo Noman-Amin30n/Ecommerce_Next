@@ -21,7 +21,7 @@ export interface IUser extends Document {
   image?: string;
   role: Role;
   isVerified?: boolean;
-  addresses: Address[];
+  address: Address;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -49,7 +49,7 @@ const UserSchema = new Schema<IUser>(
     image: { type: String },
     role: { type: String, enum: ["admin", "seller", "customer"], default: "customer" },
     isVerified: { type: Boolean, default: false },
-    addresses: { type: [AddressSchema], default: [] },
+    address: AddressSchema,
   },
   { timestamps: true }
 );

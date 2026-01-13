@@ -30,7 +30,7 @@ function SideCart() {
       </SheetTrigger>
       {open && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998] animate-in fade-in-0 duration-200"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[998] animate-in fade-in-0 duration-200"
           onClick={() => setOpen(false)}
         />
       )}
@@ -97,7 +97,7 @@ function SideCart() {
                         <div className="flex items-center gap-3 mt-4">
                           <span className="font-light">{item.quantity}</span>
                           <span className="font-light text-xs">X</span>
-                          <span className="font-medium text-xs leading-none text-[#B88E2F]">
+                          <span className="font-medium text-xs leading-none text-[#FF5714]">
                             Rs. {item.unitPrice.toLocaleString()}
                           </span>
                         </div>
@@ -130,7 +130,7 @@ function SideCart() {
               </div>
               <div className="flex justify-between items-center mt-auto pt-7 pr-14 border-t border-[#D9D9D9]">
                 <span>Subtotal</span>
-                <span className="font-semibold text-[#B88E2F]">
+                <span className="font-semibold text-[#FF5714]">
                   Rs. {subtotal.toLocaleString()}
                 </span>
               </div>

@@ -30,7 +30,7 @@ function ProductGallery({ product }: { product: ProductGalleryProps }) {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 lg:gap-8 basis-full md:basis-1/2">
+    <div className="flex flex-col md:flex-row gap-4 lg:gap-8 basis-full md:basis-1/2 md:sticky top-[36px] lg:top-[60px]">
       {/* Thumbnails Column - Desktop: Left, Mobile: Bottom */}
       <div className="flex md:flex-col gap-3 order-2 md:order-1 no-scrollbar md:max-h-[500px] py-1">
         {product.images.map((imgUrl, index) => (

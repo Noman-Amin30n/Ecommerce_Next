@@ -6,7 +6,7 @@ import Image from "next/image";
 
 interface ImageUploadProps {
   images: string[];
-  onChange: (images: string[]) => void;
+  onChange: (images: (string | File)[]) => void;
   maxImages?: number;
   id?: string; // Unique ID for the file input
 }
@@ -17,10 +17,9 @@ export default function ImageUpload({
   maxImages = 5,
   id = "image-upload",
 }: ImageUploadProps) {
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
@@ -29,41 +28,14 @@ export default function ImageUpload({
       return;
     }
 
-    setUploading(true);
     setError(null);
-
-    try {
-      const uploadPromises = files.map(async (file) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("folder", "products")
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error(`Upload failed: ${response.statusText}`);
-        }
-
-        return await response.json();
-      });
-      
-      const results = await Promise.all(uploadPromises);
-      const newUrls = results.map((r) => r.secure_url);
-      onChange([...images, ...newUrls]);
-    } catch (err) {
-      setError("Failed to upload images. Please try again.");
-      console.error(err);
-    } finally {
-      setUploading(false);
-    }
+    // Pass both existing images and new files to parent
+    onChange([...images, ...files]);
   };
 
-  const removeImage = async (index: number) => {
+  const removeImage = (index: number) => {
     const newImages = images.filter((_, i) => i !== index);
     onChange(newImages);
-    await fetch(`/api/upload?imageCloudURL=${images[index]}`, { method: "DELETE" });
   };
 
   return (
@@ -77,13 +49,11 @@ export default function ImageUpload({
               flex items-center justify-center gap-2 px-4 py-3 
               border-2 border-dashed border-gray-300 rounded-lg
               cursor-pointer hover:border-blue-500 hover:bg-blue-50
-              transition-colors ${
-                uploading ? "opacity-50 cursor-not-allowed" : ""
-              }
+              transition-colors
             `}
           >
             <Upload size={20} />
-            <span>{uploading ? "Uploading..." : "Upload Images"}</span>
+            <span>Upload Images</span>
           </label>
           <input
             id={id}
@@ -91,7 +61,6 @@ export default function ImageUpload({
             accept="image/*"
             multiple
             onChange={handleFileChange}
-            disabled={uploading}
             className="hidden"
           />
         </div>

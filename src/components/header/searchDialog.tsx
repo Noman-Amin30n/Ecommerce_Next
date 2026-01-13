@@ -145,7 +145,7 @@ export default function SearchDialog() {
                     placeholder="Search for furniture, decor, and more..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-12 pr-12 py-7 text-base border-2 border-gray-200 focus:border-[#88D9E6] focus:ring-4 focus:ring-[#88D9E6]/20 rounded-xl transition-all duration-200 bg-white shadow-sm font-medium placeholder:text-gray-400"
+                    className="pl-12 pr-12 py-7 text-base border-2 border-gray-200 focus:border-[#88D9E6] focus:ring-4 focus:ring-[#88D9E6]/20 rounded-xl transition-colors duration-200 bg-white shadow-sm font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#88D9E6]/20 focus-visible:border-[#88D9E6]"
                     autoFocus
                   />
                   {searchQuery && (

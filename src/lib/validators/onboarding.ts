@@ -14,7 +14,7 @@ export const AddressSchema = z.object({
 });
 
 export const OnboardingSchema = z.object({
-  addresses: z.array(AddressSchema).min(1, "At least one address required"),
+  address: AddressSchema,
   image: z
     .instanceof(File)
     .refine((f) => f.size <= 5 * 1024 * 1024, "Max 5mb")
