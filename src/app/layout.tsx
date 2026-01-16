@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import ClientSessionProvider from "@/components/session";
 import { CartProvider } from "@/contexts/CartContext";
+import { AOSInit } from "@/components/AOSInit";
 import "./globals.css";
 
 const inter = Inter({
@@ -34,6 +35,7 @@ export default function RootLayout({
       >
         <ClientSessionProvider>
           <CartProvider>
+            <AOSInit />
             <div className="max-w-[2560px] mx-auto inner-body">{children}</div>
           </CartProvider>
         </ClientSessionProvider>

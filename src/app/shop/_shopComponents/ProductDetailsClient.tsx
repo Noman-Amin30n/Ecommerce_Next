@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import ProductGallery from "@/components/productGallery";
 import RatingStars from "@/components/rating";
 import { Loader2 } from "lucide-react";
+import ProductDetailsSkeleton from "./ProductDetailsSkeleton";
 import { useCart } from "@/contexts/CartContext";
 
 // Define a type compatible with the Client Component
@@ -265,6 +266,11 @@ export default function ProductDetailsClient({
     thumbnail: galleryThumbnail,
     images: galleryImages,
   } as const;
+
+  // Show skeleton loader while determining default variant
+  if (product.variants.length > 0 && !selectedColor) {
+    return <ProductDetailsSkeleton />;
+  }
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-8 lg:gap-12 xl:gap-16 py-6 md:py-10 md:items-start">

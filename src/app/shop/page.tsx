@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   description: "Welcome to our online store",
 };
 
+import Category from "@/models/category";
 import { connectMongoose } from "@/lib/mongoose";
 import Product from "@/models/product";
 
@@ -49,6 +50,10 @@ export default async function ShopPage({
   const maxPrice =
     priceStats.length > 0 ? Math.ceil(priceStats[0].maxPrice) : 0;
 
+  // Fetch all categories
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const categories = (await Category.find({}).lean()) as any;
+
   return (
     <>
       <Header className="bg-white sticky top-0 z-[997] isolate" />
@@ -72,7 +77,11 @@ export default async function ShopPage({
 
               <div className="flex items-center gap-5 md:gap-6 lg:pr-6 lg:border-r-2 lg:border-[#9F9F9F]">
                 {/* Pass DB-fetched stats to Filters */}
-                <Filters minPrice={minPrice} maxPrice={maxPrice} />
+                <Filters
+                  minPrice={minPrice}
+                  maxPrice={maxPrice}
+                  categories={categories}
+                />
                 <div className="hidden sm:flex items-center gap-5 md:gap-6">
                   <ProductsLayout />
                 </div>

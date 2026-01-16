@@ -14,6 +14,8 @@ import { useSearchParams } from "next/navigation";
 interface FilterContextType {
   priceRangeValue: number;
   setPriceRangeValue: (value: number) => void;
+  categoryIds: string[];
+  setCategoryIds: (value: string[]) => void;
   totalProducts: number;
   setTotalProducts: (value: number) => void;
   isApplyingFilter: boolean;
@@ -29,6 +31,13 @@ export function FilterContextProvider({ children }: { children: ReactNode }) {
   const [priceRangeValue, _setPriceRangeValue] = useState(
     searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : 0
   );
+  // Initialize categoryIds from URL
+  const [categoryIds, _setCategoryIds] = useState<string[]>(
+    searchParams.get("categories")
+      ? searchParams.get("categories")!.split(",")
+      : []
+  );
+
   const [isApplyingFilter, _setIsApplyingFilter] = useState(false);
   const [totalProducts, _setTotalProducts] = useState(0);
 
@@ -37,6 +46,8 @@ export function FilterContextProvider({ children }: { children: ReactNode }) {
     (v: number) => _setPriceRangeValue(v),
     []
   );
+  const setCategoryIds = useCallback((v: string[]) => _setCategoryIds(v), []);
+
   const setIsApplyingFilter = useCallback(
     (v: boolean) => _setIsApplyingFilter(v),
     []
@@ -46,6 +57,8 @@ export function FilterContextProvider({ children }: { children: ReactNode }) {
   const value: FilterContextType = {
     priceRangeValue,
     setPriceRangeValue,
+    categoryIds,
+    setCategoryIds,
     isApplyingFilter,
     setIsApplyingFilter,
     totalProducts,

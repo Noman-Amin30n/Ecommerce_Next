@@ -39,6 +39,14 @@ export default async function ProductsContainer({
     query.price = { $lte: maxPrice };
   }
 
+  if (searchParams.categories) {
+    const categoryIds = (searchParams.categories as string).split(",");
+    if (categoryIds.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      query.category = { $in: categoryIds } as any;
+    }
+  }
+
   // Build Sort Object
   let sortOption: SortOption = {};
 

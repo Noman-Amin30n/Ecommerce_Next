@@ -15,24 +15,32 @@ export default function ApplyFilter({ className }: ApplyFilterProps) {
   const searchParams = useSearchParams();
   const {
     priceRangeValue,
+    categoryIds,
     isApplyingFilter,
     setIsApplyingFilter,
   } = useFilterContext();
 
   const handleApply = useCallback(async () => {
-      setIsApplyingFilter(true);
-      const queryParams = new URLSearchParams(searchParams.toString());
-      if (queryParams.has("maxPrice")) queryParams.set("maxPrice", priceRangeValue.toString());
-      else queryParams.append("maxPrice", priceRangeValue.toString());
-      if (queryParams.has("page")) queryParams.set("page", "1");
-      else queryParams.append("page", "1");
-      router.push(`/shop?${queryParams.toString()}`);
-  }, [
-    priceRangeValue,
-    router,
-    searchParams,
-    setIsApplyingFilter,
-  ]);
+    setIsApplyingFilter(true);
+    const queryParams = new URLSearchParams(searchParams.toString());
+
+    if (queryParams.has("maxPrice"))
+      queryParams.set("maxPrice", priceRangeValue.toString());
+    else queryParams.append("maxPrice", priceRangeValue.toString());
+
+    if (categoryIds.length > 0) {
+      if (queryParams.has("categories"))
+        queryParams.set("categories", categoryIds.join(","));
+      else queryParams.append("categories", categoryIds.join(","));
+    } else {
+      queryParams.delete("categories");
+    }
+
+    if (queryParams.has("page")) queryParams.set("page", "1");
+    else queryParams.append("page", "1");
+
+    router.push(`/shop?${queryParams.toString()}`);
+  }, [priceRangeValue, categoryIds, router, searchParams, setIsApplyingFilter]);
 
   return (
     <button

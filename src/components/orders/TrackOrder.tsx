@@ -66,8 +66,10 @@ const TrackOrder: React.FC<TrackOrderProps> = ({ status }) => {
 
         {statusSteps.map((step, index) => {
           const Icon = step.icon;
-          const isCompleted = index < currentStepIndex;
-          const isActive = index === currentStepIndex;
+          const isCompleted =
+            index < currentStepIndex ||
+            (status === "paid" && index === currentStepIndex);
+          const isActive = index === currentStepIndex && status !== "paid";
 
           return (
             <div
