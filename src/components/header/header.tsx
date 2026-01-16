@@ -160,7 +160,7 @@ function Header({
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <p className="text-sm font-bold text-gray-900 truncate max-w-[150px]">
+                        <p className="text-sm font-semibold text-gray-900 truncate max-w-[150px]">
                           {session.user.name}
                         </p>
                         <p className="text-[11px] text-gray-500 truncate max-w-[150px]">
