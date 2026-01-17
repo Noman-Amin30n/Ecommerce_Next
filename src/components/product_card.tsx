@@ -9,7 +9,7 @@ interface ProductCard_1Props {
   title: string;
   price: string;
 }
-export async function ProductCard_Normal({
+export function ProductCard_Normal({
   imageSrc,
   imageAlt,
   title,

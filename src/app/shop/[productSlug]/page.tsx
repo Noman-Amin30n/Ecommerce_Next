@@ -13,7 +13,9 @@ type Props = {
 
 async function getProduct(slug: string) {
   await connectMongoose();
-  const product = await Product.findOne({ slug }).lean();
+  const product = await Product.findOne({ slug })
+    .populate("category") // Changed to populate category for details page
+    .lean();
   if (!product) return null;
   // Serialize Mongoose document to plain object for Client Component
   return JSON.parse(JSON.stringify(product));
@@ -58,13 +60,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const description =
+    product.shortDescription ||
+    product.description?.slice(0, 160) ||
+    "Check out this amazing product!";
+
   return {
     title: product.title,
-    description: product.description,
+    description: description,
     openGraph: {
       title: product.title,
-      description: product.description,
-      images: product.images || [],
+      description: description,
+      images: product.images && product.images.length > 0 ? product.images : [],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.title,
+      description: description,
+      images: product.images && product.images.length > 0 ? product.images : [],
     },
   };
 }

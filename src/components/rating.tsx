@@ -59,7 +59,7 @@ const Star: React.FC<StarProps> = ({ size, fillPercentage }) => {
       <defs>
         <linearGradient id={id}>
           <stop offset={`${fillPercentage}%`} stopColor="#facc15" />
-          <stop offset={`${fillPercentage}%`} stopColor="#e5e7eb" />
+          <stop offset={`${fillPercentage}%`} stopColor="#faf4f4" />
         </linearGradient>
       </defs>
 

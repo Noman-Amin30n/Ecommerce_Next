@@ -7,7 +7,7 @@ import Footer from "@/components/footer";
 import Header from "@/components/header/header";
 import PageTitle from "@/components/pageTitle";
 import StoreFeatures from "@/components/storeFeatures";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import {
   Loader2,
   Edit2,
@@ -34,20 +34,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { pakistanLocations } from "@/lib/pakistan-locations";
+import AuthForm from "@/components/auth/AuthForm";
 
 function Page() {
   const { status: sessionStatus } = useSession();
 
   // Login form state
-  // Unauthenticated forms state
-  const [loginEmail, setLoginEmail] = useState("");
-  const [registerEmail, setRegisterEmail] = useState("");
-  const [isSigningIn, setIsSigningIn] = useState(false);
-  const [message, setMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-    form: "login" | "register" | "both";
-  } | null>(null);
+  // Unauthenticated forms state - MOVED TO AuthForm component
+  // We keep user data state for the profile section below
 
   // Profile state
   const [userData, setUserData] = useState<{
@@ -124,68 +118,6 @@ function Page() {
   };
 
   const [showCustomPostalCode, setShowCustomPostalCode] = useState(false);
-
-  const handleEmailSignIn = async (
-    email: string,
-    form: "login" | "register"
-  ) => {
-    // Reset message
-    setMessage(null);
-
-    // Validate email
-    if (!email || !email.trim()) {
-      setMessage({
-        type: "error",
-        text: "Please enter your email address",
-        form,
-      });
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setMessage({
-        type: "error",
-        text: "Please enter a valid email address",
-        form,
-      });
-      return;
-    }
-
-    try {
-      setIsSigningIn(true);
-      const result = await signIn("email", {
-        email: email.trim(),
-        redirect: false,
-        callbackUrl: "/",
-      });
-
-      if (result?.error) {
-        setMessage({
-          type: "error",
-          text: "Failed to send sign-in link. Please try again.",
-          form,
-        });
-      } else {
-        setMessage({
-          type: "success",
-          text: "Check your email! We've sent you a magic link to sign in.",
-          form,
-        });
-        if (form === "login") setLoginEmail("");
-        else setRegisterEmail("");
-      }
-    } catch (error) {
-      console.error("Failed to sign in:", error);
-      setMessage({
-        type: "error",
-        text: "An unexpected error occurred. Please try again.",
-        form,
-      });
-    } finally {
-      setIsSigningIn(false);
-    }
-  };
 
   // Generate a random vibrant color with good contrast for white text
   const generateRandomColor = () => {
@@ -265,7 +197,7 @@ function Page() {
         } catch (error) {
           console.error("Error fetching user profile:", error);
           setProfileFetchingError(
-            "An unexpected error occurred. Please try again."
+            "An unexpected error occurred. Please try again.",
           );
         }
       }
@@ -292,7 +224,7 @@ function Page() {
               const data = await response.json();
               if (data.merged) {
                 console.log(
-                  `Guest cart merged successfully. Total items: ${data.itemCount}`
+                  `Guest cart merged successfully. Total items: ${data.itemCount}`,
                 );
               }
               // Remove guest session cookie after successful merge
@@ -358,7 +290,7 @@ function Page() {
           ? data.details
               .map(
                 (issue: z.ZodIssue) =>
-                  `${issue.path.join(".")}: ${issue.message}`
+                  `${issue.path.join(".")}: ${issue.message}`,
               )
               .join(", ")
           : data.error || "Failed to update profile. Please try again.";
@@ -442,7 +374,7 @@ function Page() {
             `/api/upload?imageCloudURL=${encodeURIComponent(previousImage)}`,
             {
               method: "DELETE",
-            }
+            },
           );
           console.log("Previous image deleted from Cloudinary");
         } catch (deleteError) {
@@ -844,13 +776,13 @@ function Page() {
                           <SelectTrigger className="w-full h-[52px] px-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-[#FF5714] focus:ring-4 focus:ring-[#FF5714]/10 transition-all outline-none disabled:bg-gray-100/50 disabled:text-gray-500 font-medium text-left">
                             <SelectValue placeholder="Select Province" />
                           </SelectTrigger>
-                          <SelectContent className="rounded-2xl border-gray-100" >
+                          <SelectContent className="rounded-2xl border-gray-100">
                             {Object.keys(pakistanLocations.provinces).map(
                               (prov) => (
                                 <SelectItem key={prov} value={prov}>
                                   {prov}
                                 </SelectItem>
-                              )
+                              ),
                             )}
                           </SelectContent>
                         </Select>
@@ -885,7 +817,7 @@ function Page() {
                               Object.keys(
                                 pakistanLocations.provinces[
                                   address.state as keyof typeof pakistanLocations.provinces
-                                ]?.cities || {}
+                                ]?.cities || {},
                               ).map((city) => (
                                 <SelectItem key={city} value={city}>
                                   {city}
@@ -978,212 +910,12 @@ function Page() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-start py-8">
               {/* Login Card */}
               <div className="bg-white rounded-[32px] p-8 md:p-12 shadow-sm border border-gray-100 relative overflow-hidden">
-                <div className="relative space-y-2 mb-10">
-                  <h2 className="text-3xl font-semibold text-gray-900 tracking-tight">
-                    Login
-                  </h2>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="loginEmail"
-                      className="text-sm font-medium text-gray-700 ml-1 uppercase"
-                    >
-                      Username or email address
-                    </label>
-                    <input
-                      type="email"
-                      id="loginEmail"
-                      value={loginEmail}
-                      className="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:border-[#FF5714] focus:ring-4 focus:ring-[#FF5714]/5 transition-all outline-none font-medium text-gray-900"
-                      onChange={(e) => setLoginEmail(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !isSigningIn) {
-                          handleEmailSignIn(loginEmail, "login");
-                        }
-                      }}
-                      disabled={isSigningIn}
-                    />
-                  </div>
-
-                  {message &&
-                    (message.form === "login" || message.form === "both") && (
-                      <div
-                        className={`p-4 rounded-xl text-sm font-medium animate-in zoom-in-95 duration-300 ${
-                          message.type === "success"
-                            ? "bg-green-50 text-green-700"
-                            : "bg-red-50 text-red-700"
-                        }`}
-                      >
-                        {message.text}
-                      </div>
-                    )}
-
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                    <input type="checkbox" id="remember" className="rounded" />
-                    <label htmlFor="remember">Remember me</label>
-                  </div>
-
-                  <div className="flex flex-col gap-4">
-                    <button
-                      className="w-full py-4 px-12 border border-black text-black rounded-xl font-medium text-lg hover:bg-black hover:text-white transition-all transform active:scale-[0.98] disabled:opacity-50"
-                      onClick={() => handleEmailSignIn(loginEmail, "login")}
-                      disabled={isSigningIn}
-                    >
-                      {isSigningIn ? (
-                        <Loader2 className="animate-spin mx-auto" />
-                      ) : (
-                        "Log In"
-                      )}
-                    </button>
-                  </div>
-
-                  <div className="relative flex items-center py-4">
-                    <div className="flex-grow border-t border-gray-100"></div>
-                    <span className="flex-shrink mx-4 text-gray-400 text-[10px] font-semibold uppercase tracking-widest leading-none">
-                      Or login with
-                    </span>
-                    <div className="flex-grow border-t border-gray-100"></div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <button
-                      onClick={async () => await signIn("google")}
-                      className="flex items-center justify-center gap-2 py-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all font-medium text-sm text-gray-700 shadow-sm"
-                    >
-                      <Image
-                        src={"/images/Logo-google-icon.png"}
-                        alt="google"
-                        height={20}
-                        width={20}
-                      />
-                      Google
-                    </button>
-                    <button
-                      onClick={async () => await signIn("facebook")}
-                      className="flex items-center justify-center gap-2 py-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all font-medium text-sm text-gray-700 shadow-sm"
-                    >
-                      <Image
-                        src={"/images/Facebook_Logo.png"}
-                        alt="facebook"
-                        height={20}
-                        width={20}
-                      />
-                      Facebook
-                    </button>
-                  </div>
-                </div>
+                <AuthForm initialView="login" />
               </div>
 
               {/* Register Card */}
               <div className="bg-white rounded-[32px] p-8 md:p-12 shadow-sm border border-gray-100 relative overflow-hidden">
-                <div className="relative space-y-2 mb-10">
-                  <h2 className="text-3xl font-semibold text-gray-900 tracking-tight">
-                    Register
-                  </h2>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="registerEmail"
-                      className="text-sm font-medium text-gray-700 ml-1 uppercase"
-                    >
-                      Email address
-                    </label>
-                    <input
-                      type="email"
-                      id="registerEmail"
-                      value={registerEmail}
-                      className="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:border-[#FF5714] focus:ring-4 focus:ring-[#FF5714]/5 transition-all outline-none font-medium text-gray-900"
-                      onChange={(e) => setRegisterEmail(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !isSigningIn) {
-                          handleEmailSignIn(registerEmail, "register");
-                        }
-                      }}
-                      disabled={isSigningIn}
-                    />
-                  </div>
-
-                  {message &&
-                    (message.form === "register" ||
-                      message.form === "both") && (
-                      <div
-                        className={`p-4 rounded-xl text-sm font-medium animate-in zoom-in-95 duration-300 ${
-                          message.type === "success"
-                            ? "bg-green-50 text-green-700"
-                            : "bg-red-50 text-red-700"
-                        }`}
-                      >
-                        {message.text}
-                      </div>
-                    )}
-
-                  <div className="space-y-4 text-sm text-gray-600">
-                    <p>
-                      A link to verify your email will be sent to your email
-                      address.
-                    </p>
-                    <p>
-                      Your personal data will be used to support your experience
-                      throughout this website, to manage access to your account,
-                      and for other purposes described in our{" "}
-                      <span className="font-semibold text-black cursor-pointer underline">
-                        privacy policy
-                      </span>
-                      .
-                    </p>
-                  </div>
-
-                  <button
-                    className="w-full py-4 px-12 border border-black text-black rounded-xl font-medium text-lg hover:bg-black hover:text-white transition-all transform active:scale-[0.98] disabled:opacity-50"
-                    onClick={() => handleEmailSignIn(registerEmail, "register")}
-                    disabled={isSigningIn}
-                  >
-                    {isSigningIn ? (
-                      <Loader2 className="animate-spin mx-auto" />
-                    ) : (
-                      "Register"
-                    )}
-                  </button>
-
-                  <div className="relative flex items-center py-4">
-                    <div className="flex-grow border-t border-gray-100"></div>
-                    <span className="flex-shrink mx-4 text-gray-400 text-[10px] font-semibold uppercase tracking-widest leading-none">
-                      Or register with
-                    </span>
-                    <div className="flex-grow border-t border-gray-100"></div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <button
-                      onClick={async () => await signIn("google")}
-                      className="flex items-center justify-center gap-2 py-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all font-medium text-sm text-gray-700 shadow-sm"
-                    >
-                      <Image
-                        src={"/images/Logo-google-icon.png"}
-                        alt="google"
-                        height={20}
-                        width={20}
-                      />
-                      Google
-                    </button>
-                    <button
-                      onClick={async () => await signIn("facebook")}
-                      className="flex items-center justify-center gap-2 py-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all font-medium text-sm text-gray-700 shadow-sm"
-                    >
-                      <Image
-                        src={"/images/Facebook_Logo.png"}
-                        alt="facebook"
-                        height={20}
-                        width={20}
-                      />
-                      Facebook
-                    </button>
-                  </div>
-                </div>
+                <AuthForm initialView="register" />
               </div>
             </div>
           )}

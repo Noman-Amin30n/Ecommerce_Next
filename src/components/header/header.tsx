@@ -22,6 +22,7 @@ import { signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 import { usePathname } from "next/navigation";
+import { useWishlist } from "@/context/WishlistContext";
 
 function Header({
   className,
@@ -34,6 +35,7 @@ function Header({
   const [avatar, setAvatar] = useState<string>(profilePic || "");
   const [avatarBgColor, setAvatarBgColor] = useState<string>("");
   const pathName = usePathname();
+  const { wishlistItems } = useWishlist();
 
   const navigationLinks = [
     { label: "Home", href: "/" },
@@ -99,7 +101,7 @@ function Header({
     <header
       className={cn(
         "min-h-14 md:min-h-[100px] px-6 flex items-center",
-        className
+        className,
       )}
     >
       <div className="max-w-[1440px] mx-auto flex justify-end md:justify-between items-center grow">
@@ -113,7 +115,7 @@ function Header({
                 "hover:text-[#FF5714] transition-colors duration-200",
                 link.href === "/"
                   ? pathName === "/" && "text-[#FF5714]"
-                  : pathName.startsWith(link.href) && "text-[#FF5714]"
+                  : pathName.startsWith(link.href) && "text-[#FF5714]",
               )}
             >
               {link.label}
@@ -235,12 +237,19 @@ function Header({
             </DropdownMenu>
           )}
           <SearchDialog />
-          <CiHeart
-            stroke="#000"
-            size={24}
-            strokeWidth={1}
-            className="hover:scale-110 transition-transform duration-200 cursor-pointer"
-          />
+          <Link href="/wishlist" className="relative group">
+            <CiHeart
+              stroke="#000"
+              size={24}
+              strokeWidth={1}
+              className="hover:scale-110 transition-transform duration-200 cursor-pointer"
+            />
+            {wishlistItems.length > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-[#FF5714] text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full">
+                {wishlistItems.length}
+              </span>
+            )}
+          </Link>
           <SideCart />
         </div>
         <div className="md:hidden flex item-center">

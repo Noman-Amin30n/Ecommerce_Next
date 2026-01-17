@@ -3,7 +3,18 @@
 import React, { useState, useEffect } from "react";
 import ProductGallery from "@/components/productGallery";
 import RatingStars from "@/components/rating";
-import { Loader2 } from "lucide-react";
+import { Loader2, Heart } from "lucide-react";
+import {
+  FacebookShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+  LinkedinShareButton,
+  FacebookIcon,
+  XIcon,
+  WhatsappIcon,
+  LinkedinIcon,
+} from "react-share";
+import { useWishlist } from "@/context/WishlistContext";
 import ProductDetailsSkeleton from "./ProductDetailsSkeleton";
 import { useCart } from "@/contexts/CartContext";
 
@@ -54,6 +65,10 @@ interface ClientProduct {
     label: string;
     value: string;
   }[];
+  // Add new fields
+  category?: { _id: string; name: string; slug: string } | string;
+  sku?: string;
+  tags?: string[];
 }
 
 interface ProductDetailsClientProps {
@@ -68,7 +83,7 @@ export default function ProductDetailsClient({
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState<string>(
-    product.images[0] || ""
+    product.images[0] || "",
   );
   const [displayedPrice, setDisplayedPrice] = useState<number>(product.price);
   const [displayedComparePrice, setDisplayedComparePrice] = useState<
@@ -80,12 +95,12 @@ export default function ProductDetailsClient({
   const colors = product.variants.map((v) => v.color).filter(Boolean);
 
   const allSizes = Array.from(
-    new Set(product.variants.flatMap((v) => v.sizes.map((s) => s.size)))
+    new Set(product.variants.flatMap((v) => v.sizes.map((s) => s.size))),
   );
 
   // Determine available sizes based on selected color
   const selectedVariant = product.variants.find(
-    (v) => v.color.value === selectedColor
+    (v) => v.color.value === selectedColor,
   );
 
   const availableSizes = selectedVariant
@@ -104,7 +119,7 @@ export default function ProductDetailsClient({
   useEffect(() => {
     if (selectedColor) {
       const currentVariant = product.variants.find(
-        (v) => v.color.value === selectedColor
+        (v) => v.color.value === selectedColor,
       );
 
       if (
@@ -114,7 +129,7 @@ export default function ProductDetailsClient({
       ) {
         // If current selected size is not in the new color's sizes, pick the first one
         const isSizeAvailable = currentVariant.sizes.some(
-          (s) => s.size === selectedSize
+          (s) => s.size === selectedSize,
         );
         if (!isSizeAvailable) {
           setSelectedSize(currentVariant.sizes[0].size);
@@ -129,12 +144,12 @@ export default function ProductDetailsClient({
   useEffect(() => {
     // Find matching color variant and then size within it
     const colorVariant = product.variants.find(
-      (v) => v.color.value === selectedColor
+      (v) => v.color.value === selectedColor,
     );
 
     if (colorVariant) {
       const sizeVariant = colorVariant.sizes?.find(
-        (s) => s.size === selectedSize
+        (s) => s.size === selectedSize,
       );
 
       if (sizeVariant) {
@@ -144,7 +159,7 @@ export default function ProductDetailsClient({
         // Fallback to color-level price
         setDisplayedPrice(colorVariant.price || product.price);
         setDisplayedComparePrice(
-          colorVariant.compareAtPrice || product.compareAtPrice
+          colorVariant.compareAtPrice || product.compareAtPrice,
         );
       }
 
@@ -160,6 +175,20 @@ export default function ProductDetailsClient({
     product.compareAtPrice,
   ]);
 
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(product._id);
+
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const title = product.title;
+
+  const handleWishlistToggle = async () => {
+    if (isWishlisted) {
+      await removeFromWishlist(product._id);
+    } else {
+      await addToWishlist(product._id);
+    }
+  };
+
   async function addToCart() {
     setLoading(true);
     try {
@@ -170,7 +199,7 @@ export default function ProductDetailsClient({
       // If product has variants, require selection
       if (product.variants.length > 0) {
         const colorVariant = product.variants.find(
-          (v) => v.color.value === selectedColor
+          (v) => v.color.value === selectedColor,
         );
 
         if (!colorVariant) {
@@ -180,7 +209,7 @@ export default function ProductDetailsClient({
         }
 
         const sizeVariant = colorVariant.sizes?.find(
-          (s) => s.size === selectedSize
+          (s) => s.size === selectedSize,
         );
 
         // If variant has sizes, require size selection
@@ -221,10 +250,10 @@ export default function ProductDetailsClient({
 
   // Check if current variant is in cart
   const activeColorVariant = product.variants.find(
-    (v) => v.color.value === selectedColor
+    (v) => v.color.value === selectedColor,
   );
   const activeSizeVariant = activeColorVariant?.sizes?.find(
-    (s) => s.size === selectedSize
+    (s) => s.size === selectedSize,
   );
 
   const isItemInCart = cartItems.some((item) => {
@@ -248,7 +277,7 @@ export default function ProductDetailsClient({
   // If a color is selected, prioritize showing images from variants of that color
   if (selectedColor) {
     const colorVariantMatch = product.variants.find(
-      (v) => v.color.value === selectedColor
+      (v) => v.color.value === selectedColor,
     );
 
     if (
@@ -283,7 +312,7 @@ export default function ProductDetailsClient({
           {product.title}
         </h1>
         <div className="flex items-center gap-4">
-          <p className="text-2xl md:text-3xl font-semibold text-black">
+          <p className="text-2xl md:text-3xl font-semibold text-[#FF5714]">
             Rs. {(displayedPrice * quantity).toLocaleString()}
           </p>
           {displayedComparePrice && (
@@ -317,7 +346,7 @@ export default function ProductDetailsClient({
                 <p className="font-bold text-sm uppercase tracking-widest text-gray-400">
                   Select Color
                 </p>
-                <span className="text-sm font-medium text-gray-900 bg-gray-100 px-3 py-1 rounded-full">
+                <span className="text-sm font-medium text-gray-900 bg-[#FAF4F4] px-3 py-1 rounded-full">
                   {colors.find((c) => c.value === selectedColor)?.label ||
                     "Choose"}
                 </span>
@@ -330,7 +359,7 @@ export default function ProductDetailsClient({
                     title={color.label}
                     className={`group relative w-9 h-9 rounded-full transition-all duration-300 ease-out p-0.5 ${
                       selectedColor === color.value
-                        ? "ring-2 ring-offset-2 ring-black scale-110"
+                        ? "ring-2 ring-offset-2 ring-[#88D9E6] scale-110"
                         : "hover:scale-105"
                     }`}
                   >
@@ -343,7 +372,7 @@ export default function ProductDetailsClient({
                         <svg
                           className={`w-4 h-4 ${
                             ["#ffffff", "white", "#f", "#fff"].includes(
-                              color.value.toLowerCase()
+                              color.value.toLowerCase(),
                             )
                               ? "text-black"
                               : "text-white"
@@ -380,10 +409,10 @@ export default function ProductDetailsClient({
                   <button
                     key={index}
                     onClick={() => setSelectedSize(String(size))}
-                    className={`min-w-[44px] h-10 px-4 rounded-lg text-sm font-bold transition-all duration-300 border-2 ${
+                    className={`min-w-[44px] h-10 px-4 rounded-lg text-sm font-semibold transition-all duration-300 border ${
                       selectedSize === String(size)
-                        ? "bg-black text-white border-black shadow-lg -translate-y-0.5"
-                        : "bg-white text-gray-500 border-gray-100 hover:border-black hover:text-black hover:shadow-md"
+                        ? "bg-[#88D9E6] text-black border-[#88D9E6] shadow-lg -translate-y-0.5"
+                        : "bg-[#FAF4F4] text-black hover:bg-[#fafaf0] hover:shadow-md"
                     }`}
                   >
                     {size}
@@ -444,15 +473,15 @@ export default function ProductDetailsClient({
             <button
               onClick={addToCart}
               disabled={loading || isItemInCart}
-              className={`relative flex-1 flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl font-black text-base transition-all duration-500 overflow-hidden group shadow-xl ${
+              className={`relative flex-1 flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl font-bold text-base transition-all duration-500 overflow-hidden group shadow-xl ${
                 isItemInCart
-                  ? "bg-emerald-500 text-white cursor-default"
-                  : "bg-black text-white hover:bg-[#1a1a1a] hover:-translate-y-1 active:translate-y-0 active:scale-[0.98]"
+                  ? "bg-[#88D9E6] text-black cursor-default"
+                  : "bg-[#FF5714] text-[#f4f4f4] hover:bg-[#f55415] hover:-translate-y-1 active:translate-y-0 active:scale-[0.98]"
               } disabled:opacity-50`}
             >
               {/* Subtle animated background for black state */}
               {!isItemInCart && !loading && (
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#f4f4f4]/5 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
               )}
 
               {loading ? (
@@ -491,10 +520,137 @@ export default function ProductDetailsClient({
                 {isItemInCart
                   ? "In Your Cart"
                   : loading
-                  ? "Adding..."
-                  : "Add to Cart"}
+                    ? "Adding..."
+                    : "Add to Cart"}
               </span>
             </button>
+          </div>
+
+          {/* Additional Details & Actions */}
+          <div className="flex flex-col gap-6 mt-8 border-t border-gray-100 pt-8">
+            {/* Meta Info */}
+            <div className="space-y-3 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-gray-900 min-w-[80px]">
+                  SKU:
+                </span>
+                <span className="font-mono text-gray-500">
+                  {/* Prioritize variant SKU, then product SKU, then fallback */}
+                  {product.variants.length > 0
+                    ? // If a variant is selected (implicit logic from state), try to find its SKU
+                      (() => {
+                        const cVar = product.variants.find(
+                          (v) => v.color.value === selectedColor,
+                        );
+                        const sVar = cVar?.sizes?.find(
+                          (s) => s.size === selectedSize,
+                        );
+                        return sVar?.sku || cVar?.sku || product.sku || "N/A";
+                      })()
+                    : product.sku || "N/A"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-gray-900 min-w-[80px]">
+                  Category:
+                </span>
+                {/* 
+                     Assuming product.category is populated as an object with 'name'. 
+                     If it's just an ID string, we might need to handle unsafe access or fetch it.
+                     Based on the updated page.tsx plan, we populated it. 
+                     We add a check just in case.
+                 */}
+                <span className="text-[#FF5714] font-medium">
+                  {typeof product.category === "object" &&
+                  product.category !== null &&
+                  "name" in product.category
+                    ? (product.category as { name: string }).name
+                    : "Uncategorized"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-gray-900 min-w-[80px]">
+                  Tags:
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {product.tags && product.tags.length > 0 ? (
+                    product.tags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="bg-gray-100 px-2 py-0.5 rounded text-xs text-gray-600"
+                      >
+                        #{tag}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-400 italic">No tags</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Separator */}
+            <div className="w-full h-px bg-gray-100" />
+
+            {/* Social Share & Wishlist */}
+            <div className="flex items-center justify-between gap-4">
+              {/* Share Buttons */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-semibold text-gray-900 mr-2">
+                  Share:
+                </span>
+
+                <FacebookShareButton url={shareUrl} hashtag={"#store"}>
+                  <FacebookIcon
+                    size={32}
+                    round
+                    className="hover:opacity-80 transition-opacity"
+                  />
+                </FacebookShareButton>
+
+                <TwitterShareButton url={shareUrl} title={title}>
+                  <XIcon
+                    size={32}
+                    round
+                    className="hover:opacity-80 transition-opacity"
+                  />
+                </TwitterShareButton>
+
+                <WhatsappShareButton url={shareUrl} title={title}>
+                  <WhatsappIcon
+                    size={32}
+                    round
+                    className="hover:opacity-80 transition-opacity"
+                  />
+                </WhatsappShareButton>
+
+                <LinkedinShareButton url={shareUrl} title={title}>
+                  <LinkedinIcon
+                    size={32}
+                    round
+                    className="hover:opacity-80 transition-opacity"
+                  />
+                </LinkedinShareButton>
+              </div>
+
+              {/* Wishlist Toggle */}
+              <button
+                onClick={handleWishlistToggle}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
+                  isWishlisted
+                    ? "bg-red-50 border-red-200 text-red-600"
+                    : "bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                <Heart
+                  size={20}
+                  className={isWishlisted ? "fill-current" : ""}
+                />
+                <span className="text-sm font-medium">
+                  {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
