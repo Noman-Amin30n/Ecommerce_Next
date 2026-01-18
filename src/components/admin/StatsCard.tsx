@@ -4,10 +4,6 @@ interface StatsCardProps {
   title: string;
   value: string | number;
   icon: LucideIcon;
-  trend?: {
-    value: number;
-    isPositive: boolean;
-  };
   className?: string;
 }
 
@@ -15,7 +11,6 @@ export default function StatsCard({
   title,
   value,
   icon: Icon,
-  trend,
   className = "",
 }: StatsCardProps) {
   // Determine color theme based on title or icon
@@ -48,21 +43,6 @@ export default function StatsCard({
               {value}
             </p>
           </div>
-
-          {trend && (
-            <div
-              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                trend.isPositive
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value)}%
-              <span className="text-gray-400 font-medium ml-1">
-                vs last month
-              </span>
-            </div>
-          )}
         </div>
 
         <div
@@ -78,7 +58,7 @@ export default function StatsCard({
           .split(" ")
           .slice(0, 2)
           .join(
-            " "
+            " ",
           )} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
       />
     </div>

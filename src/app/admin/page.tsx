@@ -3,6 +3,10 @@
 import { useEffect, useState } from "react";
 import StatsCard from "@/components/admin/StatsCard";
 import StatusBadge from "@/components/admin/StatusBadge";
+import SalesChart from "@/components/admin/charts/SalesChart";
+import UsersChart from "@/components/admin/charts/UsersChart";
+import RevenueChart from "@/components/admin/charts/RevenueChart";
+import OrdersChart from "@/components/admin/charts/OrdersChart";
 import { Package, ShoppingCart, Users, DollarSign } from "lucide-react";
 import { OrderStatus } from "@/models/order";
 
@@ -88,26 +92,41 @@ export default function AdminDashboard() {
           title="Total Products"
           value={stats?.totalProducts || 0}
           icon={Package}
-          trend={{ value: 12, isPositive: true }}
         />
         <StatsCard
           title="Total Orders"
           value={stats?.totalOrders || 0}
           icon={ShoppingCart}
-          trend={{ value: 8, isPositive: true }}
         />
         <StatsCard
           title="Total Users"
           value={stats?.totalUsers || 0}
           icon={Users}
-          trend={{ value: 5, isPositive: true }}
         />
         <StatsCard
           title="Total Revenue"
           value={`PKR ${(stats?.totalRevenue || 0).toLocaleString()}`}
           icon={DollarSign}
-          trend={{ value: 15, isPositive: true }}
         />
+      </div>
+
+      {/* Analytics Charts Section */}
+      <div>
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+            Analytics Overview
+          </h2>
+          <p className="text-sm text-gray-500 mt-1 font-medium">
+            Comprehensive insights into sales, users, revenue, and orders
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <SalesChart />
+          <UsersChart />
+          <RevenueChart />
+          <OrdersChart />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -166,7 +185,7 @@ export default function AdminDashboard() {
                           <p className="text-[10px] text-gray-400 mt-0.5">
                             {new Date(order.createdAt).toLocaleDateString(
                               undefined,
-                              { month: "short", day: "numeric" }
+                              { month: "short", day: "numeric" },
                             )}
                           </p>
                         </td>
@@ -223,12 +242,12 @@ export default function AdminDashboard() {
                             status === "delivered"
                               ? "bg-emerald-500"
                               : status === "shipped"
-                              ? "bg-blue-500"
-                              : status === "paid"
-                              ? "bg-indigo-500"
-                              : status === "pending"
-                              ? "bg-orange-500"
-                              : "bg-gray-400"
+                                ? "bg-blue-500"
+                                : status === "paid"
+                                  ? "bg-indigo-500"
+                                  : status === "pending"
+                                    ? "bg-orange-500"
+                                    : "bg-gray-400"
                           }`}
                         />
                         <span className="text-xs font-bold text-gray-600 capitalize">
@@ -245,12 +264,12 @@ export default function AdminDashboard() {
                           status === "delivered"
                             ? "bg-emerald-500"
                             : status === "shipped"
-                            ? "bg-blue-500"
-                            : status === "paid"
-                            ? "bg-indigo-500"
-                            : status === "pending"
-                            ? "bg-orange-500"
-                            : "bg-gray-400"
+                              ? "bg-blue-500"
+                              : status === "paid"
+                                ? "bg-indigo-500"
+                                : status === "pending"
+                                  ? "bg-orange-500"
+                                  : "bg-gray-400"
                         }`}
                         style={{ width: `${percentage}%` }}
                       />

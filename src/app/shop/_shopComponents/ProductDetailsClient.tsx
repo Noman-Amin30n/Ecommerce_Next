@@ -593,7 +593,7 @@ export default function ProductDetailsClient({
             <div className="w-full h-px bg-gray-100" />
 
             {/* Social Share & Wishlist */}
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
               {/* Share Buttons */}
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-gray-900 mr-2">
