@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-[#f8fafc]">
+    <div className="flex h-screen bg-[#f8fafc]">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Header - Glassmorphism */}
@@ -36,7 +36,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-x-hidden p-6 lg:p-10 max-w-[1600px] mx-auto w-full">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-6 lg:p-10 max-w-[1600px] mx-auto w-full">
           <div className="relative">
             {/* Subtle background decoration */}
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />

@@ -5,7 +5,7 @@ import PageTitle from "@/components/pageTitle";
 import Footer from "@/components/footer";
 import Header from "@/components/header/header";
 import StoreFeatures from "@/components/storeFeatures";
-import { useWishlist } from "@/context/WishlistContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { ProductCard_Normal } from "@/components/product_card";
 import { Loader2, HeartOff } from "lucide-react";
 import Link from "next/link";

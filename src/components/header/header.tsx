@@ -21,7 +21,7 @@ import { signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 import { usePathname } from "next/navigation";
-import { useWishlist } from "@/context/WishlistContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 
 function Header({
   className,
@@ -138,7 +138,11 @@ function Header({
                     </AvatarFallback>
                   </Avatar>
                 ) : (
-                  <User size={24} strokeWidth={2} className="hover:scale-110 transition-transform duration-200" />
+                  <User
+                    size={24}
+                    strokeWidth={2}
+                    className="hover:scale-110 transition-transform duration-200"
+                  />
                 )}
               </DropdownMenuTrigger>
               <DropdownMenuContent

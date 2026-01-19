@@ -87,6 +87,35 @@ body[data-scroll-locked] {
 }
 
 @layer base {
+  /* Firefox */
+  /* * { */
+    /* scrollbar-width: thin; */
+    /* scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent; */
+  /* } */
+
+  /* Custom Scrollbar Styles */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 20px;
+    border: 1px solid transparent;
+    background-clip: content-box;
+    transition: background 0.3s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+    background-clip: content-box;
+  }
+
   * {
     @apply border-border;
   }

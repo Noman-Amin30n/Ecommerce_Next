@@ -49,7 +49,7 @@ export const getOrCreateGuestSessionId = (): string => {
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -82,6 +82,45 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     fetchCart();
   }, [fetchCart, session]);
+
+  // Handle guest cart merging when user authenticates
+  useEffect(() => {
+    const mergeGuestCart = async () => {
+      if (sessionStatus === "authenticated") {
+        const guestSessionId = Cookies.get(GUEST_SESSION_ID_COOKIE);
+
+        if (guestSessionId) {
+          try {
+            console.log("Merging guest cart in CartContext...");
+            const response = await fetch("/api/cart/merge", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ guestSessionId }),
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              if (data.merged) {
+                console.log(
+                  `Guest cart merged successfully. Total items: ${data.itemCount}`,
+                );
+                // Refresh the cart after merging
+                await fetchCart();
+              }
+              // Remove guest session cookie after successful merge
+              Cookies.remove(GUEST_SESSION_ID_COOKIE);
+            } else {
+              console.error("Failed to merge guest cart");
+            }
+          } catch (error) {
+            console.error("Error merging guest cart:", error);
+          }
+        }
+      }
+    };
+
+    mergeGuestCart();
+  }, [sessionStatus, fetchCart]);
 
   const addToCart = async (item: CartItem) => {
     try {
@@ -184,7 +223,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const cartCount = cartItems.length;
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.unitPrice * item.quantity,
-    0
+    0,
   );
 
   return (

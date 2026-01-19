@@ -157,7 +157,9 @@ export default function AuthForm({
         )}
 
         {view === "register" && (
-          <div className={`space-y-4 ${isAccountPage ? "text-sm" : "text-xs"} text-gray-600`}>
+          <div
+            className={`space-y-4 ${isAccountPage ? "text-sm" : "text-xs"} text-gray-600`}
+          >
             <p>
               A link to verify your email will be sent to your email address.
             </p>
@@ -187,7 +189,9 @@ export default function AuthForm({
           <>
             <div className="relative flex items-center py-4">
               <div className="flex-grow border-t border-gray-100"></div>
-              <span className={`flex-shrink mx-4 text-gray-400 ${isAccountPage ? "text-xs" : "text-[10px]"} font-semibold uppercase tracking-widest leading-none`}>
+              <span
+                className={`flex-shrink mx-4 text-gray-400 ${isAccountPage ? "text-xs" : "text-[10px]"} font-semibold uppercase tracking-widest leading-none`}
+              >
                 Or {view} with
               </span>
               <div className="flex-grow border-t border-gray-100"></div>

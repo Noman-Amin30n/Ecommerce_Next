@@ -206,42 +206,6 @@ function Page() {
     fetchUserProfile();
   }, [sessionStatus]);
 
-  // Handle guest cart merging when user authenticates
-  useEffect(() => {
-    const mergeGuestCart = async () => {
-      if (sessionStatus === "authenticated") {
-        const guestSessionId = Cookies.get("guestSessionId");
-
-        if (guestSessionId) {
-          try {
-            const response = await fetch("/api/cart/merge", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ guestSessionId }),
-            });
-
-            if (response.ok) {
-              const data = await response.json();
-              if (data.merged) {
-                console.log(
-                  `Guest cart merged successfully. Total items: ${data.itemCount}`,
-                );
-              }
-              // Remove guest session cookie after successful merge
-              Cookies.remove("guestSessionId");
-            } else {
-              console.error("Failed to merge guest cart");
-            }
-          } catch (error) {
-            console.error("Error merging guest cart:", error);
-          }
-        }
-      }
-    };
-
-    mergeGuestCart();
-  }, [sessionStatus]);
-
   // Handle profile update
   const handleUpdateProfile = async () => {
     setProfileMessage(null);

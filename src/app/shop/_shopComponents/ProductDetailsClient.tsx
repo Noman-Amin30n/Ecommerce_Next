@@ -14,7 +14,7 @@ import {
   WhatsappIcon,
   LinkedinIcon,
 } from "react-share";
-import { useWishlist } from "@/context/WishlistContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import ProductDetailsSkeleton from "./ProductDetailsSkeleton";
 import { useCart } from "@/contexts/CartContext";
 
