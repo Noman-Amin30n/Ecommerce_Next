@@ -1,8 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { TbUserExclamation } from "react-icons/tb";
 import { CiHeart } from "react-icons/ci";
-import { LockKeyhole, LogIn, UserPen, UserPlus } from "lucide-react";
+import { LockKeyhole, LogIn, User, UserPen, UserPlus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -139,7 +138,7 @@ function Header({
                     </AvatarFallback>
                   </Avatar>
                 ) : (
-                  <TbUserExclamation size={24} strokeWidth={2} />
+                  <User size={24} strokeWidth={2} className="hover:scale-110 transition-transform duration-200" />
                 )}
               </DropdownMenuTrigger>
               <DropdownMenuContent
