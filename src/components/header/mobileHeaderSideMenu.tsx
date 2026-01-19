@@ -56,7 +56,7 @@ function MobileHeaderSideMenu({
       </SheetTrigger>
       <SheetContent
         side={"left"}
-        className="w-[300px] sm:w-[350px] bg-white border-none p-0 flex flex-col h-full shadow-2xl"
+        className="w-[300px] z-[998] sm:w-[350px] bg-white border-none p-0 flex flex-col h-full shadow-2xl"
       >
         {/* Header Section */}
         <div className="flex justify-between items-center p-6 border-b border-gray-100">
