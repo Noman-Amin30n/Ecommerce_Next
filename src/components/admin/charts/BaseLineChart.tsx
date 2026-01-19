@@ -36,6 +36,7 @@ interface BaseLineChartProps {
   loading?: boolean;
   yAxisLabel?: string;
   formatValue?: (value: number) => string;
+  onlyIntegers?: boolean;
 }
 
 export default function BaseLineChart({
@@ -46,6 +47,7 @@ export default function BaseLineChart({
   loading = false,
   yAxisLabel = "",
   formatValue = (value) => value.toString(),
+  onlyIntegers = false,
 }: BaseLineChartProps) {
   const chartRef = useRef<ChartJS<"line">>(null);
 
@@ -159,6 +161,7 @@ export default function BaseLineChart({
             weight: 600 as const,
           },
           color: "#9ca3af",
+          precision: onlyIntegers ? 0 : undefined,
           callback: function (value) {
             return formatValue(Number(value));
           },

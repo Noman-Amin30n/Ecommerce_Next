@@ -24,7 +24,8 @@ export default function RevenueChart() {
     async function fetchRevenueData() {
       setLoading(true);
       try {
-        const params = new URLSearchParams({ timeRange });
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const params = new URLSearchParams({ timeRange, timezone });
         const res = await fetch(`/api/admin/analytics/revenue?${params}`, {
           cache: "no-store",
         });

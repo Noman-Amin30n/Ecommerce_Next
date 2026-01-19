@@ -30,9 +30,11 @@ export default function SalesChart() {
       if (!selectedProduct) return;
       setLoading(true);
       try {
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const params = new URLSearchParams({
           productId: selectedProduct._id,
           timeRange,
+          timezone,
         });
 
         const res = await fetch(`/api/admin/analytics/sales?${params}`, {
@@ -90,6 +92,7 @@ export default function SalesChart() {
             isPositive={chartData.isPositive}
             loading={loading}
             formatValue={(value) => `${value} units`}
+            onlyIntegers={true}
           />
 
           {/* Stats Summary */}

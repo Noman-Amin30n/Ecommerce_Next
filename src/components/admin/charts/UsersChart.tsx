@@ -24,7 +24,8 @@ export default function UsersChart() {
     async function fetchUserData() {
       setLoading(true);
       try {
-        const params = new URLSearchParams({ timeRange });
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const params = new URLSearchParams({ timeRange, timezone });
         const res = await fetch(`/api/admin/analytics/users?${params}`, {
           cache: "no-store",
         });
@@ -70,6 +71,7 @@ export default function UsersChart() {
             isPositive={chartData.isPositive}
             loading={loading}
             formatValue={(value) => `${value} users`}
+            onlyIntegers={true}
           />
 
           {/* Stats Summary */}

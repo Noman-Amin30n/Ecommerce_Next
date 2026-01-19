@@ -8,7 +8,7 @@ import { handleError } from "@/lib/errors";
 export async function GET() {
   try {
     await initDb();
-    const categories = await Category.find().lean();
+    const categories = await Category.find().populate("parent").lean();
     return NextResponse.json({ categories });
   } catch (e) {
     return handleError(e);

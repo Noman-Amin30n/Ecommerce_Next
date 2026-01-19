@@ -24,7 +24,8 @@ export default function OrdersChart() {
     async function fetchOrderData() {
       setLoading(true);
       try {
-        const params = new URLSearchParams({ timeRange });
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const params = new URLSearchParams({ timeRange, timezone });
         const res = await fetch(`/api/admin/analytics/orders?${params}`, {
           cache: "no-store",
         });
@@ -70,6 +71,7 @@ export default function OrdersChart() {
             isPositive={chartData.isPositive}
             loading={loading}
             formatValue={(value) => `${value} orders`}
+            onlyIntegers={true}
           />
 
           {/* Stats Summary */}

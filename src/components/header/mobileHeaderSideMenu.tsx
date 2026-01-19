@@ -31,133 +31,174 @@ function MobileHeaderSideMenu({
   getUserInitials,
 }: IMobileHeaderSideMenu) {
   const { data: session, status: sessionStatus } = useSession();
+
+  const navLinks = [
+    { href: "/", label: "Home", icon: <GoHome size={20} /> },
+    { href: "/shop", label: "Shop", icon: <BsShop size={20} /> },
+    {
+      href: "/about",
+      label: "About",
+      icon: <IoIosInformationCircleOutline size={20} />,
+    },
+    {
+      href: "/contact",
+      label: "Contact",
+      icon: <MdOutlineContactMail size={20} />,
+    },
+  ];
+
   return (
     <Sheet>
-      <SheetTrigger>
-        <MdMenu stroke="#000" className="text-[28px]" />
+      <SheetTrigger asChild>
+        <button className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200">
+          <MdMenu className="text-[28px] text-gray-800" />
+        </button>
       </SheetTrigger>
       <SheetContent
         side={"left"}
-        className="w-full bg-[#88D9E6] border-none py-0 px-0 isolate z-[999]"
+        className="w-[300px] sm:w-[350px] bg-white border-none p-0 flex flex-col h-full shadow-2xl"
       >
-        <div className="flex justify-end items-center min-h-[80px] px-6">
-          <SheetClose>
-            <X
-              stroke="#000"
-              className="text-[#050505]"
-              size={32}
-              strokeWidth={1.5}
-            />
+        {/* Header Section */}
+        <div className="flex justify-between items-center p-6 border-b border-gray-100">
+          <Link
+            href="/"
+            className="text-2xl font-bold tracking-tight text-[#FF5714]"
+          >
+            Store.
+          </Link>
+          <SheetClose asChild>
+            <button className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200">
+              <X className="text-gray-500" size={24} />
+            </button>
           </SheetClose>
         </div>
-        <div className="flex flex-col justify-between items-stretch h-[calc(100dvh-80px)]">
-          <ul className="space-y-6 text-sm text-[#050505] px-6">
-            <Link
-              href="/"
-              className="flex justify-start items-center gap-2 leading-none"
-            >
-              <GoHome stroke="#000" size={16} />
-              <span>Home</span>
-            </Link>
-            <Link
-              href="/shop"
-              className="flex justify-start items-center gap-2 leading-none"
-            >
-              <BsShop stroke="#000" size={16} />
-              <span>Shop</span>
-            </Link>
-            <li className="flex justify-start items-center gap-2 leading-none">
-              <IoIosInformationCircleOutline stroke="#000" size={16} />
-              <span>About</span>
-            </li>
-            <li className="flex justify-start items-center gap-2 leading-none">
-              <MdOutlineContactMail stroke="#000" size={16} />
-              <span>Contact</span>
-            </li>
+
+        {/* User Profile Section (if authenticated) */}
+        {sessionStatus === "authenticated" && (
+          <div className="px-6 py-6 bg-gray-50/50 border-b border-gray-100">
+            <div className="flex items-center gap-4">
+              <Avatar className="w-12 h-12 border-2 border-white shadow-sm">
+                <AvatarImage src={avatar} alt={session.user.name || ""} />
+                <AvatarFallback
+                  style={{ backgroundColor: avatarBgColor || "#FF5714" }}
+                  className="text-white font-bold"
+                >
+                  {getUserInitials(session.user.name)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-gray-900 truncate max-w-[150px]">
+                  {session.user.name}
+                </span>
+                <span className="text-xs text-gray-500 truncate max-w-[150px]">
+                  {session.user.email}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation Links */}
+        <div className="flex-1 overflow-y-auto py-4 px-2">
+          <nav className="space-y-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="flex items-center gap-4 px-4 py-3 text-gray-700 hover:text-[#FF5714] hover:bg-orange-50 rounded-xl transition-all duration-200 group"
+              >
+                <span className="text-gray-400 group-hover:text-[#FF5714] transition-colors">
+                  {link.icon}
+                </span>
+                <span className="font-medium">{link.label}</span>
+              </Link>
+            ))}
+
             {sessionStatus === "authenticated" && (
               <Link
                 href="/account"
-                className="flex justify-start items-center gap-2 leading-none"
+                className="flex items-center gap-4 px-4 py-3 text-gray-700 hover:text-[#FF5714] hover:bg-orange-50 rounded-xl transition-all duration-200 group"
               >
-                <UserPen stroke="#000" size={16} />
-                <span>My Account</span>
+                <UserPen
+                  className="text-gray-400 group-hover:text-[#FF5714]"
+                  size={20}
+                />
+                <span className="font-medium">My Account</span>
               </Link>
             )}
-            <li className="flex justify-between items-stretch flex-wrap gap-4 text-sm text-nowrap">
-              {sessionStatus === "authenticated" ? (
-                <>
-                  {session.user.role === "admin" && (
-                    <Link
-                      href="/admin"
-                      className="basis-[100px] grow flex justify-center items-center gap-2 py-3 px-5 bg-[#FF5714] text-white shadow-md"
-                    >
-                      <span>
-                        <Lock size={16} />
-                      </span>
-                      <span>Admin Panel</span>
-                    </Link>
-                  )}
-                  <button
-                    className={`${
-                      session.user.role === "admin"
-                        ? "basis-[100px] border border-[#050505] text-[#050505]"
-                        : "basis-full bg-[#050505] text-white"
-                    } grow flex justify-center items-center gap-2 px-5 py-3 shadow-md`}
-                    onClick={() => signOut()}
-                  >
-                    <span>
-                      <LogOut size={16} />
-                    </span>
-                    <span>Logout</span>
-                  </button>
-                </>
-              ) : (
-                <>
+          </nav>
+
+          {/* Action Buttons */}
+          <div className="mt-8 px-4 space-y-3">
+            {sessionStatus === "authenticated" ? (
+              <>
+                {session.user.role === "admin" && (
                   <Link
-                    href="/account"
-                    className="basis-[100px] grow flex justify-center items-center gap-2 py-3 px-5 bg-[#FF5714] text-white shadow-md"
+                    href="/admin"
+                    className="flex justify-center items-center gap-2 w-full py-3.5 px-6 bg-gray-900 text-white rounded-xl font-semibold shadow-lg shadow-gray-200 hover:bg-black transition-all active:scale-95"
                   >
-                    <LogIn size={16} />
-                    <span>Login</span>
+                    <Lock size={18} />
+                    <span>Admin Panel</span>
                   </Link>
-                  <Link
-                    href="/account"
-                    className="basis-[100px] grow flex justify-center items-center gap-2 py-3 px-5 border border-[#050505] text-[#050505] shadow-md"
-                  >
-                    <UserPlus size={16} />
-                    <span>Register</span>
-                  </Link>
-                </>
-              )}
-            </li>
-          </ul>
-          <div
-            className={`grid ${
-              sessionStatus === "authenticated" ? "grid-cols-4" : "grid-cols-3"
-            } gap-4 bg-white text-[#050505] px-6 py-5`}
-          >
-            {sessionStatus === "authenticated" && (
-              <div className="flex justify-center items-center">
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src={avatar} alt={session.user.name || ""} />
-                  <AvatarFallback
-                    style={{ backgroundColor: avatarBgColor }}
-                    className="text-white font-semibold"
-                  >
-                    {getUserInitials(session.user.name)}
-                  </AvatarFallback>
-                </Avatar>
+                )}
+                <button
+                  onClick={() => signOut()}
+                  className="flex justify-center items-center gap-2 w-full py-3.5 px-6 border-2 border-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all active:scale-95"
+                >
+                  <LogOut size={18} />
+                  <span>Logout</span>
+                </button>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                <Link
+                  href="/account"
+                  className="flex justify-center items-center gap-2 py-3.5 px-4 bg-[#FF5714] text-white rounded-xl font-semibold shadow-lg shadow-orange-100 hover:bg-[#e64a0e] transition-all active:scale-95 text-sm"
+                >
+                  <LogIn size={18} />
+                  <span>Login</span>
+                </Link>
+                <Link
+                  href="/account"
+                  className="flex justify-center items-center gap-2 py-3.5 px-4 border-2 border-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all active:scale-95 text-sm"
+                >
+                  <UserPlus size={18} />
+                  <span>Join</span>
+                </Link>
               </div>
             )}
-            <div className="flex justify-center items-center">
+          </div>
+        </div>
+
+        {/* Bottom Toolbar */}
+        <div className="p-6 bg-gray-50 border-t border-gray-100 grid grid-cols-3 gap-2">
+          <div className="flex flex-col items-center gap-1 group cursor-pointer">
+            <div className="p-2 group-hover:bg-white rounded-lg transition-all group-hover:shadow-sm">
               <SearchDialog />
             </div>
-            <div className="flex justify-center items-center">
-              <CiHeart size={28} strokeWidth={1} />
+            <span className="text-[10px] text-gray-400 font-medium">
+              Search
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-1 group cursor-pointer">
+            <div className="p-2 group-hover:bg-white rounded-lg transition-all group-hover:shadow-sm">
+              <CiHeart
+                size={24}
+                className="group-hover:text-red-500 transition-colors"
+              />
             </div>
-            <div className="flex justify-center items-center">
-              <AiOutlineShoppingCart size={28} />
+            <span className="text-[10px] text-gray-400 font-medium">
+              Wishlist
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-1 group cursor-pointer">
+            <div className="p-2 group-hover:bg-white rounded-lg transition-all group-hover:shadow-sm">
+              <AiOutlineShoppingCart
+                size={24}
+                className="group-hover:text-[#FF5714] transition-colors"
+              />
             </div>
+            <span className="text-[10px] text-gray-400 font-medium">Cart</span>
           </div>
         </div>
       </SheetContent>
