@@ -173,7 +173,7 @@ function MobileHeaderSideMenu({
         {/* Bottom Toolbar */}
         <div className="p-6 bg-gray-50 border-t border-gray-100 grid grid-cols-3 gap-2">
           <div className="flex flex-col items-center gap-1 group cursor-pointer">
-            <div className="p-2 group-hover:bg-white rounded-lg transition-all group-hover:shadow-sm">
+            <div className="p-2 h-10 w-10 group-hover:bg-white rounded-lg transition-all group-hover:shadow-sm">
               <SearchDialog />
             </div>
             <span className="text-[10px] text-gray-400 font-medium">
@@ -181,23 +181,24 @@ function MobileHeaderSideMenu({
             </span>
           </div>
           <div className="flex flex-col items-center gap-1 group cursor-pointer">
-            <div className="p-2 group-hover:bg-white rounded-lg transition-all group-hover:shadow-sm">
+            <Link href="/wishlist" className="p-2 h-10 w-10 group-hover:bg-white rounded-lg transition-all group-hover:shadow-sm">
               <CiHeart
                 size={24}
+                strokeWidth={1}
                 className="group-hover:text-red-500 transition-colors"
               />
-            </div>
+            </Link>
             <span className="text-[10px] text-gray-400 font-medium">
               Wishlist
             </span>
           </div>
           <div className="flex flex-col items-center gap-1 group cursor-pointer">
-            <div className="p-2 group-hover:bg-white rounded-lg transition-all group-hover:shadow-sm">
+            <Link href="/cart" className="p-2 h-10 w-10 group-hover:bg-white rounded-lg transition-all group-hover:shadow-sm">
               <AiOutlineShoppingCart
                 size={24}
                 className="group-hover:text-[#FF5714] transition-colors"
               />
-            </div>
+            </Link>
             <span className="text-[10px] text-gray-400 font-medium">Cart</span>
           </div>
         </div>
