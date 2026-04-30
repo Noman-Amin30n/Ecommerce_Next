@@ -10,7 +10,7 @@ import React, {
 import Cookies from "js-cookie";
 import { useSession } from "next-auth/react";
 
-interface CartItem {
+export interface CartItem {
   product: string | { _id: string; title: string; images: string[] };
   variantSku?: string;
   image?: string;

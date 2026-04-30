@@ -52,6 +52,7 @@ interface ClientReview {
 
 interface ClientProduct {
   _id: string;
+  slug: string;
   title: string;
   description?: string;
   shortDescription?: string;
