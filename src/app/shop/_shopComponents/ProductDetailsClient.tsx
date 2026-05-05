@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import ProductGallery from "@/components/productGallery";
 import RatingStars from "@/components/rating";
-import { Loader2, Heart } from "lucide-react";
+import { Loader2, Heart, CheckCircle2, AlertCircle, XCircle } from "lucide-react";
 import {
   FacebookShareButton,
   TwitterShareButton,
@@ -164,9 +164,22 @@ export default function ProductDetailsClient({
         );
       }
 
+      let newAvail = 0;
+      if (sizeVariant) {
+        newAvail = sizeVariant.quantity ?? 0;
+      } else {
+        newAvail = colorVariant.quantity ?? 0;
+      }
+
       if (colorVariant.images && colorVariant.images.length > 0) {
         setCurrentImage(colorVariant.images[0]);
       }
+
+      // Clamp quantity if it exceeds new available quantity
+      setQuantity((prev) => {
+        if (newAvail === 0) return 1;
+        return prev > newAvail ? newAvail : prev;
+      });
     }
   }, [
     selectedColor,
@@ -257,6 +270,35 @@ export default function ProductDetailsClient({
     (s) => s.size === selectedSize,
   );
 
+  let availableQuantity: number | null = null;
+  if (product.variants && product.variants.length > 0) {
+    if (activeColorVariant) {
+      if (activeColorVariant.sizes && activeColorVariant.sizes.length > 0) {
+        if (activeSizeVariant) {
+          availableQuantity = activeSizeVariant.quantity ?? 0;
+        }
+      } else {
+        availableQuantity = activeColorVariant.quantity ?? 0;
+      }
+    }
+  }
+
+  let stockStatusText = "In Stock";
+  let stockColorClass = "text-emerald-700";
+  let stockBgClass = "bg-emerald-50 border-emerald-200";
+
+  if (availableQuantity !== null) {
+    if (availableQuantity === 0) {
+      stockStatusText = "Out of Stock";
+      stockColorClass = "text-red-700";
+      stockBgClass = "bg-red-50 border-red-200";
+    } else if (availableQuantity <= 10) {
+      stockStatusText = "Low Stock";
+      stockColorClass = "text-orange-700";
+      stockBgClass = "bg-orange-50 border-orange-200";
+    }
+  }
+
   const isItemInCart = cartItems.some((item) => {
     const itemProductId =
       typeof item.product === "string" ? item.product : item.product._id;
@@ -330,6 +372,25 @@ export default function ProductDetailsClient({
           <span className="text-sm text-gray-500">
             ({product.reviews?.length || 0} reviews)
           </span>
+        </div>
+
+        {/* Stock Status */}
+        <div className="flex items-center mb-5">
+          <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border ${stockBgClass} ${stockColorClass} text-sm font-semibold transition-colors duration-300`}>
+            {availableQuantity === 0 ? (
+               <XCircle size={16} className="stroke-[2.5]" />
+            ) : availableQuantity !== null && availableQuantity <= 10 ? (
+               <AlertCircle size={16} className="stroke-[2.5]" />
+            ) : (
+               <CheckCircle2 size={16} className="stroke-[2.5]" />
+            )}
+            <span className="tracking-wide uppercase text-xs">{stockStatusText}</span>
+            {availableQuantity !== null && availableQuantity > 0 && (
+              <span className="ml-1 opacity-80 font-bold border-l pl-2 border-current">
+                {availableQuantity} Left
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Product Description */}
@@ -429,8 +490,8 @@ export default function ProductDetailsClient({
             <div className="flex items-center justify-between border-2 border-gray-100 rounded-xl bg-white p-0.5 min-w-[110px] shadow-sm">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                disabled={isItemInCart}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-50 text-gray-400 hover:text-black transition-all disabled:opacity-30"
+                disabled={isItemInCart || availableQuantity === 0}
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-50 text-gray-400 hover:text-black transition-all disabled:opacity-30 disabled:hover:bg-transparent"
               >
                 <svg
                   className="w-3.5 h-3.5"
@@ -451,8 +512,8 @@ export default function ProductDetailsClient({
               </span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                disabled={isItemInCart}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-50 text-gray-400 hover:text-black transition-all disabled:opacity-30"
+                disabled={isItemInCart || availableQuantity === 0 || (availableQuantity !== null && quantity >= availableQuantity)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-50 text-gray-400 hover:text-black transition-all disabled:opacity-30 disabled:hover:bg-transparent"
               >
                 <svg
                   className="w-3.5 h-3.5"
@@ -473,15 +534,17 @@ export default function ProductDetailsClient({
             {/* Add to Cart Button */}
             <button
               onClick={addToCart}
-              disabled={loading || isItemInCart}
+              disabled={loading || isItemInCart || availableQuantity === 0}
               className={`relative flex-1 flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl font-bold text-base transition-all duration-500 overflow-hidden group shadow-xl ${
                 isItemInCart
                   ? "bg-[#88D9E6] text-black cursor-default"
+                  : availableQuantity === 0
+                  ? "bg-gray-200 text-gray-500 cursor-not-allowed shadow-none"
                   : "bg-[#FF5714] text-[#f4f4f4] hover:bg-[#f55415] hover:-translate-y-1 active:translate-y-0 active:scale-[0.98]"
               } disabled:opacity-50`}
             >
               {/* Subtle animated background for black state */}
-              {!isItemInCart && !loading && (
+              {!isItemInCart && !loading && availableQuantity !== 0 && (
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#f4f4f4]/5 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
               )}
 
@@ -501,6 +564,8 @@ export default function ProductDetailsClient({
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
+              ) : availableQuantity === 0 ? (
+                <XCircle className="w-5 h-5" />
               ) : (
                 <svg
                   className="w-5 h-5 transition-transform group-hover:rotate-12"
@@ -520,9 +585,11 @@ export default function ProductDetailsClient({
               <span className="relative z-10 uppercase tracking-widest">
                 {isItemInCart
                   ? "In Your Cart"
-                  : loading
-                    ? "Adding..."
-                    : "Add to Cart"}
+                  : availableQuantity === 0
+                    ? "Out of Stock"
+                    : loading
+                      ? "Adding..."
+                      : "Add to Cart"}
               </span>
             </button>
           </div>

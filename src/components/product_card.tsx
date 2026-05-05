@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { MyButton } from "./buttons";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -8,15 +9,18 @@ interface ProductCard_1Props {
   imageAlt: string;
   title: string;
   price: string;
+  href?: string;
 }
 export function ProductCard_Normal({
   imageSrc,
   imageAlt,
   title,
   price,
+  href = "#",
 }: ProductCard_1Props) {
   return (
-    <div
+    <Link
+      href={href}
       className="group flex h-full flex-col justify-start items-end gap-4 shadow-sm hover:shadow-lg transition-all duration-300 bg-white p-4 cursor-pointer"
       data-aos="fade-up"
     >
@@ -27,7 +31,7 @@ export function ProductCard_Normal({
           width={500}
           height={500}
           className={
-            "object-contain object-center group-hover:scale-110 transition-transform duration-500"
+            "object-contain object-center group-hover:scale-110 transition-transform duration-500 mix-blend-multiply"
           }
           placeholder="blur"
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
@@ -44,7 +48,7 @@ export function ProductCard_Normal({
           Rs. {price}
         </p>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -70,9 +74,13 @@ export function ProductCardList({
   imageAlt,
   title,
   price,
+  href = "#",
 }: ProductCard_1Props) {
   return (
-    <div className="flex flex-row items-center gap-6 shadow-sm hover:shadow-md transition-all bg-white">
+    <Link
+      href={href}
+      className="flex flex-row items-center gap-6 shadow-sm hover:shadow-md transition-all bg-white cursor-pointer"
+    >
       {/* Image */}
       <div className="w-full min-w-[200px] max-w-[250px]">
         <Image
@@ -80,7 +88,7 @@ export function ProductCardList({
           alt={imageAlt}
           width={500}
           height={500}
-          className="w-full object-contain rounded-xl"
+          className="w-full object-contain rounded-xl mix-blend-multiply"
           placeholder="blur"
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
         />
@@ -91,7 +99,7 @@ export function ProductCardList({
         <p className="font-medium text-base md:text-lg line-clamp-2">{title}</p>
         <p className="text-lg md:text-xl font-semibold mt-2">Rs. {price}</p>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -116,15 +124,18 @@ interface ProductCard_BigProps {
   imageSrc: string;
   imageAlt: string;
   title: string;
+  href?: string;
 }
 export function ProductCard_Big({
   imageSrc,
   imageAlt,
   title,
+  href = "#",
 }: ProductCard_BigProps) {
   return (
-    <div
-      className="group flex flex-col justify-start items-end gap-4 md:basis-1/2 lg:pl-[100px]"
+    <Link
+      href={href}
+      className="group flex flex-col justify-start items-end gap-4 md:basis-1/2 lg:pl-[100px] cursor-pointer"
       data-aos="fade-up"
     >
       <div className="w-3/4 relative grow overflow-hidden">
@@ -134,7 +145,7 @@ export function ProductCard_Big({
           width={500}
           height={500}
           className={
-            "object-contain object-center group-hover:scale-105 transition-transform duration-500"
+            "object-contain object-center group-hover:scale-105 transition-transform duration-500 mix-blend-multiply"
           }
           placeholder="blur"
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
@@ -146,6 +157,6 @@ export function ProductCard_Big({
         </p>
         <MyButton btnText="View More" />
       </div>
-    </div>
+    </Link>
   );
 }
