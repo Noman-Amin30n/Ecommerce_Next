@@ -50,8 +50,8 @@ export default async function ShopPage({
   const maxPrice =
     priceStats.length > 0 ? Math.ceil(priceStats[0].maxPrice) : 0;
 
-  // Fetch all categories
-  const categories = await Category.find({}).lean();
+  // Fetch all categories and serialize for Client Component props
+  const categories = JSON.parse(JSON.stringify(await Category.find({}).lean()));
 
   return (
     <>

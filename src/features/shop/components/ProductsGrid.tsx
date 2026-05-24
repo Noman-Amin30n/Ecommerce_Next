@@ -87,7 +87,7 @@ export default async function ProductsContainer({
   const projection =
     searchQuery && searchQuery.trim() ? { score: { $meta: "textScore" } } : {};
 
-  const [products, total] = await Promise.all([
+  const [productsRaw, total] = await Promise.all([
     ProductModel.find(query, projection)
       .sort(sortOption)
       .skip(skip)
@@ -95,6 +95,8 @@ export default async function ProductsContainer({
       .lean(),
     ProductModel.countDocuments(query),
   ]);
+
+  const products = JSON.parse(JSON.stringify(productsRaw)) as IProduct[];
 
   return (
     <ProductsClientContainer products={products}>

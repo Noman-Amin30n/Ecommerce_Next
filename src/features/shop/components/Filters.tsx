@@ -41,7 +41,7 @@ export default function Filters({
   );
 
   return (
-    <div className="relative">
+    <div className="relative" ref={filterRef}>
       <div
         className="flex items-center gap-2 cursor-pointer"
         onClick={() => !isApplyingFilter && setIsOpen((prev) => !prev)}
@@ -51,7 +51,6 @@ export default function Filters({
       </div>
 
       <div
-        ref={filterRef}
         className={clsx(
           "absolute top-full left-0 bg-white rounded-md p-4 z-10 shadow-lg min-w-[250px] max-w-[300px] w-[90vw] sm:w-[350px] transform origin-top transition-all duration-200 ease-in-out",
           isOpen ? "translate-y-2 scale-y-100" : "scale-y-0"
