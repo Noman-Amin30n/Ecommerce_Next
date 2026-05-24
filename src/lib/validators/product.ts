@@ -51,6 +51,7 @@ export const ProductCreateSchema = z.object({
   sku: z.string().optional(),
   quantity: handleNumeric(z.coerce.number().int().min(0).optional()),
   isPublished: z.boolean().optional(),
+  isFreeShipping: z.boolean().optional(),
 });
 
 export type ProductCreateInput = z.infer<typeof ProductCreateSchema>;

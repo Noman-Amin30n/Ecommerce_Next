@@ -3,14 +3,14 @@ import { cn } from "@/lib/utils";
 interface ButtonProps {
   btnText: string;
   className?: string;
-  varient?: "full-underline" | "partial-underline";
+  variant?: "full-underline" | "partial-underline";
 }
-export function MyButton({
+export function AppButton({
   btnText,
   className,
-  varient = "full-underline",
+  variant = "full-underline",
 }: ButtonProps) {
-  switch (varient) {
+  switch (variant) {
     case "partial-underline":
       return (
         <div>
@@ -32,4 +32,23 @@ export function MyButton({
         </button>
       );
   }
+}
+
+export function MyButton({
+  btnText,
+  className,
+}: {
+  btnText: string;
+  className?: string;
+}) {
+  return (
+    <button
+      className={cn(
+        "text-base sm:text-lg lg:text-[20px] font-medium border-b-2 border-black pb-1 hover:text-gray-600 transition-colors duration-300",
+        className
+      )}
+    >
+      {btnText}
+    </button>
+  );
 }

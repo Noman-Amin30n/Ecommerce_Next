@@ -11,9 +11,9 @@ import { TbAdjustmentsHorizontal } from "react-icons/tb";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFilterContext } from "@/contexts/filterContext";
 import useOutsideClick from "@/hooks/outsideclick";
-import ShowItemsInput from "./itemsPerPage";
-import SortBy from "./sortBy";
-import ApplyFilter from "./apply";
+import ShowItemsInput from "./ItemsPerPage";
+import SortBy from "./SortBy";
+import ApplyFilter from "./ApplyFilter";
 import clsx from "clsx";
 import { useSearchParams } from "next/navigation";
 import type { ICategory } from "@/models/category";
@@ -142,9 +142,10 @@ function PriceFilter({ minPrice, maxPrice }: PriceFilterProps) {
   );
 }
 
-interface CategoryItem extends Omit<ICategory, "parent" | "children" | "_id"> {
+interface CategoryItem {
   _id: string | { toString: () => string };
   name: string;
+  slug: string;
   parent?: string | { toString: () => string } | null;
   children: CategoryItem[];
 }
@@ -159,11 +160,14 @@ function CategoryFilter({ categories }: { categories: ICategory[] }) {
 
     // Initialize map with all categories
     categories.forEach((cat) => {
-      // Use _id if available, otherwise assume the object itself has an id
-      // Client side ICategory typically has _id as string or object
       const id = cat._id.toString();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      map.set(id, { ...(cat as any), children: [] });
+      map.set(id, {
+        _id: cat._id,
+        name: cat.name,
+        slug: cat.slug,
+        parent: cat.parent?.toString() || null,
+        children: [],
+      });
     });
 
     // Build tree

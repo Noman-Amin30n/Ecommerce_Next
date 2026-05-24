@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
-import ClientSessionProvider from "@/components/session";
+import ClientSessionProvider from "@/components/Session";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
-import { AOSInit } from "@/components/AOSInit";
+import { AOSInit } from "@/components/common/AOSInit";
 import { Toaster } from "sonner";
 import "./globals.css";
 

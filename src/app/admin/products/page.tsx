@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import StatusBadge from "@/components/admin/StatusBadge";
+import StatusBadge from "@/features/admin/components/StatusBadge";
 import {
   Plus,
   Search,

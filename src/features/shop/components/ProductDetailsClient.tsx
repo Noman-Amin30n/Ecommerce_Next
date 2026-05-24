@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import ProductGallery from "@/components/productGallery";
-import RatingStars from "@/components/rating";
+import ProductGallery from "@/components/common/ProductGallery";
+import RatingStars from "@/components/common/Rating";
 import { Loader2, Heart, CheckCircle2, AlertCircle, XCircle } from "lucide-react";
 import {
   FacebookShareButton,
@@ -70,6 +70,7 @@ interface ClientProduct {
   category?: { _id: string; name: string; slug: string } | string;
   sku?: string;
   tags?: string[];
+  isFreeShipping?: boolean;
 }
 
 interface ProductDetailsClientProps {
@@ -391,6 +392,12 @@ export default function ProductDetailsClient({
               </span>
             )}
           </div>
+          
+          {product.isFreeShipping && (
+            <div className="ml-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border bg-green-50 border-green-200 text-green-700 text-sm font-semibold">
+              <span className="tracking-wide uppercase text-xs">Free Shipping</span>
+            </div>
+          )}
         </div>
 
         {/* Product Description */}

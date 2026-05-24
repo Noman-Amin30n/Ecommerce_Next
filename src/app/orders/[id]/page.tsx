@@ -14,11 +14,11 @@ import {
   Download,
   AlertCircle,
 } from "lucide-react";
-import Header from "@/components/header/header";
-import Footer from "@/components/footer";
-import PageTitle from "@/components/pageTitle";
-import TrackOrder from "@/components/orders/TrackOrder";
-import Invoice from "@/components/orders/Invoice";
+import Header from "@/components/header/Header";
+import Footer from "@/components/Footer";
+import PageTitle from "@/components/common/PageTitle";
+import TrackOrder from "@/features/orders/components/TrackOrder";
+import Invoice from "@/features/orders/components/Invoice";
 import { IOrder } from "@/models/order";
 import { format } from "date-fns";
 import Image from "next/image";

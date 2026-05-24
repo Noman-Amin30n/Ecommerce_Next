@@ -2,16 +2,16 @@
 
 import React from "react";
 import { useCart } from "@/contexts/CartContext";
-import { CartItemCard } from "@/components/cart/CartItemCard";
-import { CartSummary } from "@/components/cart/CartSummary";
+import { CartItemCard } from "@/features/cart/components/CartItemCard";
+import { CartSummary } from "@/features/cart/components/CartSummary";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
-import Header from "@/components/header/header";
-import Footer from "@/components/footer";
-import PageTitle from "@/components/pageTitle";
-import StoreFeatures from "@/components/storeFeatures";
+import Header from "@/components/header/Header";
+import Footer from "@/components/Footer";
+import PageTitle from "@/components/common/PageTitle";
+import StoreFeatures from "@/components/common/StoreFeatures";
 
 export default function CartPage() {
   const { cartItems, cartCount, subtotal, loading } = useCart();
@@ -84,7 +84,7 @@ export default function CartPage() {
           </div>
           
           <div className="lg:w-1/3 w-full">
-            <CartSummary subtotal={subtotal} />
+            <CartSummary items={cartItems} subtotal={subtotal} />
           </div>
         </div>
       </main>

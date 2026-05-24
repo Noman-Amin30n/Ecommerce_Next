@@ -1,11 +1,11 @@
-import Footer from "@/components/footer";
-import Header from "@/components/header/header";
-import BlogCard from "@/components/blogCard/blogCard";
+import Footer from "@/components/Footer";
+import Header from "@/components/header/Header";
+import BlogCard from "@/components/common/BlogCard";
 import Image from "next/image";
-import { MyButton } from "@/components/buttons";
-import { ProductCard_Big, ProductCard_Normal } from "@/components/product_card";
+import { AppButton } from "@/components/common/Buttons";
+import { ProductCard_Big, ProductCard_Normal } from "@/components/common/ProductCard";
 import Link from "next/link";
-import { getLandingProducts } from "@/lib/getLandingProducts";
+import { getLandingProducts } from "@/services/productService";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -56,7 +56,7 @@ export default async function Home() {
                 )}
               </h2>
               <Link href={`/shop/${heroProduct?.slug || ""}`}>
-                <MyButton btnText="Shop Now" />
+                <AppButton btnText="Shop Now" />
               </Link>
             </div>
           </div>
@@ -97,14 +97,16 @@ export default async function Home() {
                 imageSrc={product.images?.[0] || defaultImage}
                 imageAlt={product.title}
                 title={product.title}
-                price={product.price?.toLocaleString()}
+                price={product.price?.toString()}
+                compareAtPrice={product.compareAtPrice?.toString()}
+                isFreeShipping={product.isFreeShipping}
                 href={`/shop/${product.slug}`}
               />
             ))}
           </div>
           <div className="mt-12 md:mt-16">
             <Link href="/shop">
-              <MyButton btnText="View More" />
+              <AppButton btnText="View More" />
             </Link>
           </div>
         </div>

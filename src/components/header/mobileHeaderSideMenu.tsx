@@ -17,7 +17,7 @@ import Link from "next/link";
 import { Lock, LogIn, LogOut, UserPen, UserPlus, X } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { signOut, useSession } from "next-auth/react";
-import SearchDialog from "./searchDialog";
+import SearchDialog from "./SearchDialog";
 
 interface IMobileHeaderSideMenu {
   avatar?: string;

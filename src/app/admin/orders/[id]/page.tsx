@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import StatusBadge from "@/components/admin/StatusBadge";
+import StatusBadge from "@/features/admin/components/StatusBadge";
 import { ArrowLeft, Package } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";

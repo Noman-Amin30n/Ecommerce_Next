@@ -1,20 +1,17 @@
 import React from "react";
-import { ProductCard_Normal, ProductCardList } from "@/components/product_card";
-import SwitchPage from "./switchPage";
-import ProductsClientContainer from "./productsClientContainer";
+import { ProductCard_Normal, ProductCardList } from "@/components/common/ProductCard";
+import SwitchPage from "./SwitchPage";
+import ProductsClientContainer from "./ProductsClientContainer";
 import Link from "next/link";
 import ProductModel, { IProduct } from "@/models/product"; // Alias model import
-import { TotalCountUpdaterClient } from "./totalCountUpdaterClient";
-import { SortOrder } from "mongoose";
-import { Filter } from "mongodb";
+import { TotalCountUpdaterClient } from "./TotalCountUpdaterClient";
+import mongoose, { SortOrder } from "mongoose";
 
 interface ProductsContainerProps {
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
-interface SortOption {
-  [key: string]: SortOrder;
-}
+type SortOption = Record<string, SortOrder | { $meta: unknown }>;
 
 export default async function ProductsContainer({
   searchParams,
@@ -28,7 +25,7 @@ export default async function ProductsContainer({
   const searchQuery = searchParams.searchQuery as string | undefined;
 
   // Build Mongoose Query
-  const query: Filter<IProduct> = {};
+  const query: mongoose.QueryFilter<IProduct> = {};
 
   // Add search query filter using MongoDB text search
   if (searchQuery && searchQuery.trim()) {
@@ -42,8 +39,7 @@ export default async function ProductsContainer({
   if (searchParams.categories) {
     const categoryIds = (searchParams.categories as string).split(",");
     if (categoryIds.length > 0) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      query.category = { $in: categoryIds } as any;
+      query.category = { $in: categoryIds };
     }
   }
 
@@ -54,7 +50,7 @@ export default async function ProductsContainer({
 
   // If searching AND no specific sort selected, sort by text score (relevance)
   if (searchQuery && searchQuery.trim() && !userSelectedSort) {
-    sortOption = { score: { $meta: "textScore" } as unknown as SortOrder };
+    sortOption = { score: { $meta: "textScore" } };
   } else {
     // Otherwise apply the selected (or default "createdAt") sort
     switch (sortBy) {
@@ -92,14 +88,12 @@ export default async function ProductsContainer({
     searchQuery && searchQuery.trim() ? { score: { $meta: "textScore" } } : {};
 
   const [products, total] = await Promise.all([
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ProductModel.find(query as any, projection)
+    ProductModel.find(query, projection)
       .sort(sortOption)
       .skip(skip)
       .limit(itemsPerPage)
       .lean(),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ProductModel.countDocuments(query as any),
+    ProductModel.countDocuments(query),
   ]);
 
   return (
@@ -142,7 +136,10 @@ export default async function ProductsContainer({
                     imageSrc={product.images[0]}
                     imageAlt={product.title}
                     title={product.title}
+                    href={`/shop/${product.slug || product._id.toString()}`}
                     price={product.price.toString()}
+                    compareAtPrice={product.compareAtPrice?.toString()}
+                    isFreeShipping={product.isFreeShipping}
                   />
                 </Link>
               ))}
@@ -154,13 +151,15 @@ export default async function ProductsContainer({
                   href={`/shop/${product.slug || product._id.toString()}`}
                   key={product._id.toString()}
                 >
-                  {" "}
                   <ProductCard_Normal
                     key={product._id.toString()}
                     imageSrc={product.images[0]}
                     imageAlt={product.title}
                     title={product.title}
+                    href={`/shop/${product.slug || product._id.toString()}`}
                     price={product.price.toString()}
+                    compareAtPrice={product.compareAtPrice?.toString()}
+                    isFreeShipping={product.isFreeShipping}
                   />
                 </Link>
               ))}

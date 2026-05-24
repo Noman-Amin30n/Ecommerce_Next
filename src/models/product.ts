@@ -40,6 +40,7 @@ export interface IProduct extends Document {
   sizes?: string[];
   sku?: string;
   isPublished: boolean;
+  isFreeShipping: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -96,6 +97,7 @@ const ProductSchema = new Schema<IProduct>(
     sizes: { type: [String], default: [] },
     sku: { type: String },
     isPublished: { type: Boolean, default: false },
+    isFreeShipping: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

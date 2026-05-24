@@ -21,6 +21,7 @@ export interface IOrder extends Document {
   shipping: number;
   tax: number;
   discount: number;
+  codFee: number;
   total: number;
   currency: string;
   status: OrderStatus;
@@ -66,6 +67,7 @@ const OrderSchema = new Schema<IOrder>(
     shipping: { type: Number, required: true, default: 0 },
     tax: { type: Number, required: true, default: 0 },
     discount: { type: Number, required: true, default: 0 },
+    codFee: { type: Number, required: true, default: 0 },
     total: { type: Number, required: true },
     currency: { type: String, required: true, default: process.env.DEFAULT_CURRENCY ?? "USD" },
     status: { type: String, enum: ["pending","paid","shipped","delivered","cancelled","refunded"], default: "pending" },

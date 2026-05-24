@@ -1,9 +1,9 @@
 import React from "react";
 import Image from "next/image";
-import { MyButton } from "../buttons";
+import { MyButton } from "./Buttons";
 import { FiClock } from "react-icons/fi";
 import { MdOutlineDateRange } from "react-icons/md";
-import BlogCardTimestamps from "./blogCardTimestamps";
+import BlogCardTimestamps from "./BlogCardTimestamps";
 
 interface BlogCardProps {
   imageSrc: string;

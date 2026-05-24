@@ -1,7 +1,7 @@
 import Product from "@/models/product";
 import Order from "@/models/order";
 import Review from "@/models/review";
-import { connectMongoose } from "./mongoose";
+import { connectMongoose } from "@/lib/mongoose";
 
 export async function getLandingProducts() {
   await connectMongoose();

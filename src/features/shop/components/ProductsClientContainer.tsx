@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useFilterContext } from "@/contexts/filterContext";
-import { ProductCard_NormalSkeleton, ProductCardListSkeleton } from "@/components/product_card";
+import { ProductCard_NormalSkeleton, ProductCardListSkeleton } from "@/components/common/ProductCard";
 import { useSearchParams } from "next/navigation";
 import { IProduct } from "@/models/product";
 

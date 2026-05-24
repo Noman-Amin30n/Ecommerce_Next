@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import StatusBadge from "@/components/admin/StatusBadge";
+import StatusBadge from "@/features/admin/components/StatusBadge";
 import {
   Search,
   Eye,

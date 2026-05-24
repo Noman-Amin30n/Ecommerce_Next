@@ -16,6 +16,7 @@ export const CreateOrderSchema = z.object({
   shipping: z.number().nonnegative().optional(),
   tax: z.number().nonnegative().optional(),
   discount: z.number().nonnegative().optional(),
+  codFee: z.number().nonnegative().optional(),
   currency: z.string().min(3).optional(),
   shippingAddress: z.object({
     fullName: z.string().min(1),

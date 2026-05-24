@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import StatsCard from "@/components/admin/StatsCard";
-import StatusBadge from "@/components/admin/StatusBadge";
-import SalesChart from "@/components/admin/charts/SalesChart";
-import UsersChart from "@/components/admin/charts/UsersChart";
-import RevenueChart from "@/components/admin/charts/RevenueChart";
-import OrdersChart from "@/components/admin/charts/OrdersChart";
+import StatsCard from "@/features/admin/components/StatsCard";
+import StatusBadge from "@/features/admin/components/StatusBadge";
+import SalesChart from "@/features/admin/components/charts/SalesChart";
+import UsersChart from "@/features/admin/components/charts/UsersChart";
+import RevenueChart from "@/features/admin/components/charts/RevenueChart";
+import OrdersChart from "@/features/admin/components/charts/OrdersChart";
 import { Package, ShoppingCart, Users, DollarSign } from "lucide-react";
 import { OrderStatus } from "@/models/order";
 

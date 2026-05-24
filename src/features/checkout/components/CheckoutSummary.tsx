@@ -4,17 +4,31 @@ import React from "react";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { CartItem } from "@/contexts/CartContext";
+import { calculateShipping, calculateCodFee } from "@/lib/pricing-utils";
 
 interface CheckoutSummaryProps {
   items: CartItem[];
   subtotal: number;
   currency?: string;
-  shipping?: number;
   tax?: number;
+  paymentMethod?: string;
 }
 
-export function CheckoutSummary({ items, subtotal, currency = "USD", shipping = 0, tax = 0 }: CheckoutSummaryProps) {
-  const total = subtotal + shipping + tax;
+export function CheckoutSummary({ 
+  items, 
+  subtotal, 
+  currency = "PKR", 
+  tax = 0,
+  paymentMethod = "cod"
+}: CheckoutSummaryProps) {
+  const shipping = calculateShipping(items.map(item => ({
+    quantity: item.quantity,
+    unitPrice: item.unitPrice,
+    isFreeShipping: typeof item.product === "object" ? item.product.isFreeShipping : false
+  })));
+
+  const codFee = paymentMethod === "cod" ? calculateCodFee(subtotal) : 0;
+  const total = subtotal + shipping + tax + codFee;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -64,6 +78,13 @@ export function CheckoutSummary({ items, subtotal, currency = "USD", shipping = 
           <span className="text-gray-500">Shipping</span>
           <span className="font-medium">{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
         </div>
+        
+        {codFee > 0 && (
+          <div className="flex justify-between">
+            <span className="text-gray-500">COD Handling Fee (10%)</span>
+            <span className="font-medium">{formatPrice(codFee)}</span>
+          </div>
+        )}
         
         {tax > 0 && (
           <div className="flex justify-between">

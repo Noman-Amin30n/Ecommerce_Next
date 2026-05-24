@@ -1,10 +1,10 @@
 import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Header from "@/components/header/header";
-import Breadcrumbs from "@/components/breadcrumbs";
-import ProductDetailsClient from "../_shopComponents/ProductDetailsClient";
-import ProductTabSection from "../_shopComponents/ProductTabSection";
+import Header from "@/components/header/Header";
+import Breadcrumbs from "@/components/common/Breadcrumbs";
+import ProductDetailsClient from "@/features/shop/components/ProductDetailsClient";
+import ProductTabSection from "@/features/shop/components/ProductTabSection";
 import { connectMongoose } from "@/lib/mongoose";
 import Product from "@/models/product";
 
@@ -42,6 +42,7 @@ interface PlainProduct {
   category?: { _id: string; name: string; slug: string } | string;
   sku?: string;
   tags?: string[];
+  isFreeShipping?: boolean;
 }
 
 async function getProduct(slug: string): Promise<PlainProduct | null> {

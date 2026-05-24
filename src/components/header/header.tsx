@@ -12,9 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import MobileHeaderSideMenu from "./mobileHeaderSideMenu";
-import SideCart from "./sideCart";
-import SearchDialog from "./searchDialog";
+import MobileHeaderSideMenu from "./MobileHeaderSideMenu";
+import SideCart from "@/features/cart/components/SideCart";
+import SearchDialog from "./SearchDialog";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";

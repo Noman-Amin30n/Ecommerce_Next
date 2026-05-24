@@ -4,16 +4,23 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
+import { calculateShipping } from "@/lib/pricing-utils";
+import { CartItem } from "@/contexts/CartContext";
 
 interface CartSummaryProps {
+  items: CartItem[];
   subtotal: number;
   currency?: string;
-  shipping?: number;
   tax?: number;
 }
 
-export function CartSummary({ subtotal, currency = "USD", shipping = 0, tax = 0 }: CartSummaryProps) {
+export function CartSummary({ items, subtotal, currency = "PKR", tax = 0 }: CartSummaryProps) {
   const router = useRouter();
+  const shipping = calculateShipping(items.map(item => ({
+    quantity: item.quantity,
+    unitPrice: item.unitPrice,
+    isFreeShipping: typeof item.product === "object" ? item.product.isFreeShipping : false
+  })));
   const total = subtotal + shipping + tax;
 
   const formatPrice = (price: number) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm, Controller, Resolver } from "react-hook-form";
-import TiptapEditor from "@/components/TiptapEditor";
+import TiptapEditor from "@/components/common/TiptapEditor";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ProductCreateSchema,
@@ -55,32 +55,43 @@ export default function ProductForm({
   } = useForm<ProductCreateInput>({
     resolver: zodResolver(ProductCreateSchema) as Resolver<ProductCreateInput>,
     defaultValues: {
-      isPublished: false,
-      images: [],
-      tags: [],
-      colors: [],
-      sizes: [],
-      variants: [],
-      quantity: 0,
-      price: 0,
-      compareAtPrice: 0,
       ...initialData,
+      isPublished: initialData?.isPublished ?? false,
+      isFreeShipping: initialData?.isFreeShipping === true,
+      images: initialData?.images ?? [],
+      tags: initialData?.tags ?? [],
+      colors: initialData?.colors ?? [],
+      sizes: initialData?.sizes ?? [],
+      variants: initialData?.variants ?? [],
+      quantity: initialData?.quantity ?? 0,
+      price: initialData?.price ?? 0,
+      compareAtPrice: initialData?.compareAtPrice ?? 0,
+      category: typeof initialData?.category === 'object' && initialData?.category !== null && '_id' in initialData.category 
+        ? (initialData.category as unknown as Category)._id 
+        : initialData?.category,
     },
   });
 
-  // Handle initialData.category if it's an object (populated) or string
+  // Handle initialData changes for category specifically if needed
   useEffect(() => {
-    if (initialData?.category) {
-      const catValue =
-        typeof initialData.category === "object" &&
-        initialData.category !== null &&
-        "_id" in initialData.category
-          ? (initialData.category as unknown as Category)._id
+    if (initialData) {
+      if (initialData.category && categories.length > 0) {
+        const catValue = typeof initialData.category === 'object' && initialData.category !== null && '_id' in initialData.category 
+          ? (initialData.category as unknown as Category)._id 
           : initialData.category;
-
-      setValue("category", catValue);
+        
+        setValue("category", catValue);
+      }
+      
+      // Explicitly sync boolean flags
+      if (initialData.isFreeShipping !== undefined) {
+        setValue("isFreeShipping", !!initialData.isFreeShipping);
+      }
+      if (initialData.isPublished !== undefined) {
+        setValue("isPublished", initialData.isPublished);
+      }
     }
-  }, [initialData, setValue]);
+  }, [initialData, setValue, categories]);
 
   const tags = watch("tags") || [];
 
@@ -1122,6 +1133,36 @@ export default function ProductForm({
                     onClick={() => field.onChange(!field.value)}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                       field.value ? "bg-blue-600" : "bg-gray-200"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        field.value ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                )}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <div>
+                <p className="text-sm font-bold text-gray-800">
+                  Free Shipping
+                </p>
+                <p className="text-[10px] text-gray-500">
+                  No shipping charges for this product
+                </p>
+              </div>
+              <Controller
+                name="isFreeShipping"
+                control={control}
+                render={({ field }) => (
+                  <button
+                    type="button"
+                    onClick={() => field.onChange(!field.value)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                      field.value ? "bg-green-600" : "bg-gray-200"
                     }`}
                   >
                     <span

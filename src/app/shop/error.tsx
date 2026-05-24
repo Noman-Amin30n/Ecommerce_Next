@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Footer from "@/components/footer";
-import Header from "@/components/header/header";
-import PageTitle from "@/components/pageTitle";
+import Footer from "@/components/Footer";
+import Header from "@/components/header/Header";
+import PageTitle from "@/components/common/PageTitle";
 import { cn } from "@/lib/utils";
 
 type ErrorProps = {

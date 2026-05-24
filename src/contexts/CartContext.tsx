@@ -11,7 +11,7 @@ import Cookies from "js-cookie";
 import { useSession } from "next-auth/react";
 
 export interface CartItem {
-  product: string | { _id: string; title: string; images: string[] };
+  product: string | { _id: string; title: string; images: string[]; isFreeShipping?: boolean };
   variantSku?: string;
   image?: string;
   color?: { label: string; value: string };

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import ProductForm from "@/components/admin/ProductForm";
+import ProductForm from "@/features/admin/components/ProductForm";
 import { ProductCreateInput } from "@/lib/validators/product";
 
 export default function EditProductPage() {
@@ -36,6 +36,7 @@ export default function EditProductPage() {
             sku: data.product.sku,
             quantity: data.product.quantity,
             isPublished: data.product.isPublished,
+            isFreeShipping: data.product.isFreeShipping || false,
           });
         }
       } catch (error) {

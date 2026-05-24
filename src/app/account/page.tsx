@@ -3,10 +3,10 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { z } from "zod";
 import Cookies from "js-cookie";
-import Footer from "@/components/footer";
-import Header from "@/components/header/header";
-import PageTitle from "@/components/pageTitle";
-import StoreFeatures from "@/components/storeFeatures";
+import Footer from "@/components/Footer";
+import Header from "@/components/header/Header";
+import PageTitle from "@/components/common/PageTitle";
+import StoreFeatures from "@/components/common/StoreFeatures";
 import { useSession } from "next-auth/react";
 import {
   Loader2,
@@ -34,7 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { pakistanLocations } from "@/lib/pakistan-locations";
-import AuthForm from "@/components/auth/AuthForm";
+import AuthForm from "@/features/auth/components/AuthForm";
 
 function Page() {
   const { status: sessionStatus } = useSession();

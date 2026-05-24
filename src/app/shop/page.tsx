@@ -1,20 +1,20 @@
 // app/shop/page.tsx
 import React, { Suspense } from "react";
 import type { Metadata } from "next";
-import Header from "@/components/header/header";
-import Footer from "@/components/footer";
-import PageTitle from "@/components/pageTitle";
+import Header from "@/components/header/Header";
+import Footer from "@/components/Footer";
+import PageTitle from "@/components/common/PageTitle";
 import { FilterContextProvider } from "@/contexts/filterContext";
 
-// Shop subcomponents
-import ItemsPerPage from "./_shopComponents/itemsPerPage";
-import SortBy from "./_shopComponents/sortBy";
-import Filters from "./_shopComponents/filters";
-import ProductsLayout from "./_shopComponents/productsLayout";
-import ProductsContainer from "./_shopComponents/productsGrid";
-import { ProductsContainerFallback } from "./_shopComponents/productsClientContainer";
-import ProductsCount from "./_shopComponents/productsCount";
-import StoreFeatures from "@/components/storeFeatures";
+// Shop feature components
+import ItemsPerPage from "@/features/shop/components/ItemsPerPage";
+import SortBy from "@/features/shop/components/SortBy";
+import Filters from "@/features/shop/components/Filters";
+import ProductsLayout from "@/features/shop/components/ProductsLayout";
+import ProductsContainer from "@/features/shop/components/ProductsGrid";
+import { ProductsContainerFallback } from "@/features/shop/components/ProductsClientContainer";
+import ProductsCount from "@/features/shop/components/ProductsCount";
+import StoreFeatures from "@/components/common/StoreFeatures";
 
 export const metadata: Metadata = {
   title: "Shop",
@@ -51,8 +51,7 @@ export default async function ShopPage({
     priceStats.length > 0 ? Math.ceil(priceStats[0].maxPrice) : 0;
 
   // Fetch all categories
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const categories = (await Category.find({}).lean()) as any;
+  const categories = await Category.find({}).lean();
 
   return (
     <>

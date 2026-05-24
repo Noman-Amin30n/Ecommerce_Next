@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Progress } from "@/components/ui/progress";
-import RatingStars from "@/components/rating";
+import RatingStars from "@/components/common/Rating";
 import type { ReviewsApiResponse } from "@/types/review";
 import { Skeleton } from "@/components/ui/skeleton";
 

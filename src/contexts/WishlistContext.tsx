@@ -9,7 +9,7 @@ import {
   useCallback,
 } from "react";
 import { useSession } from "next-auth/react";
-import AuthDialog from "@/components/auth/AuthDialog";
+import AuthDialog from "@/features/auth/components/AuthDialog";
 import { toast } from "sonner";
 import { IWishlistItem } from "@/models/wishlist";
 

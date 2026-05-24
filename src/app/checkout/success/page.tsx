@@ -2,10 +2,10 @@ import React from "react";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Header from "@/components/header/header";
-import Footer from "@/components/footer";
-import PageTitle from "@/components/pageTitle";
-import StoreFeatures from "@/components/storeFeatures";
+import Header from "@/components/header/Header";
+import Footer from "@/components/Footer";
+import PageTitle from "@/components/common/PageTitle";
+import StoreFeatures from "@/components/common/StoreFeatures";
 
 interface SuccessPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

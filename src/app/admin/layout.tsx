@@ -1,6 +1,6 @@
 // src/app/admin/layout.tsx
 import { ReactNode } from "react";
-import Sidebar from "@/components/admin/Sidebar";
+import Sidebar from "@/features/admin/components/Sidebar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

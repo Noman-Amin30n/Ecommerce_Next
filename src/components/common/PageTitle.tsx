@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import Breadcrumbs from "./breadcrumbs";
+import Breadcrumbs from "./Breadcrumbs";
 import { cn } from "@/lib/utils";
 
 interface PageTitleProps {

@@ -7,6 +7,8 @@ import { getSessionForRequest, requireAuth } from "@/lib/auth";
 import { handleError, ApiError } from "@/lib/errors";
 import Cart from "@/models/cart";
 import Inventory from "@/models/inventory";
+import { calculateShipping, calculateCodFee } from "@/lib/pricing-utils";
+import Product from "@/models/product";
 
 export async function GET() {
     try {
@@ -38,10 +40,22 @@ export async function POST(req: Request) {
 
         // Calculate totals server-side (avoid trusting client)
         const subTotal = parsed.items.reduce((s, it) => s + it.unitPrice * it.quantity, 0);
-        const shipping = parsed.shipping ?? 0;
+        
+        // Fetch products to get isFreeShipping flag
+        const productIds = parsed.items.map(item => item.product);
+        const products = await Product.find({ _id: { $in: productIds } });
+        const productMap = new Map(products.map(p => [p._id.toString(), p]));
+
+        const shipping = calculateShipping(parsed.items.map(item => ({
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            isFreeShipping: productMap.get(item.product)?.isFreeShipping ?? false
+        })));
+
+        const codFee = calculateCodFee(subTotal);
         const tax = parsed.tax ?? 0;
         const discount = parsed.discount ?? 0;
-        const total = subTotal + shipping + tax - discount;
+        const total = subTotal + shipping + tax + codFee - discount;
 
         // TODO: Use transactions to reserve inventory atomically
         // Very simple inventory check (non-transactional)
@@ -72,8 +86,9 @@ export async function POST(req: Request) {
             shipping,
             tax,
             discount,
+            codFee,
             total,
-            currency: parsed.currency ?? process.env.DEFAULT_CURRENCY ?? "USD",
+            currency: parsed.currency ?? process.env.DEFAULT_CURRENCY ?? "PKR",
             shippingAddress: parsed.shippingAddress,
             status: "pending",
             payment: {

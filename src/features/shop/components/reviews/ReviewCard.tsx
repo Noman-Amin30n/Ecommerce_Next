@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import RatingStars from "@/components/rating";
+import RatingStars from "@/components/common/Rating";
 import ImageLightbox from "./ImageLightbox";
 import type { ClientReview } from "@/types/review";
 

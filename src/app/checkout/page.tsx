@@ -4,15 +4,16 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
-import { CheckoutAuthDialog } from "@/components/checkout/CheckoutAuthDialog";
-import { CheckoutForm, ShippingAddressFormValues } from "@/components/checkout/CheckoutForm";
-import { CheckoutSummary } from "@/components/checkout/CheckoutSummary";
+import { CheckoutAuthDialog } from "@/features/checkout/components/CheckoutAuthDialog";
+import { CheckoutForm, ShippingAddressFormValues } from "@/features/checkout/components/CheckoutForm";
+import { CheckoutSummary } from "@/features/checkout/components/CheckoutSummary";
 import { toast } from "sonner";
+import { calculateShipping, calculateCodFee } from "@/lib/pricing-utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import Header from "@/components/header/header";
-import Footer from "@/components/footer";
-import PageTitle from "@/components/pageTitle";
-import StoreFeatures from "@/components/storeFeatures";
+import Header from "@/components/header/Header";
+import Footer from "@/components/Footer";
+import PageTitle from "@/components/common/PageTitle";
+import StoreFeatures from "@/components/common/StoreFeatures";
 
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
@@ -58,12 +59,21 @@ export default function CheckoutPage() {
         quantity: item.quantity,
       }));
 
+      const shipping = calculateShipping(cartItems.map(item => ({
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        isFreeShipping: typeof item.product === "object" ? item.product.isFreeShipping : false
+      })));
+
+      const codFee = calculateCodFee(subtotal);
+
       const payload = {
         items: orderItems,
-        shipping: 0, // Calculate properly if needed
-        tax: 0,      // Calculate properly if needed
+        shipping,
+        tax: 0,
         discount: 0,
-        currency: "USD",
+        codFee,
+        currency: "PKR",
         shippingAddress: addressData,
         paymentMethod: "cod",
       };

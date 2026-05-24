@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import PageTitle from "@/components/pageTitle";
-import Footer from "@/components/footer";
-import Header from "@/components/header/header";
-import StoreFeatures from "@/components/storeFeatures";
+import PageTitle from "@/components/common/PageTitle";
+import Footer from "@/components/Footer";
+import Header from "@/components/header/Header";
+import StoreFeatures from "@/components/common/StoreFeatures";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { ProductCard_Normal } from "@/components/product_card";
+import { ProductCard_Normal } from "@/components/common/ProductCard";
 import { Loader2, HeartOff } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -86,6 +86,7 @@ export default function WishlistPage() {
                         imageAlt={product.title}
                         title={product.title}
                         price={product.price?.toString()}
+                        href={`/shop/${product.slug}`}
                       />
                     </Link>
                   )}

@@ -1,14 +1,47 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MyButton } from "./buttons";
+import { MyButton } from "./Buttons";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Truck, Tag } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface ProductBadgeProps {
+  children: React.ReactNode;
+  icon?: React.ElementType;
+  variant: "shipping" | "discount";
+  className?: string;
+}
+
+const ProductBadge = ({ children, icon: Icon, variant, className }: ProductBadgeProps) => {
+  const variants = {
+    shipping: "from-[#88D9E6] to-[#4facfe] shadow-[0_4px_12px_rgba(136,217,230,0.4)]",
+    discount: "from-[#FF5714] to-[#ff7e5f] shadow-[0_4px_12px_rgba(255,87,20,0.4)]",
+  };
+
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-white",
+        "bg-gradient-to-r backdrop-blur-md border border-white/20",
+        "transition-all duration-300 hover:scale-105 hover:shadow-lg",
+        variants[variant],
+        className
+      )}
+    >
+      {Icon && <Icon size={12} strokeWidth={3} className="shrink-0" />}
+      <span className="drop-shadow-sm">{children}</span>
+    </div>
+  );
+};
 
 interface ProductCard_1Props {
   imageSrc: string;
   imageAlt: string;
   title: string;
   price: string;
+  compareAtPrice?: string;
+  isFreeShipping?: boolean;
   href?: string;
 }
 export function ProductCard_Normal({
@@ -16,6 +49,8 @@ export function ProductCard_Normal({
   imageAlt,
   title,
   price,
+  compareAtPrice,
+  isFreeShipping,
   href = "#",
 }: ProductCard_1Props) {
   return (
@@ -36,6 +71,23 @@ export function ProductCard_Normal({
           placeholder="blur"
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
         />
+        
+        {/* Badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+          {isFreeShipping && (
+            <ProductBadge icon={Truck} variant="shipping">
+              Free Shipping
+            </ProductBadge>
+          )}
+        </div>
+        
+        {compareAtPrice && parseFloat(compareAtPrice) > parseFloat(price) && (
+          <div className="absolute top-3 right-3 z-10">
+            <ProductBadge icon={Tag} variant="discount">
+              {Math.round(((parseFloat(compareAtPrice) - parseFloat(price)) / parseFloat(compareAtPrice)) * 100)}% OFF
+            </ProductBadge>
+          </div>
+        )}
       </div>
       <div className="self-stretch flex flex-col items-start justify-between">
         <p
@@ -74,6 +126,8 @@ export function ProductCardList({
   imageAlt,
   title,
   price,
+  compareAtPrice,
+  isFreeShipping,
   href = "#",
 }: ProductCard_1Props) {
   return (
@@ -83,15 +137,34 @@ export function ProductCardList({
     >
       {/* Image */}
       <div className="w-full min-w-[200px] max-w-[250px]">
-        <Image
-          src={imageSrc}
-          alt={imageAlt}
-          width={500}
-          height={500}
-          className="w-full object-contain rounded-xl mix-blend-multiply"
-          placeholder="blur"
-          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
-        />
+        <div className="relative overflow-hidden rounded-xl">
+          <Image
+            src={imageSrc}
+            alt={imageAlt}
+            width={500}
+            height={500}
+            className="w-full object-contain mix-blend-multiply"
+            placeholder="blur"
+            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+          />
+          
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+            {isFreeShipping && (
+              <ProductBadge icon={Truck} variant="shipping">
+                Free Shipping
+              </ProductBadge>
+            )}
+          </div>
+          
+          {compareAtPrice && parseFloat(compareAtPrice) > parseFloat(price) && (
+            <div className="absolute top-3 right-3 z-10">
+              <ProductBadge icon={Tag} variant="discount">
+                {Math.round(((parseFloat(compareAtPrice) - parseFloat(price)) / parseFloat(compareAtPrice)) * 100)}% OFF
+              </ProductBadge>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Content */}
